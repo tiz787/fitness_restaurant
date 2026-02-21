@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Gestión de órdenes - Fitness Restaurant"
+    />
+    <meta name="theme-color" content="#ff4a01" />
+
+    <title>Gestionar Órdenes | Fitness Restaurant Dashboard</title>
+
+    <!-- ESTILOS GLOBALES -->
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="../css/utilities.css" />
+
+    <style>
+      .order-card {
+        position: relative;
+        overflow: hidden;
+        background: var(--color-bg-secondary);
+        border-radius: var(--border-radius-lg);
+        padding: var(--spacing-lg);
+        box-shadow: var(--shadow-sm);
+        border-left: 4px solid var(--color-primary);
+      }
+      .order-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url("../assets/images/imagen7-Orden.png");
+        background-size: cover;
+        background-position: center;
+        filter: blur(12px);
+        opacity: 0.25;
+        z-index: 0;
+        border-radius: var(--border-radius-lg);
+      }
+      .order-card > * {
+        position: relative;
+        z-index: 1;
+      }
+      /* KPI Cards mejorados */
+      .kpi-card {
+        position: relative;
+        overflow: hidden;
+        min-height: 140px;
+      }
+      .kpi-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url("../assets/images/imagen7-Orden.png");
+        background-size: cover;
+        background-position: center;
+        filter: blur(10px);
+        opacity: 0.2;
+        z-index: 0;
+      }
+      .kpi-card__value {
+        position: relative;
+        z-index: 1;
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--color-primary);
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+      .kpi-card__label {
+        position: relative;
+        z-index: 1;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--color-text-primary);
+        text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+      }
+    </style>
+  </head>
+
+  <body class="page-ordenes">
+    <!-- SKIP LINK - Accesibilidad -->
+    <a href="#main-content" class="sr-only">Ir al contenido principal</a>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+      <div class="navbar__logo">🥗 Fitness Restaurant</div>
+      <nav class="navbar__menu">
+        <a href="../index.html" class="navbar__link">Dashboard</a>
+        <a href="catalogo.html" class="navbar__link">Catálogo</a>
+        <a href="gestion-de-pedidos.html" class="navbar__link"
+          >Gestión Pedidos</a
+        >
+        <a
+          href="gestionar-ordenes.html"
+          class="navbar__link navbar__link--active"
+          >Órdenes</a
+        >
+        <a href="reportes.html" class="navbar__link">Reportes</a>
+      </nav>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main id="main-content" class="container">
+      <!-- SECCIÓN HERO -->
+      <section class="hero">
+        <h1 class="hero__title">Gestión de Órdenes</h1>
+        <p class="hero__subtitle">
+          Visualiza y gestiona las órdenes activas del día
+        </p>
+      </section>
+
+      <!-- SECCIÓN: FILTROS Y ESTADÍSTICAS -->
+      <section>
+        <h2>Estado de Órdenes</h2>
+        <div class="kpi-container">
+          <div class="kpi-card" style="border-top-color: #ff4a01">
+            <div class="kpi-card__value">5</div>
+            <div class="kpi-card__label">⏱ Pendientes</div>
+          </div>
+          <div class="kpi-card" style="border-top-color: #396c03">
+            <div class="kpi-card__value">12</div>
+            <div class="kpi-card__label">✓ Completadas</div>
+          </div>
+          <div class="kpi-card" style="border-top-color: #d8d92e">
+            <div class="kpi-card__value">2</div>
+            <div class="kpi-card__label">⚠ En Espera</div>
+          </div>
+          <div class="kpi-card" style="border-top-color: #dc3545">
+            <div class="kpi-card__value">1</div>
+            <div class="kpi-card__label">✕ Cancelada</div>
+          </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters-container">
+          <button class="button button--primary">Todos</button>
+          <button class="button button--outline">⏱ Pendientes</button>
+          <button class="button button--outline">✓ Completadas</button>
+          <button class="button button--outline">En Preparación</button>
+        </div>
+      </section>
+
+      <!-- SECCIÓN: ÓRDENES ACTIVAS -->
+      <section>
+        <h2>Órdenes Pendientes (En Tiempo Real)</h2>
+
+        <div class="orders-container">
+          <!-- ORDEN 1 -->
+          <div class="order-card">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: start;
+                margin-bottom: var(--spacing-md);
+              "
+            >
+              <div>
+                <h3 style="margin: 0; margin-bottom: 0.25rem">
+                  #1001 - Juan Pérez
+                </h3>
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 0.875rem;
+                    color: var(--color-text-secondary);
+                  "
+                >
+                  hace 5 minutos
+                </p>
+              </div>
+              <span class="table__status table__status--pending"
+                >⏱ Pendiente</span
+              >
+            </div>
+
+            <div
+              style="
+                background: var(--color-bg-primary);
+                padding: var(--spacing-md);
+                border-radius: var(--border-radius-md);
+                margin-bottom: var(--spacing-md);
+              "
+            >
+              <p style="margin: 0.5rem 0; font-size: 0.875rem">
+                <strong>✓</strong> Pechuga Asada x2
+              </p>
+              <p style="margin: 0.5rem 0; font-size: 0.875rem">
+                <strong>✓</strong> Ensalada Vegana x1
+              </p>
+              <p style="margin: 0.5rem 0; font-size: 0.875rem">
+                <strong>✓</strong> Batido Green x2
+              </p>
+            </div>
+
+            <div style="display: flex; gap: var(--spacing-sm)">
+              <button
+                class="button button--secondary button--small"
+                style="flex: 1"
+              >
+                ✓ Hecho
+              </button>
+              <button class="button button--outline button--small">
+                Ver Detalles
+              </button>
+            </div>
+          </div>
+
+          <!-- ORDEN 2 -->
+          <div class="order-card">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: start;
+                margin-bottom: var(--spacing-md);
+              "
+            >
+              <div>
+                <h3 style="margin: 0; margin-bottom: 0.25rem">
+                  #1002 - María García
+                </h3>
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 0.875rem;
+                    color: var(--color-text-secondary);
+                  "
+                >
+                  hace 8 minutos
+                </p>
+              </div>
+              <span class="table__status table__status--pending"
+                >⏱ Pendiente</span
+              >
+            </div>
+
+            <div
+              style="
+                background: var(--color-bg-primary);
+                padding: var(--spacing-md);
+                border-radius: var(--border-radius-md);
+                margin-bottom: var(--spacing-md);
+              "
+            >
+              <p style="margin: 0.5rem 0; font-size: 0.875rem">
+                <strong>✓</strong> Buddha Bowl x1
+              </p>
+              <p style="margin: 0.5rem 0; font-size: 0.875rem">
+                <strong>✓</strong> Jugo Naranja x1
+              </p>
+              <p style="margin: 0.5rem 0; font-size: 0.875rem">
+                <strong>✓</strong> Brownie Proteico x1
+              </p>
+            </div>
+
+            <div style="display: flex; gap: var(--spacing-sm)">
+              <button
+                class="button button--secondary button--small"
+                style="flex: 1"
+              >
+                ✓ Hecho
+              </button>
+              <button class="button button--outline button--small">
+                Ver Detalles
+              </button>
+            </div>
+          </div>
+
+          <!-- ORDEN 3 -->
+          <div class="order-card">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: start;
+                margin-bottom: var(--spacing-md);
+              "
+            >
+              <div>
+                <h3 style="margin: 0; margin-bottom: 0.25rem">
+                  #1003 - Carlos López
+                </h3>
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 0.875rem;
+                    color: var(--color-text-secondary);
+                  "
+                >
+                  hace 2 minutos
+                </p>
+              </div>
+              <span
+                class="table__status"
+                style="
+                  background-color: rgba(216, 217, 46, 0.1);
+                  color: var(--color-accent);
+                "
+                >⏳ En Prep.</span
+              >
+            </div>
+
+            <div
+              style="
+                background: var(--color-bg-primary);
+                padding: var(--spacing-md);
+                border-radius: var(--border-radius-md);
+                margin-bottom: var(--spacing-md);
+              "
+            >
+              <p style="margin: 0.5rem 0; font-size: 0.875rem">
+                <strong>✓</strong> Pechuga Asada x1
+              </p>
+              <p style="margin: 0.5rem 0; font-size: 0.875rem">
+                <strong>✓</strong> Ensalada Vegana x1
+              </p>
+            </div>
+
+            <div style="display: flex; gap: var(--spacing-sm)">
+              <button
+                class="button button--secondary button--small"
+                style="flex: 1"
+              >
+                ✓ Hecho
+              </button>
+              <button class="button button--outline button--small">
+                Ver Detalles
+              </button>
+            </div>
+          </div>
+
+          <!-- ORDEN 4 -->
+          <div class="order-card">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: start;
+                margin-bottom: var(--spacing-md);
+              "
+            >
+              <div>
+                <h3 style="margin: 0; margin-bottom: 0.25rem">
+                  #1004 - Ana Ruiz
+                </h3>
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 0.875rem;
+                    color: var(--color-text-secondary);
+                  "
+                >
+                  hace 12 minutos
+                </p>
+              </div>
+              <span class="table__status table__status--pending"
+                >⏱ Pendiente</span
+              >
+            </div>
+
+            <div
+              style="
+                background: var(--color-bg-primary);
+                padding: var(--spacing-md);
+                border-radius: var(--border-radius-md);
+                margin-bottom: var(--spacing-md);
+              "
+            >
+              <p style="margin: 0.5rem 0; font-size: 0.875rem">
+                <strong>✓</strong> Buddha Bowl x2
+              </p>
+              <p style="margin: 0.5rem 0; font-size: 0.875rem">
+                <strong>✓</strong> Batido Green x1
+              </p>
+            </div>
+
+            <div style="display: flex; gap: var(--spacing-sm)">
+              <button
+                class="button button--secondary button--small"
+                style="flex: 1"
+              >
+                ✓ Hecho
+              </button>
+              <button class="button button--outline button--small">
+                Ver Detalles
+              </button>
+            </div>
+          </div>
+
+          <!-- ORDEN 5 -->
+          <div class="order-card">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: start;
+                margin-bottom: var(--spacing-md);
+              "
+            >
+              <div>
+                <h3 style="margin: 0; margin-bottom: 0.25rem">
+                  #1005 - Felipe Torres
+                </h3>
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 0.875rem;
+                    color: var(--color-text-secondary);
+                  "
+                >
+                  hace 20 minutos
+                </p>
+              </div>
+              <span class="table__status table__status--completed"
+                >✓ Completado</span
+              >
+            </div>
+
+            <div
+              style="
+                background: var(--color-bg-primary);
+                padding: var(--spacing-md);
+                border-radius: var(--border-radius-md);
+                margin-bottom: var(--spacing-md);
+              "
+            >
+              <p style="margin: 0.5rem 0; font-size: 0.875rem">
+                <strong>✓</strong> Pechuga Asada x3
+              </p>
+              <p style="margin: 0.5rem 0; font-size: 0.875rem">
+                <strong>✓</strong> Jugo Naranja x1
+              </p>
+            </div>
+
+            <div style="display: flex; gap: var(--spacing-sm)">
+              <button
+                class="button button--outline button--small"
+                style="flex: 1"
+                disabled
+              >
+                Completado
+              </button>
+              <button class="button button--outline button--small">
+                Imprimir
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN: ÚLTIMA ORDEN COMPLETADA -->
+      <section style="margin-top: 3rem">
+        <h2>Últimas Órdenes Completadas</h2>
+        <div style="overflow-x: auto">
+          <table class="table">
+            <thead class="table__header">
+              <tr>
+                <th class="table__cell table__cell--header">ID</th>
+                <th class="table__cell table__cell--header">Cliente</th>
+                <th class="table__cell table__cell--header">Total</th>
+                <th class="table__cell table__cell--header">Hora Completa</th>
+                <th class="table__cell table__cell--header">Tiempo (min)</th>
+                <th class="table__cell table__cell--header">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="table__row">
+                <td class="table__cell">#995</td>
+                <td class="table__cell">Rosa Silva</td>
+                <td class="table__cell"><strong>$52.50</strong></td>
+                <td class="table__cell">14:32</td>
+                <td class="table__cell">
+                  <strong style="color: var(--color-success)">12 min</strong>
+                </td>
+                <td class="table__cell">
+                  <button class="button button--outline button--small">
+                    Detalles
+                  </button>
+                </td>
+              </tr>
+              <tr class="table__row">
+                <td class="table__cell">#994</td>
+                <td class="table__cell">David Moreno</td>
+                <td class="table__cell"><strong>$38.97</strong></td>
+                <td class="table__cell">14:20</td>
+                <td class="table__cell">
+                  <strong style="color: var(--color-success)">15 min</strong>
+                </td>
+                <td class="table__cell">
+                  <button class="button button--outline button--small">
+                    Detalles
+                  </button>
+                </td>
+              </tr>
+              <tr class="table__row">
+                <td class="table__cell">#993</td>
+                <td class="table__cell">Sandra Cortés</td>
+                <td class="table__cell"><strong>$29.98</strong></td>
+                <td class="table__cell">14:08</td>
+                <td class="table__cell">
+                  <strong style="color: var(--color-secondary)">18 min</strong>
+                </td>
+                <td class="table__cell">
+                  <button class="button button--outline button--small">
+                    Detalles
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer
+      style="
+        background-color: var(--color-bg-secondary);
+        padding: var(--spacing-xl) var(--spacing-lg);
+        text-align: center;
+        border-top: 1px solid var(--color-border);
+        margin-top: var(--spacing-2xl);
+      "
+    >
+      <p style="color: var(--color-text-secondary); margin-bottom: 0">
+        &copy; 2026 Fitness Restaurant Dashboard. Todos los derechos reservados.
+      </p>
+    </footer>
+  </body>
+</html>

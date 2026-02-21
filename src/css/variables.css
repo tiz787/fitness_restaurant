@@ -1,0 +1,86 @@
+/* ========================================
+   SISTEMA DE VARIABLES - DESIGN SYSTEM
+   Fitness Restaurant Dashboard
+   ======================================== */
+
+:root {
+  /* COLORES PRIMARIOS & SECUNDARIOS */
+  --color-primary: #ff4a01; /* Naranja Atómico - CTAs, Logos */
+  --color-secondary: #ff8b00; /* Naranja Cálido - Acentos, Hover */
+  --color-success: #396c03; /* Verde Bosque - Éxito, Salud */
+  --color-accent: #d8d92e; /* Lima Eléctrica - Destacados, Warning */
+  --color-highlight: #ffd900; /* Amarillo Solar - Precios, Tags */
+
+  /* COLORES NEUTROS */
+  --color-bg-primary: #f8f9fa; /* Fondo Principal - Gris ultra claro */
+  --color-bg-secondary: #ffffff; /* Fondo secundario - Blanco */
+  --color-text-primary: #212529; /* Texto Principal - Casi negro */
+  --color-text-secondary: #495057; /* Texto Secundario - Gris oscuro */
+  --color-border: #dee2e6; /* Bordes/Divisores */
+  --color-error: #dc3545; /* Error - Rojo */
+
+  /* TIPOGRAFÍA - FUENTES */
+  --font-family-primary:
+    "Inter", "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* TAMAÑOS DE FUENTE */
+  --font-size-h1: 2.5rem; /* 40px */
+  --font-size-h2: 1.75rem; /* 28px */
+  --font-size-h3: 1.25rem; /* 20px */
+  --font-size-body: 1rem; /* 16px */
+  --font-size-small: 0.875rem; /* 14px */
+  --font-size-tiny: 0.75rem; /* 12px */
+
+  /* PESOS DE FUENTE */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* ESPACIADO - SCALE */
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem; /* 8px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 2rem; /* 32px */
+  --spacing-2xl: 3rem; /* 48px */
+
+  /* BORDES */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-full: 9999px;
+
+  /* SOMBRAS */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+
+  /* TRANSICIONES */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+
+  /* BREAKPOINTS (Mobile-First) */
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+  --breakpoint-2xl: 1400px;
+
+  /* Z-INDEX SCALE */
+  --z-dropdown: 100;
+  --z-modal: 200;
+  --z-toast: 300;
+  --z-tooltip: 400;
+}
+
+/* MODO OSCURO (OPCIONAL - Para cocina) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg-primary: #1a1a1a;
+    --color-bg-secondary: #2d2d2d;
+    --color-text-primary: #f8f9fa;
+    --color-text-secondary: #b0b0b0;
+    --color-border: #3d3d3d;
+  }
+}
