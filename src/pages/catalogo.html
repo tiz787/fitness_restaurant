@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Gestión de Catálogo - Fitness Restaurant"
+    />
+    <meta name="theme-color" content="#ff4a01" />
+
+    <title>Catálogo | Fitness Restaurant Dashboard</title>
+
+    <!-- ESTILOS GLOBALES -->
+    <link rel="stylesheet" href="../css/variables.css" />
+    <link rel="stylesheet" href="../css/reset.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <link rel="stylesheet" href="../css/utilities.css" />
+
+    <style>
+      .search-filters {
+        display: flex;
+        gap: var(--spacing-lg);
+        flex-wrap: wrap;
+        }
+      .search-filters .form__group {
+        flex: 1;
+        min-width: 150px;
+        }
+      .table-wrapper {
+        overflow-x: visible; /* quita el scroll */
+        width: 100%;
+        max-width: 100vw; /* ocupa todo el ancho de la ventana */
+        /* o si está dentro de un layout con sidebar: */
+      }
+      .table-container {
+        background: var(--color-bg-secondary);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: 0;
+        width: 100%;
+     }
+      .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: unset; /* elimina el ancho mínimo forzado */
+      }
+      .admin-table thead {
+        background: linear-gradient(
+          135deg,
+          var(--color-primary),
+          var(--color-secondary)
+        );
+        color: white;
+      }
+      .admin-table th {
+        padding: var(--spacing-md);
+        text-align: left;
+        font-weight: var(--font-weight-bold);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.75rem;
+      }
+      .admin-table tbody tr {
+        border-bottom: 1px solid var(--color-border);
+      }
+      .admin-table tbody tr:hover {
+        background-color: var(--color-bg-primary);
+      }
+      .admin-table td {
+        padding: var(--spacing-md);
+        font-size: var(--font-size-small);
+        vertical-align: middle;
+      }
+      .toggle-switch {
+        width: 50px;
+        height: 24px;
+        background-color: #ccc;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background-color var(--transition-fast);
+        display: inline-block;
+        position: relative;
+      }
+      .toggle-switch.active {
+        background-color: var(--color-success);
+      }
+      .toggle-switch::after {
+        content: "";
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background-color: white;
+        border-radius: 50%;
+        top: 2px;
+        left: 2px;
+        transition: left var(--transition-fast);
+      }
+      .toggle-switch.active::after {
+        left: 28px;
+      }
+      .actions-cell {
+        display: flex;
+        gap: var(--spacing-sm);
+        flex-wrap: wrap;
+      }
+      .badge-cell {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+      }
+      .audit-info {
+        font-size: 0.75rem;
+        color: var(--color-text-secondary);
+        display: block;
+        margin-top: 0.25rem;
+      }
+      .table__image {
+        width: 60px;
+        height: 60px;
+        border-radius: var(--border-radius-md);
+        object-fit: cover;
+        box-shadow: var(--shadow-sm);
+      }
+      /* KPI Cards con fondo */
+      .kpi-card {
+        position: relative;
+        overflow: hidden;
+        min-height: 140px;
+      }
+      .kpi-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url("../assets/images/imagen7-Orden.png");
+        background-size: cover;
+        background-position: center;
+        filter: blur(8px);
+        opacity: 0.2;
+        z-index: 0;
+      }
+      .kpi-card__value,
+      .kpi-card__label {
+        position: relative;
+        z-index: 1;
+        font-weight: bold;
+        color: var(--color-primary);
+        text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+      }
+      .kpi-card__value {
+        font-size: 2.5rem;
+      }
+      .kpi-card__label {
+        font-size: 1rem;
+        color: var(--color-text-primary);
+      }
+      .form-section {
+        background: linear-gradient(
+            135deg,
+             rgba(255, 74, 1, 0.05),
+             rgba(255, 139, 0, 0.05)
+                );
+        padding: var(--spacing-lg);
+        border-radius: var(--border-radius-lg);
+        border-left: 4px solid var(--color-primary);
+        margin-bottom: var(--spacing-lg);
+        }
+
+      .form-section h2 {
+        color: var(--color-primary);
+        text-transform: uppercase;
+        margin-bottom: var(--spacing-lg);
+        padding-bottom: var(--spacing-sm);
+        border-bottom: 1px solid var(--color-primary);
+        }
+    </style>
+  </head>
+
+  <body class="page-catalogo">
+    <!-- SKIP LINK - Accesibilidad -->
+    <a href="#main-content" class="sr-only">Ir al contenido principal</a>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+      <div class="navbar__logo">🥗 Fitness Restaurant</div>
+      <nav class="navbar__menu">
+        <a href="../index.html" class="navbar__link">Dashboard</a>
+        <a href="catalogo.html" class="navbar__link navbar__link--active"
+          >Catálogo</a
+        >
+        <a href="gestion-de-pedidos.html" class="navbar__link"
+          >Gestión Pedidos</a
+        >
+        <a href="gestionar-ordenes.html" class="navbar__link">Órdenes</a>
+        <a href="reportes.html" class="navbar__link">Reportes</a>
+      </nav>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main id="main-content" class="container">
+      <!-- SECCIÓN HERO -->
+      <section class="hero">
+        <h1 class="hero__title">📋 Gestión de Catálogo</h1>
+        <p class="hero__subtitle">
+          Administra el menú, precios, disponibilidad y auditoría de platillos
+        </p>
+      </section>
+
+      <!-- SECCIÓN: CONTROLES Y FILTROS -->
+      <section>
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+          "
+        >
+            <div class="form-section">
+                <h2>Listado de Platillos</h2>
+                    <button class="button button--primary" id="btn-nuevo-platillo">
+                ➕ Nuevo Platillo
+                </button>
+        </div>
+
+        <div class="filters-container table-container" style="padding: var(--spacing-lg); margin-bottom: var(--spacing-lg);">
+          <div class="search-filters">
+            <div class="form__group">
+              <label for="search-platillo" class="form__label">🔍 Buscar</label>
+              <input
+                type="text"
+                id="search-platillo"
+                class="form__input"
+                placeholder="Nombre, ingrediente o ID..."
+              />
+            </div>
+           </div>
+
+            <div class="form__group">
+              <label for="filter-categoria" class="form__label"
+                >📁 Categoría</label
+              >
+              <select id="filter-categoria" class="form__select">
+                <option value="">Todas</option>
+                <option value="ensaladas">🥗 Ensaladas Fitness</option>
+                <option value="proteinas">🍗 Proteínas</option>
+                <option value="bowls">🥑 Bowls</option>
+                <option value="postres">🍰 Postres</option>
+                <option value="batidos">🥤 Batidos</option>
+                <option value="jugos">🧃 Jugos</option>
+              </select>
+            </div>
+
+            <div class="form__group">
+              <label for="filter-precio-max" class="form__label"
+                >💰 Precio Máx</label
+              >
+              <input
+                type="number"
+                id="filter-precio-max"
+                class="form__input"
+                placeholder="$50.00"
+                min="0"
+                step="0.01"
+              />
+            </div>
+
+            <div class="form__group">
+              <label for="filter-disponibilidad" class="form__label"
+                >🔄 Estado</label
+              >
+              <select id="filter-disponibilidad" class="form__select">
+                <option value="">Todos</option>
+                <option value="disponible">✅ Disponibles</option>
+                <option value="agotado">❌ Agotados</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN: TABLA DE PLATILLOS -->
+      <section>
+        <div class="table-container">
+            <div class="table-wrapper">
+                <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width: 8%">Imagen</th>
+                <th style="width: 12%">ID / Nombre</th>
+                <th style="width: 16%">Descripción</th>
+                <th style="width: 11%">Categoría</th>
+                <th style="width: 7%">Precio</th>
+                <th style="width: 7%">Calorías</th>
+                <th style="width: 9%">Disponible</th>
+                <th style="width: 11%">Certificaciones</th>
+                <th style="width: 16%">Auditoría</th>
+                <th style="width: 12%">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-platillos">
+              <tr>
+                <td><img src="../assets/images/imagen1-EnsaladaVeganaPremiun.jpeg" alt="Ensalada Vegana Premium" class="table__image" /></td>
+                <td><strong>#001</strong><br />Ensalada Vegana Premium</td>
+                <td>Mix de vegetales orgánicos, tofu marinado</td>
+                <td>🥗 Ensaladas</td>
+                <td>$14.99</td>
+                <td>150 cal</td>
+                <td>
+                  <div
+                    class="toggle-switch active"
+                    onclick="this.classList.toggle('active')"
+                  ></div>
+                </td>
+                <td>
+                  <div class="badge-cell">
+                    <span class="badge badge--success">🌱 Vegano</span
+                    ><span class="badge badge--primary">🌿 Orgánico</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="audit-info">✏️ Admin</span
+                  ><span class="audit-info">21/02/2026 10:30</span>
+                </td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="button button--outline button--small">
+                      ✏️ Editar</button
+                    ><button class="button button--danger button--small">
+                      🗑️
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td><img src="../assets/images/imagen2-PechugaAsadaFitness.jpeg" alt="Pechuga Asada Fitness" class="table__image" /></td>
+                <td><strong>#002</strong><br />Pechuga Asada Fitness</td>
+                <td>Marinada con especias y vegetales al vapor</td>
+                <td>🍗 Proteínas</td>
+                <td>$13.99</td>
+                <td>280 cal</td>
+                <td>
+                  <div
+                    class="toggle-switch active"
+                    onclick="this.classList.toggle('active')"
+                  ></div>
+                </td>
+                <td>
+                  <div class="badge-cell">
+                    <span class="badge badge--primary">💪 High Prot</span
+                    ><span class="badge badge--success">📉 Low Carbs</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="audit-info">✏️ Gerente</span
+                  ><span class="audit-info">20/02/2026 15:45</span>
+                </td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="button button--outline button--small">
+                      ✏️ Editar</button
+                    ><button class="button button--danger button--small">
+                      🗑️
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td><img src="../assets/images/imagen3-BuddhaBowlDetox.jpeg" alt="Buddha Bowl Detox" class="table__image" /></td>
+                <td><strong>#003</strong><br />Buddha Bowl Detox</td>
+                <td>Lechugas, tofu orgánico, quinua y vegetales</td>
+                <td>🥑 Bowls</td>
+                <td>$17.99</td>
+                <td>220 cal</td>
+                <td>
+                  <div
+                    class="toggle-switch"
+                    onclick="this.classList.toggle('active')"
+                  ></div>
+                </td>
+                <td>
+                  <div class="badge-cell">
+                    <span class="badge badge--success">🌱 Vegano</span
+                    ><span class="badge badge--error">🚫 SinGluten</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="audit-info">➕ Admin</span
+                  ><span class="audit-info">21/02/2026 08:15</span>
+                </td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="button button--outline button--small">
+                      ✏️ Editar</button
+                    ><button class="button button--danger button--small">
+                      🗑️
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td><img src="../assets/images/imagen4-BrownieProteico.jpeg" alt="Brownie Proteico" class="table__image" /></td>
+                <td><strong>#004</strong><br />Brownie Proteico</td>
+                <td>Sin azúcar con proteína whey y chocolate</td>
+                <td>🍰 Postres</td>
+                <td>$8.99</td>
+                <td>180 cal</td>
+                <td>
+                  <div
+                    class="toggle-switch active"
+                    onclick="this.classList.toggle('active')"
+                  ></div>
+                </td>
+                <td>
+                  <div class="badge-cell">
+                    <span class="badge badge--success">🚫 SinAzúcar</span
+                    ><span class="badge badge--primary">💪 HighProt</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="audit-info">✏️ Staff</span
+                  ><span class="audit-info">19/02/2026 14:20</span>
+                </td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="button button--outline button--small">
+                      ✏️ Editar</button
+                    ><button class="button button--danger button--small">
+                      🗑️
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td><img src="../assets/images/imagen5-BatidoGreenDetox.jpeg" alt="Batido Green Detox" class="table__image" /></td>
+                <td><strong>#005</strong><br />Batido Green Detox</td>
+                <td>Manzana verde, espinaca, jengibre y proteína</td>
+                <td>🥤 Batidos</td>
+                <td>$9.99</td>
+                <td>120 cal</td>
+                <td>
+                  <div
+                    class="toggle-switch active"
+                    onclick="this.classList.toggle('active')"
+                  ></div>
+                </td>
+                <td>
+                  <div class="badge-cell">
+                    <span class="badge badge--success">🌱 Vegano</span
+                    ><span class="badge badge--error">🚫 SinGluten</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="audit-info">➕ Admin</span
+                  ><span class="audit-info">21/02/2026 09:00</span>
+                </td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="button button--outline button--small">
+                      ✏️ Editar</button
+                    ><button class="button button--danger button--small">
+                      🗑️
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td><img src="../assets/images/imagen6-JugoNaranjaZanahoria.jpeg" alt="Jugo Naranja-Zanahoria" class="table__image" /></td>
+                <td><strong>#006</strong><br />Jugo Naranja-Zanahoria</td>
+                <td>Jugos naturales sin conservantes, exprimidos</td>
+                <td>🧃 Jugos</td>
+                <td>$5.99</td>
+                <td>85 cal</td>
+                <td>
+                  <div
+                    class="toggle-switch active"
+                    onclick="this.classList.toggle('active')"
+                  ></div>
+                </td>
+                <td>
+                  <div class="badge-cell">
+                    <span class="badge badge--success">🌱 Vegano</span
+                    ><span class="badge badge--error">🚫 SinGluten</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="audit-info">✏️ Gerente</span
+                  ><span class="audit-info">18/02/2026 11:30</span>
+                </td>
+                <td>
+                  <div class="actions-cell">
+                    <button class="button button--outline button--small">
+                      ✏️ Editar</button
+                    ><button class="button button--danger button--small">
+                      🗑️
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+       </div> 
+
+        <!-- Resumen de Estadísticas -->
+        <div class="kpi-container" style="margin-top: var(--spacing-2xl)">
+          <div class="kpi-card" style="border-top-color: #ff4a01">
+            <div class="kpi-card__value">6</div>
+            <div class="kpi-card__label">Total Platillos</div>
+          </div>
+          <div class="kpi-card" style="border-top-color: #396c03">
+            <div class="kpi-card__value">5</div>
+            <div class="kpi-card__label">Disponibles</div>
+          </div>
+          <div class="kpi-card" style="border-top-color: #d8d92e">
+            <div class="kpi-card__value">1</div>
+            <div class="kpi-card__label">Agotados</div>
+          </div>
+          <div class="kpi-card" style="border-top-color: #dc3545">
+            <div class="kpi-card__value">3</div>
+            <div class="kpi-card__label">Certificaciones</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN: FORMULARIO AGREGAR/EDITAR -->
+      <section
+        <div class="form-section">
+          <h2>Agregar o Editar Platillo</h2>
+
+          <form class="form" style="max-width: 800px">
+          <div class="form__row">
+            <div class="form__group">
+              <label for="form-nombre" class="form__label form__label--required"
+                >Nombre</label
+              >
+              <input
+                type="text"
+                id="form-nombre"
+                class="form__input"
+                placeholder="Ej: Ensalada Premium"
+              />
+            </div>
+
+            <div class="form__group">
+              <label
+                for="form-categoria"
+                class="form__label form__label--required"
+                >Categoría</label
+              >
+              <select id="form-categoria" class="form__select">
+                <option selected disabled>Seleccionar categoría</option>
+                <option>🥗 Ensaladas Fitness</option>
+                <option>🍗 Proteínas</option>
+                <option>🥑 Bowls</option>
+                <option>🍰 Postres</option>
+                <option>🥤 Batidos</option>
+                <option>🧃 Jugos</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form__group">
+            <label
+              for="form-descripcion"
+              class="form__label form__label--required"
+              >Descripción</label
+            >
+            <textarea
+              id="form-descripcion"
+              class="form__textarea"
+              placeholder="Detalles del platillo..."
+            ></textarea>
+          </div>
+
+          <div class="form__row">
+            <div class="form__group">
+              <label for="form-precio" class="form__label form__label--required"
+                >Precio ($)</label
+              >
+              <input
+                type="number"
+                id="form-precio"
+                class="form__input"
+                placeholder="14.99"
+                min="0"
+                step="0.01"
+              />
+            </div>
+
+            <div class="form__group">
+              <label for="form-calorias" class="form__label">Calorías</label>
+              <input
+                type="number"
+                id="form-calorias"
+                class="form__input"
+                placeholder="150"
+                min="0"
+              />
+            </div>
+          </div>
+
+          <div
+            style="
+              display: flex;
+              flex-wrap: wrap;
+              gap: var(--spacing-lg);
+              margin-bottom: var(--spacing-lg);
+            "
+          >
+            <label
+              style="display: flex; align-items: center; gap: var(--spacing-sm)"
+              ><input type="checkbox" /> 🌱 Vegano</label
+            >
+            <label
+              style="display: flex; align-items: center; gap: var(--spacing-sm)"
+              ><input type="checkbox" /> 🚫 Sin Gluten</label
+            >
+            <label
+              style="display: flex; align-items: center; gap: var(--spacing-sm)"
+              ><input type="checkbox" /> 🌿 Orgánico</label
+            >
+            <label
+              style="display: flex; align-items: center; gap: var(--spacing-sm)"
+              ><input type="checkbox" /> 💪 Alto Proteína</label
+            >
+          </div>
+
+          <label
+            style="
+              display: flex;
+              align-items: center;
+              gap: var(--spacing-sm);
+              margin-bottom: var(--spacing-lg);
+            "
+            ><input type="checkbox" checked /> ✅ Disponible</label
+          >
+
+          <div style="display: flex; gap: var(--spacing-md)">
+            <button type="submit" class="button button--primary">
+              💾 Guardar
+            </button>
+            <button type="reset" class="button button--outline">
+              Cancelar
+            </button>
+          </div>
+        </form>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer
+      style="
+        background: var(--color-bg-secondary);
+        padding: var(--spacing-lg);
+        text-align: center;
+        color: var(--color-text-secondary);
+        margin-top: var(--spacing-2xl);
+      "
+    >
+      <p>&copy; 2026 Fitness Restaurant - Gestión de Catálogo</p>
+    </footer>
+  </body>
+</html>
