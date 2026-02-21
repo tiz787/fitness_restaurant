@@ -1,0 +1,5 @@
+restaurante saludable que sea una app web tipo deshboad en donde van haber dos vistas la priemra que va ahcer para crear lo que son los platillos que vende el restaurante y ocmo los ingredientes que lleva y cuanto vale cada platillo y que por esta primera vista sea un tipo crud para crear,actualizar,leer y eliminar las platillos que hay en el restautante
+
+una segunda vista que por mediode esta se crea una neuva orden con los platillos creados coloque el cliente la cantidad de platillos y le diga el monto del pedido y con un checkbox se pueda marcar como hecho
+
+on estos datos incluir como un dasboard con la estadistica del sitio para el admin, y se pueda como definir un total de vendido en el dia, que platillo registro mas ventas
