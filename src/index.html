@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Dashboard de gestión para Fitness Restaurant - Comida saludable"
+    />
+    <meta name="theme-color" content="#ff4a01" />
+
+    <title>Fitness Restaurant Dashboard</title>
+
+    <!-- ESTILOS GLOBALES -->
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/utilities.css" />
+
+    <style>
+      /* Carrusel / Slideshow */
+      .carousel {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        background: var(--color-bg-secondary);
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        margin-bottom: var(--spacing-2xl);
+      }
+      .carousel__container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+      .carousel__slide {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 1s ease-in-out;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .carousel__slide.active {
+        opacity: 1;
+      }
+      .carousel__slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .carousel__indicators {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+        z-index: 2;
+      }
+      .carousel__dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+      .carousel__dot.active {
+        background: white;
+      }
+      @media (max-width: 768px) {
+        .carousel {
+          height: 300px;
+        }
+      }
+      @media (max-width: 480px) {
+        .carousel {
+          height: 200px;
+        }
+      }
+    </style>
+
+    <!-- FUENTES (Opcional - Se puede agregar Google Fonts más adelante) -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet"> -->
+  </head>
+
+  <body>
+    <!-- SKIP LINK - Accesibilidad -->
+    <a href="#main-content" class="sr-only">Ir al contenido principal</a>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+      <div class="navbar__logo">🥗 Fitness Restaurant</div>
+      <nav class="navbar__menu">
+        <a href="#" class="navbar__link navbar__link--active">Dashboard</a>
+        <a href="pages/catalogo.html" class="navbar__link">Catálogo</a>
+        <a href="pages/gestion-de-pedidos.html" class="navbar__link">Gestión Pedidos</a>
+        <a href="pages/gestionar-ordenes.html" class="navbar__link">Órdenes</a>
+        <a href="pages/reportes.html" class="navbar__link">Reportes</a>
+      </nav>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main id="main-content" class="container">
+      <!-- SECCIÓN HERO -->
+      <section class="hero">
+        <h1 class="hero__title">Bienvenido al Dashboard</h1>
+        <p class="hero__subtitle">
+          Gestiona tu restaurante fitness de forma rápida y eficiente
+        </p>
+      </section>
+
+      <!-- SECCIÓN: CARRUSEL AUTOMÁTICO DE PRODUCTOS -->
+      <section>
+        <div class="carousel">
+          <div class="carousel__container">
+            <div class="carousel__slide active">
+              <img src="assets/images/imagen1-EnsaladaVeganaPremiun.jpeg" alt="Ensalada Vegana Premium" />
+            </div>
+            <div class="carousel__slide">
+              <img src="assets/images/imagen2-PechugaAsadaFitness.jpeg" alt="Pechuga Asada Fitness" />
+            </div>
+            <div class="carousel__slide">
+              <img src="assets/images/imagen3-BuddhaBowlDetox.jpeg" alt="Buddha Bowl Detox" />
+            </div>
+            <div class="carousel__slide">
+              <img src="assets/images/imagen4-BrownieProteico.jpeg" alt="Brownie Proteico" />
+            </div>
+            <div class="carousel__slide">
+              <img src="assets/images/imagen5-BatidoGreenDetox.jpeg" alt="Batido Green Detox" />
+            </div>
+            <div class="carousel__slide">
+              <img src="assets/images/imagen6-JugoNaranjaZanahoria.jpeg" alt="Jugo Naranja-Zanahoria" />
+            </div>
+          </div>
+          <div class="carousel__indicators">
+            <span class="carousel__dot active" onclick="carouselGo(0)"></span>
+            <span class="carousel__dot" onclick="carouselGo(1)"></span>
+            <span class="carousel__dot" onclick="carouselGo(2)"></span>
+            <span class="carousel__dot" onclick="carouselGo(3)"></span>
+            <span class="carousel__dot" onclick="carouselGo(4)"></span>
+            <span class="carousel__dot" onclick="carouselGo(5)"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN DE EJEMPLO: TARJETAS DE PRODUCTOS -->
+      <section>
+        <h2>Productos Destacados</h2>
+        <div class="grid">
+          <!-- CARD 1 - Ensalada Vegana -->
+          <article class="card">
+            <div class="card__image">
+              <img src="assets/images/imagen1-EnsaladaVeganaPremiun.jpeg" alt="Ensalada Vegana Premium" style="width: 100%; height: 100%; object-fit: cover;" />
+            </div>
+            <div class="card__content">
+              <h3 class="card__title">Ensalada Vegana Premium</h3>
+              <p class="card__description">
+                Mix de vegetales orgánicos, tofu marinado y aderezo balsamico de
+                aguacate
+              </p>
+              <div class="card__meta">
+                <span>🔥 150 cal</span>
+                <span>💪 18g Proteína</span>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+                <span class="badge badge--success">🌱 Vegano</span>
+                <span class="badge badge--primary">🌿 Orgánico</span>
+                <span class="badge badge--error">🚫 Sin Gluten</span>
+              </div>
+              <div class="card__price">$14.99</div>
+              <div class="card__actions gap-sm">
+                <button class="button button--primary button--small">
+                  Agregar
+                </button>
+                <button class="button button--outline button--small">
+                  Detalles
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- CARD 2 - Proteína con Alto contenido proteíco -->
+          <article class="card card--highlighted">
+            <div class="card__image">
+              <img src="assets/images/imagen2-PechugaAsadaFitness.jpeg" alt="Pechuga Asada Fitness" style="width: 100%; height: 100%; object-fit: cover;" />
+              <span class="card__badge">💪 Bestseller</span>
+            </div>
+            <div class="card__content">
+              <h3 class="card__title">Pechuga Asada Fitness</h3>
+              <p class="card__description">
+                Pechuga de pollo marinada con especias, acompañada de vegetales al
+                vapor
+              </p>
+              <div class="card__meta">
+                <span>🔥 280 cal</span>
+                <span>💪 45g Proteína</span>
+                <span>📉 Bajo Carbohidrato</span>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+                <span class="badge badge--primary">💪 Alto en Proteína</span>
+                <span class="badge badge--success">📉 Bajo Carbs</span>
+              </div>
+              <div class="card__price">
+                <span class="card__price--original">$15.99</span>
+                $13.99
+              </div>
+              <div class="card__actions gap-sm">
+                <button class="button button--primary button--small">
+                  Agregar
+                </button>
+                <button class="button button--outline button--small">
+                  Detalles
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- CARD 3 - Buddha Bowl Vegano Detox -->
+          <article class="card">
+            <div class="card__image">
+              <img src="assets/images/imagen3-BuddhaBowlDetox.jpeg" alt="Buddha Bowl Detox" style="width: 100%; height: 100%; object-fit: cover;" />
+              <span class="card__badge card__badge--success">🌱 Vegano</span>
+            </div>
+            <div class="card__content">
+              <h3 class="card__title">Buddha Bowl Detox</h3>
+              <p class="card__description">
+                Mix de lechugas, tofu orgánico, quinua y vegetales frescos con
+                vinagreta de lima
+              </p>
+              <div class="card__meta">
+                <span>🔥 220 cal</span>
+                <span>💪 22g Proteína</span>
+                <span>📉 Bajo Carbs</span>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+                <span class="badge badge--success">🌱 Vegano</span>
+                <span class="badge badge--error">🚫 Sin Gluten</span>
+                <span class="badge badge--primary">🌿 Orgánico</span>
+              </div>
+              <div class="card__price">$17.99</div>
+              <div class="card__actions gap-sm">
+                <button class="button button--primary button--small">
+                  Agregar
+                </button>
+                <button class="button button--outline button--small">
+                  Detalles
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- SECCIÓN: FORMULARIO DE EJEMPLO -->
+      <section style="margin-top: 3rem">
+        <h2>Agregar Nuevo Platillo</h2>
+        <div class="grid--2">
+          <form
+            class="form"
+            style="
+              background: var(--color-bg-secondary);
+              padding: var(--spacing-xl);
+              border-radius: var(--border-radius-lg);
+              box-shadow: var(--shadow-sm);
+            "
+          >
+            <div class="form__group">
+              <label for="dish-name" class="form__label form__label--required"
+                >Nombre del Platillo</label
+              >
+              <input
+                type="text"
+                id="dish-name"
+                class="form__input"
+                placeholder="Ej: Pollo a la Parrilla"
+              />
+            </div>
+
+            <div class="form__row">
+              <div class="form__group">
+                <label
+                  for="dish-category"
+                  class="form__label form__label--required"
+                  >Categoría</label
+                >
+                <select id="dish-category" class="form__select">
+                  <option selected disabled>Seleccionar categoría</option>
+                  <optgroup label="🥗 Bases">
+                    <option value="ensaladas">Ensaladas Fitness</option>
+                    <option value="ensaladas-veganas">Ensaladas Veganas</option>
+                  </optgroup>
+                  <optgroup label="💪 Proteínas">
+                    <option value="proteinas-pollo">Proteínas - Pollo</option>
+                    <option value="proteinas-pescado">Proteínas - Pescado</option>
+                    <option value="proteinas-veganas">Proteínas - Veganas (Tofu/Legumbres)</option>
+                  </optgroup>
+                  <optgroup label="🌿 Especiales">
+                    <option value="bowls-veganos">Bowls Veganos</option>
+                    <option value="libre-gluten">Libre de Gluten</option>
+                    <option value="postres-sin-azucar">Postres Sin Azúcar</option>
+                  </optgroup>
+                  <optgroup label="🥤 Bebidas">
+                    <option value="batidos-detox">Batidos Detox</option>
+                    <option value="jugos-naturales">Jugos Naturales</option>
+                    <option value="bebidas-procesadas">Bebidas Procesadas</option>
+                  </optgroup>
+                </select>
+              </div>
+
+              <div class="form__group">
+                <label
+                  for="dish-price"
+                  class="form__label form__label--required"
+                  >Precio ($)</label
+                >
+                <input
+                  type="number"
+                  id="dish-price"
+                  class="form__input"
+                  placeholder="12.99"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+            </div>
+
+            <!-- INFORMACIÓN NUTRICIONAL -->
+            <div class="form__row">
+              <div class="form__group">
+                <label for="dish-calories" class="form__label">Calorías (kcal)</label>
+                <input
+                  type="number"
+                  id="dish-calories"
+                  class="form__input"
+                  placeholder="150"
+                  min="0"
+                />
+              </div>
+
+              <div class="form__group">
+                <label for="dish-protein" class="form__label">Proteína (g)</label>
+                <input
+                  type="number"
+                  id="dish-protein"
+                  class="form__input"
+                  placeholder="30"
+                  min="0"
+                  step="0.1"
+                />
+              </div>
+            </div>
+
+            <div class="form__row">
+              <div class="form__group">
+                <label for="dish-carbs" class="form__label">Carbohidratos (g)</label>
+                <input
+                  type="number"
+                  id="dish-carbs"
+                  class="form__input"
+                  placeholder="25"
+                  min="0"
+                  step="0.1"
+                />
+              </div>
+
+              <div class="form__group">
+                <label for="dish-fats" class="form_, Lácteos (separados por comas)"
+              />
+            </div>
+
+            <!-- CERTIFICACIONES -->
+            <div class="form__group">
+              <label class="form__label">Certificaciones 🏷️</label>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--spacing-md); padding: var(--spacing-md); background-color: var(--color-bg-primary); border-radius: var(--border-radius-md);">
+                
+                <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                  <input type="checkbox" id="cert-vegan" value="vegan" />
+                  <label for="cert-vegan" style="margin: 0; cursor: pointer;">🌱 Vegano</label>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                  <input type="checkbox" id="cert-gluten-free" value="gluten-free" />
+                  <label for="cert-gluten-free" style="margin: 0; cursor: pointer;">🌾 Libre de Gluten</label>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                  <input type="checkbox" id="cert-organic" value="organic" />
+                  <label for="cert-organic" style="margin: 0; cursor: pointer;">🌿 Orgánico</label>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                  <input type="checkbox" id="cert-sugar-free" value="sugar-free" />
+                  <label for="cert-sugar-free" style="margin: 0; cursor: pointer;">🚫 Sin Azúcar</label>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                  <input type="checkbox" id="cert-low-carb" value="low-carb" />
+                  <label for="cert-low-carb" style="margin: 0; cursor: pointer;">📉 Bajo en Carbohidratos</label>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                  <input type="checkbox" id="cert-high-protein" value="high-protein" />
+                  <label for="cert-high-protein" style="margin: 0; cursor: pointer;">💪 Alto en Proteína</label>
+                </div>
+
+              </div <input
+                  type="number"
+                  id="dish-fats"
+                  class="form__input"
+                  placeholder="10"
+                  min="0"
+                  step="0.1"
+                />
+              </div>
+            </div>
+
+            <div class="form__row">
+              <div class="form__group">
+                <label for="dish-available" class="form__label"
+                  >Disponible</label
+                >
+                <select id="dish-available" class="form__select">
+                  <option value="yes">Sí</option>
+                  <option value="no">No</option>
+                </select>
+              </div>
+
+              <div class="form__group">
+                <label for="dish-preparation-time" class="form__label">Tiempo Preparación (min)</label>
+                <input
+                  type="number"
+                  id="dish-preparation-time"
+                  class="form__input"
+                  placeholder="15"
+                  min="1"
+                />
+              </div>
+            </div>
+
+            <div class="form__group">
+              <label for="dish-description" class="form__label"
+                >Descripción</label
+              >
+              <textarea
+                id="dish-description"
+                class="form__textarea"
+                placeholder="Ingredientes y preparación..."
+              ></textarea>
+            </div>
+
+            <div class="form__group">
+              <label for="dish-allergens" class="form__label">Alérgenos</label>
+              <input
+                type="text"
+                id="dish-allergens"
+                class="form__input"
+                placeholder="Ej: Gluten, Cacahuetes (separados por comas)"
+              />
+            </div>
+
+            <div style="display: flex; gap: var(--spacing-md)">
+              <button type="submit" class="button button--primary">
+                Guardar Platillo
+              </button>
+              <button type="reset" class="button button--outline">
+                Limpiar
+              </button>
+            </div>
+          </form>
+
+          <!-- ALERTAS DE EJEMPLO -->
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: var(--spacing-lg);
+            "
+          >
+            <div class="alert alert--success">
+              <span style="font-size: 1.5rem">✓</span>
+              <div class="alert__content">
+                <strong>¡Éxito!</strong> El platillo se ha guardado
+                correctamente en el sistema.
+              </div>
+            </div>
+
+            <div class="alert alert--warning">
+              <span style="font-size: 1.5rem">⚠</span>
+              <div class="alert__content">
+                <strong>Atención:</strong> Este platillo tiene bajo stock y
+                pronto se agotará.
+              </div>
+            </div>
+
+            <div class="alert alert--error">
+              <span style="font-size: 1.5rem">✕</span>
+              <div class="alert__content">
+                <strong>Error:</strong> Por favor completa todos los campos
+                obligatorios.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN: TABLA DE ÓRDENES -->
+      <section style="margin-top: 3rem">
+        <h2>Órdenes Recientes</h2>
+        <div style="overflow-x: auto">
+          <table class="table">
+            <thead class="table__header">
+              <tr>
+                <th class="table__cell table__cell--header">ID Orden</th>
+                <th class="table__cell table__cell--header">Cliente</th>
+                <th class="table__cell table__cell--header">Platillos</th>
+                <th class="table__cell table__cell--header">Total</th>
+                <th class="table__cell table__cell--header">Estado</th>
+                <th class="table__cell table__cell--header">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="table__row">
+                <td class="table__cell">#001</td>
+                <td class="table__cell">Juan Pérez</td>
+                <td class="table__cell">Ensalada + Pechuga</td>
+                <td class="table__cell"><strong>$25.98</strong></td>
+                <td class="table__cell">
+                  <span class="table__status table__status--pending"
+                    >⏱ Pendiente</span
+                  >
+                </td>
+                <td class="table__cell">
+                  <button class="button button--secondary button--small">
+                    Completar
+                  </button>
+                </td>
+              </tr>
+              <tr class="table__row">
+                <td class="table__cell">#002</td>
+                <td class="table__cell">María García</td>
+                <td class="table__cell">Buddha Bowl</td>
+                <td class="table__cell"><strong>$13.99</strong></td>
+                <td class="table__cell">
+                  <span class="table__status table__status--completed"
+                    >✓ Completado</span
+                  >
+                </td>
+                <td class="table__cell">
+                  <button class="button button--outline button--small">
+                    Imprimir
+                  </button>
+                </td>
+              </tr>
+              <tr class="table__row">
+                <td class="table__cell">#003</td>
+                <td class="table__cell">Carlos López</td>
+                <td class="table__cell">Jugo Natural</td>
+                <td class="table__cell"><strong>$6.99</strong></td>
+                <td class="table__cell">
+                  <span class="table__status table__status--cancelled"
+                    >✕ Cancelado</span
+                  >
+                </td>
+                <td class="table__cell">
+                  <button class="button button--outline button--small" disabled>
+                    Completar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECCIÓN: BADGES Y ESTILOS DE TEXTO -->
+      <section style="margin-top: 3rem; margin-bottom: 3rem">
+        <h2>Componentes Adicionales</h2>
+
+        <div
+          style="display: flex; flex-direction: column; gap: var(--spacing-xl)"
+        >
+          <div>
+            <h3>Badges</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-md)">
+              <span class="badge">Default</span>
+              <span class="badge badge--primary">Primario</span>
+              <span class="badge badge--success">Éxito</span>
+              <span class="badge badge--error">Error</span>
+            </div>
+          </div>
+
+          <div>
+            <h3>Variedad de Botones</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: var(--spacing-md)">
+              <button class="button button--primary">Primario</button>
+              <button class="button button--secondary">Secundario</button>
+              <button class="button button--outline">Outline</button>
+              <button class="button button--danger">Peligro</button>
+              <button class="button button--large">Grande</button>
+              <button class="button button--primary button--small">
+                Pequeño
+              </button>
+              <button class="button button--primary" disabled>
+                Deshabilitado
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer
+      style="
+        background-color: var(--color-bg-secondary);
+        padding: var(--spacing-xl) var(--spacing-lg);
+        text-align: center;
+        border-top: 1px solid var(--color-border);
+        margin-top: var(--spacing-2xl);
+      "
+    >
+      <p style="color: var(--color-text-secondary); margin-bottom: 0">
+        &copy; 2026 Fitness Restaurant Dashboard. Todos los derechos reservados.
+      </p>
+    </footer>
+
+    <script>
+      let currentSlide = 0;
+      const slides = document.querySelectorAll('.carousel__slide');
+      const dots = document.querySelectorAll('.carousel__dot');
+      
+      function showSlide(n) {
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active'));
+        
+        slides[n].classList.add('active');
+        dots[n].classList.add('active');
+      }
+      
+      function carouselGo(n) {
+        currentSlide = n;
+        showSlide(currentSlide);
+      }
+      
+      function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+      }
+      
+      // Cambiar imagen cada 4 segundos
+      setInterval(nextSlide, 4000);
+    </script>
+  </body>
+</html>
