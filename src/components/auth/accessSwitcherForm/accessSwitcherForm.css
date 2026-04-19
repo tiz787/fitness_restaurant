@@ -1,0 +1,80 @@
+/* Contenedor principal del acceso rapido por rol. */
+.accessSwitcherForm {
+  max-width: 34rem;
+  margin: 2.5rem auto;
+  border-radius: 1.2rem;
+  border: 1px solid #d6e2d9;
+  background: #ffffff;
+  box-shadow: 0 20px 40px rgba(29, 57, 38, 0.12);
+  overflow: hidden;
+}
+
+/* Encabezado superior con fondo diferenciado para branding. */
+.accessSwitcherForm__header {
+  padding: 1.5rem 1.6rem 1.2rem;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(86, 190, 112, 0.18), transparent 45%),
+    linear-gradient(180deg, #f4fbf6, #eff8f1);
+  border-bottom: 1px solid #dce9df;
+}
+
+/* Texto corto de marca para contextualizar el formulario. */
+.accessSwitcherForm__eyebrow {
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: #2f6f46;
+}
+
+/* Titulo principal del bloque de acceso. */
+.accessSwitcherForm__title {
+  margin: 0;
+  font-family: 'Sora', 'Manrope', sans-serif;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  color: #173b26;
+}
+
+/* Texto explicativo de estado actual del proyecto. */
+.accessSwitcherForm__description {
+  margin: 0.65rem 0 0;
+  color: #436451;
+  font-size: 0.92rem;
+}
+
+/* Zona de campos del formulario. */
+.accessSwitcherForm__form {
+  display: grid;
+  gap: 0.55rem;
+  padding: 1.3rem 1.6rem 1.6rem;
+}
+
+/* Etiquetas de campos para accesibilidad y claridad. */
+.accessSwitcherForm__label {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #2d4d3b;
+}
+
+/* Contenedor de acciones en columna para lectura rapida. */
+.accessSwitcherForm__actions {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+}
+
+/* Ajustes responsive para pantalla pequena. */
+@media (max-width: 640px) {
+  .accessSwitcherForm {
+    margin: 1rem auto;
+    border-radius: 0.95rem;
+  }
+
+  .accessSwitcherForm__header,
+  .accessSwitcherForm__form {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}

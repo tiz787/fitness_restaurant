@@ -1,0 +1,420 @@
+/* Contenedor general de la vista cliente. */
+.clientMenuView {
+  min-height: 100vh;
+  background: #eef2f1;
+  color: #22372d;
+}
+
+/* Cabecera superior estilo app de cliente. */
+.clientMenuView__header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  border-bottom: 1px solid #dbe4de;
+  background: #ffffff;
+}
+
+/* Layout interno de la cabecera con 3 bloques. */
+.clientMenuView__headerInner {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+}
+
+/* Marca y nombre en la esquina izquierda. */
+.clientMenuView__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 800;
+  color: #2f8f48;
+}
+
+/* Grupo de links del menu cliente. */
+.clientMenuView__nav {
+  display: inline-flex;
+  justify-content: center;
+  gap: 0.2rem;
+  align-items: center;
+}
+
+/* Link base de la navegacion cliente. */
+.clientMenuView__navLink {
+  border: 0;
+  border-radius: 0.72rem;
+  padding: 0.36rem 0.62rem;
+  background: transparent;
+  color: #4e6659;
+  font-size: 0.77rem;
+  font-weight: 700;
+}
+
+/* Link activo de navegacion. */
+.clientMenuView__navLink.is-active {
+  background: #46a75e;
+  color: #f5fff8;
+}
+
+/* Bloque derecho de acciones de usuario. */
+.clientMenuView__userActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Chip de rol admin en la cabecera cliente. */
+.clientMenuView__adminChip {
+  border: 1px solid #f0cb9a;
+  border-radius: 999px;
+  padding: 0.1rem 0.46rem;
+  color: #cc7d19;
+  font-size: 0.67rem;
+  font-weight: 700;
+}
+
+/* Boton de usuario en esquina derecha. */
+.clientMenuView__userMenu {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.26rem 0.56rem;
+  background: #f4f7f5;
+  color: #4b6458;
+  font-size: 0.76rem;
+  font-weight: 700;
+  display: inline-flex;
+  gap: 0.28rem;
+  align-items: center;
+}
+
+/* Boton para volver a acceso sin afectar admin. */
+.clientMenuView__exitButton {
+  border: 1px solid #d5ddd8;
+  border-radius: 999px;
+  padding: 0.18rem 0.5rem;
+  background: #ffffff;
+  color: #577064;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* Main de la vista cliente. */
+.clientMenuView__main {
+  min-height: auto;
+  padding: 1rem 0 1.8rem;
+}
+
+/* Contenido centrado tipo marketplace. */
+.clientMenuView__content {
+  max-width: 930px;
+  margin: 0 auto;
+  padding: 0 0.8rem;
+}
+
+/* Bloque titulo + subtitulo de la vista menu. */
+.clientMenuView__titleBlock {
+  margin-bottom: 0.72rem;
+}
+
+/* Titulo principal de la vista cliente. */
+.clientMenuView__titleBlock h1 {
+  margin: 0;
+  color: #152b22;
+  font-family: 'Sora', 'Manrope', sans-serif;
+  font-size: 2rem;
+}
+
+/* Subtitulo del menu cliente. */
+.clientMenuView__titleBlock p {
+  margin: 0.15rem 0 0;
+  color: #778c80;
+  font-size: 0.82rem;
+}
+
+/* Fila de buscador y selector de orden. */
+.clientMenuView__controls {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.52rem;
+  margin-bottom: 0.55rem;
+}
+
+/* Buscador principal con icono y borde suave. */
+.clientMenuView__search {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid #d9e2dd;
+  border-radius: 0.72rem;
+  background: #ffffff;
+  padding: 0 0.58rem;
+}
+
+/* Input del buscador cliente. */
+.clientMenuView__search input {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  padding: 0.46rem 0.16rem;
+  font-size: 0.8rem;
+}
+
+/* Select de ordenamiento del listado. */
+.clientMenuView__controls select {
+  border-radius: 0.72rem;
+  border: 1px solid #d9e2dd;
+  background: #ffffff;
+  min-width: 7.8rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.35rem 0.55rem;
+}
+
+/* Fila de chips por categoria. */
+.clientMenuView__chips {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.55rem;
+}
+
+/* Chip base de categoria. */
+.clientMenuView__chip {
+  border: 1px solid #d8e1dc;
+  border-radius: 999px;
+  padding: 0.2rem 0.56rem;
+  background: #ffffff;
+  color: #5d7468;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: inline-flex;
+  gap: 0.24rem;
+  align-items: center;
+}
+
+/* Chip activo seleccionado. */
+.clientMenuView__chip.is-active {
+  background: #47ab61;
+  border-color: #47ab61;
+  color: #f4fff7;
+}
+
+/* Contador de resultados de platos. */
+.clientMenuView__count {
+  margin: 0;
+  color: #6f8579;
+  font-size: 0.79rem;
+}
+
+/* Grid principal de tarjetas de platos. */
+.clientMenuView__grid {
+  margin-top: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.56rem;
+}
+
+/* Tarjeta individual del platillo. */
+.clientDishCard {
+  border: 1px solid #d6e0da;
+  border-radius: 0.85rem;
+  background: #ffffff;
+  overflow: hidden;
+  display: grid;
+}
+
+/* Estado de tarjeta no disponible. */
+.clientDishCard.is-unavailable {
+  opacity: 0.9;
+}
+
+/* Media superior de cada tarjeta. */
+.clientDishCard__media {
+  position: relative;
+  height: 7.15rem;
+}
+
+/* Imagen principal de cada platillo. */
+.clientDishCard__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Badge de destacado sobre imagen. */
+.clientDishCard__badge {
+  position: absolute;
+  top: 0.35rem;
+  left: 0.38rem;
+  border-radius: 999px;
+  background: #ef8c35;
+  color: #fff6eb;
+  padding: 0.08rem 0.4rem;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+/* Overlay de no disponible. */
+.clientDishCard__unavailable {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 800;
+  background: rgba(16, 26, 21, 0.55);
+}
+
+/* Cuerpo de la tarjeta con info del plato. */
+.clientDishCard__body {
+  padding: 0.52rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+/* Fila de nombre + precio. */
+.clientDishCard__titleRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+/* Nombre del plato en la tarjeta. */
+.clientDishCard__titleRow h2 {
+  margin: 0;
+  color: #1f362d;
+  font-size: 0.88rem;
+  line-height: 1.2;
+}
+
+/* Precio destacado en color verde. */
+.clientDishCard__titleRow strong {
+  color: #2f954f;
+  font-size: 0.86rem;
+}
+
+/* Descripcion corta de producto. */
+.clientDishCard__description {
+  margin: 0;
+  color: #798f84;
+  font-size: 0.7rem;
+  line-height: 1.35;
+  min-height: 2.3rem;
+}
+
+/* Bloque de macro nutrientes. */
+.clientDishCard__macros {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.25rem;
+}
+
+/* Caja de cada macro (cal/prot/carbs). */
+.clientDishCard__macros div {
+  border-radius: 0.52rem;
+  text-align: center;
+  padding: 0.22rem;
+}
+
+/* Color por macro: calorias. */
+.clientDishCard__macros div:nth-child(1) {
+  background: #e8f4ea;
+}
+
+/* Color por macro: proteina. */
+.clientDishCard__macros div:nth-child(2) {
+  background: #e6edf9;
+}
+
+/* Color por macro: carbs. */
+.clientDishCard__macros div:nth-child(3) {
+  background: #f8ece4;
+}
+
+/* Valor numerico de macro. */
+.clientDishCard__macros strong {
+  display: block;
+  font-size: 0.64rem;
+  line-height: 1;
+  color: #385548;
+}
+
+/* Etiqueta textual de macro. */
+.clientDishCard__macros small {
+  display: block;
+  font-size: 0.58rem;
+  color: #738a7d;
+  line-height: 1;
+}
+
+/* Pie de tarjeta con rating y CTA. */
+.clientDishCard__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Texto de rating y tiempo de envio. */
+.clientDishCard__footer p {
+  margin: 0;
+  color: #809589;
+  font-size: 0.64rem;
+}
+
+/* Boton agregar a carrito. */
+.clientDishCard__footer button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.18rem 0.48rem;
+  background: #4da95f;
+  color: #f4fff7;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+/* Estilo de boton cuando no hay stock. */
+.clientDishCard__footer button:disabled {
+  background: #cad6cf;
+  color: #5f7468;
+}
+
+/* Ajustes responsive para tablets grandes. */
+@media (max-width: 1200px) {
+  .clientMenuView__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Ajustes responsive para tablets. */
+@media (max-width: 900px) {
+  .clientMenuView__headerInner {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .clientMenuView__controls {
+    grid-template-columns: 1fr;
+  }
+
+  .clientMenuView__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Ajustes responsive para moviles. */
+@media (max-width: 620px) {
+  .clientMenuView__content {
+    padding: 0 0.65rem;
+  }
+
+  .clientMenuView__grid {
+    grid-template-columns: 1fr;
+  }
+}

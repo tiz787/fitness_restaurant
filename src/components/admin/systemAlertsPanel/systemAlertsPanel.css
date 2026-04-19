@@ -1,0 +1,43 @@
+/* Panel de alertas para control operacional del admin. */
+.systemAlertsPanel {
+  border-color: #efd89d;
+  background: #fff8e8;
+}
+
+/* Lista vertical de mensajes de alerta. */
+.systemAlertsPanel__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.34rem;
+}
+
+/* Fila de alerta con icono y texto. */
+.systemAlertsPanel__list li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+/* Icono textual de advertencia para cada alerta. */
+.systemAlertsPanel__list span {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 999px;
+  display: grid;
+  place-content: center;
+  background: #f7d26d;
+  color: #704b00;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+/* Mensaje detallado de alerta operativa. */
+.systemAlertsPanel__list p {
+  margin: 0;
+  color: #7f5d10;
+  font-size: 0.8rem;
+}

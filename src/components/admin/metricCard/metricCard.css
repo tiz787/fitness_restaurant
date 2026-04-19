@@ -1,0 +1,71 @@
+/* Tarjeta KPI base usada en la cabecera operativa del dashboard. */
+.metricCard {
+  border: 1px solid #dce3e7;
+  border-radius: 0.9rem;
+  background: #ffffff;
+  padding: 0.9rem;
+  box-shadow: 0 8px 18px rgba(30, 44, 35, 0.06);
+}
+
+/* Encabezado de icono y badge de variacion. */
+.metricCard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Icono textual para lectura rapida de contexto. */
+.metricCard__icon {
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 0.55rem;
+  display: grid;
+  place-content: center;
+  font-size: 0.74rem;
+  font-weight: 800;
+  background: #edf4ef;
+  color: #2a7144;
+}
+
+/* Badge de variacion porcentual o estado operativo. */
+.metricCard__badge {
+  padding: 0.13rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: #edf5ef;
+  color: #2a8b4e;
+}
+
+/* Valor numerico principal de la metrica. */
+.metricCard__value {
+  margin: 0.65rem 0 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #17271f;
+}
+
+/* Etiqueta descriptiva debajo del valor. */
+.metricCard__label {
+  margin: 0.1rem 0 0;
+  color: #5a6f62;
+  font-size: 0.86rem;
+}
+
+/* Ajusta color de icono para tono info. */
+.metricCard--info .metricCard__icon {
+  background: #edf2ff;
+  color: #2f5ac1;
+}
+
+/* Ajusta color de icono para tono warning. */
+.metricCard--warning .metricCard__icon {
+  background: #fff4e8;
+  color: #c17a2f;
+}
+
+/* Ajusta color de icono para tono neutral. */
+.metricCard--neutral .metricCard__icon {
+  background: #f0ecff;
+  color: #6f50be;
+}

@@ -1,0 +1,28 @@
+/* Panel de tendencia de ventas basado en linea SVG. */
+.salesTrendPanel {
+  min-height: 18rem;
+}
+
+/* Estado visual para cuando no existen puntos de datos. */
+.salesTrendPanel__empty {
+  margin: 0;
+  color: #6a7f72;
+  font-size: 0.9rem;
+}
+
+/* Area del grafico con rejilla sutil para lectura. */
+.salesTrendPanel__chart {
+  border: 1px solid #e0e8e3;
+  border-radius: 0.8rem;
+  padding: 0.3rem 0.45rem;
+  height: 14rem;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(117, 158, 126, 0.08) 0,
+      rgba(117, 158, 126, 0.08) 1px,
+      transparent 1px,
+      transparent 28px
+    ),
+    #fbfdfb;
+}

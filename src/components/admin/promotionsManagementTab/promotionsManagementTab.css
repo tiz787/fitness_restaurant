@@ -1,0 +1,323 @@
+/* Contenedor principal de la pestaña promociones. */
+.promotionsManagementTab {
+  display: grid;
+  gap: 0.9rem;
+}
+
+/* Header con titulo y boton crear cupon. */
+.promotionsManagementTab__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+/* Titulo principal de la seccion promociones. */
+.promotionsManagementTab__title {
+  margin: 0;
+  font-family: 'Sora', 'Manrope', sans-serif;
+  font-size: 2rem;
+  color: #172a23;
+}
+
+/* Texto auxiliar con total de cupones activos. */
+.promotionsManagementTab__subtitle {
+  margin: 0.12rem 0 0;
+  color: #607468;
+}
+
+/* Boton superior para mostrar formulario de alta. */
+.promotionsManagementTab__newCouponButton {
+  border: 0;
+  border-radius: 0.85rem;
+  padding: 0.6rem 0.9rem;
+  background: linear-gradient(135deg, #4cb266, #2f8f48);
+  color: #f4fff7;
+  font-weight: 700;
+}
+
+/* Grilla de metricas resumen de cupones. */
+.promotionsManagementTab__stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+/* Card base de metrica en promociones. */
+.promotionStatCard {
+  border: 1px solid #dce4df;
+  border-radius: 0.9rem;
+  background: #ffffff;
+  padding: 0.7rem;
+  text-align: center;
+}
+
+/* Valor principal de cada metrica. */
+.promotionStatCard p {
+  margin: 0;
+  font-size: 1.7rem;
+  font-weight: 800;
+}
+
+/* Etiqueta secundaria de la metrica. */
+.promotionStatCard span {
+  color: #62786a;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* Color de metrica positiva. */
+.promotionStatCard--success p {
+  color: #2f9150;
+}
+
+/* Color de metrica informativa. */
+.promotionStatCard--info p {
+  color: #2f66c8;
+}
+
+/* Color de metrica preventiva. */
+.promotionStatCard--warning p {
+  color: #ad7a26;
+}
+
+/* Color de metrica critica. */
+.promotionStatCard--danger p {
+  color: #c04153;
+}
+
+/* Formulario de nuevo cupon. */
+.promotionsManagementTab__form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+/* Titulo del formulario de alta de cupon. */
+.promotionsManagementTab__formTitle {
+  margin: 0;
+  color: #1f3329;
+  font-size: 1.05rem;
+}
+
+/* Grilla de campos del formulario. */
+.promotionsManagementTab__formGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+/* Label de cada campo del formulario. */
+.promotionsManagementTab__formGrid label {
+  display: grid;
+  gap: 0.25rem;
+  color: #3a5548;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+/* Label del campo descripcion. */
+.promotionsManagementTab__descriptionField {
+  display: grid;
+  gap: 0.25rem;
+  color: #3a5548;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+/* Grupo de toggles booleanos de condiciones. */
+.promotionsManagementTab__toggles {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Label de checkbox de condiciones. */
+.promotionsManagementTab__toggles label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #3d5a4d;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+/* Footer del formulario para boton guardar. */
+.promotionsManagementTab__formActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Boton guardar de formulario de cupon. */
+.promotionsManagementTab__formActions button {
+  border: 0;
+  border-radius: 0.75rem;
+  padding: 0.55rem 0.9rem;
+  background: #2f8f48;
+  color: #f4fff7;
+  font-weight: 700;
+}
+
+/* Grilla de cards de cupones existentes. */
+.promotionsManagementTab__cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+/* Card individual de cupon promocional. */
+.promotionCouponCard {
+  border: 1px solid #dce4df;
+  border-radius: 0.95rem;
+  background: #ffffff;
+  padding: 0.85rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+/* Header de card con codigo y descuento. */
+.promotionCouponCard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.7rem;
+}
+
+/* Codigo principal del cupon en card. */
+.promotionCouponCard__code {
+  margin: 0;
+  color: #2f8f48;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+/* Titulo del cupon en card. */
+.promotionCouponCard__title {
+  margin: 0.12rem 0 0;
+  color: #2a3d33;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+/* Bloque derecho de estado y descuento. */
+.promotionCouponCard__rightHeader {
+  display: grid;
+  justify-items: end;
+  gap: 0.2rem;
+}
+
+/* Chip base de estado de cupon. */
+.promotionCouponCard__status {
+  border-radius: 999px;
+  padding: 0.12rem 0.45rem;
+  font-size: 0.69rem;
+  font-weight: 700;
+}
+
+/* Estado activo del cupon. */
+.promotionCouponCard__status--activo {
+  background: #ddf7e3;
+  color: #2f9150;
+}
+
+/* Estado inactivo del cupon. */
+.promotionCouponCard__status--inactivo {
+  background: #eef1f5;
+  color: #6d7f73;
+}
+
+/* Estado expirado del cupon. */
+.promotionCouponCard__status--expirado {
+  background: #fde6e9;
+  color: #c04153;
+}
+
+/* Texto descriptivo corto de cupon. */
+.promotionCouponCard__description {
+  margin: 0;
+  color: #607468;
+  font-size: 0.81rem;
+}
+
+/* Fila de informacion de usos y vencimiento. */
+.promotionCouponCard__usageInfo {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  color: #607469;
+  font-size: 0.74rem;
+}
+
+/* Barra de progreso base para usos de cupon. */
+.promotionCouponCard__usageTrack {
+  width: 100%;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: #e5ece7;
+  overflow: hidden;
+}
+
+/* Barra de progreso activa de usos de cupon. */
+.promotionCouponCard__usageTrack span {
+  height: 100%;
+  display: block;
+  background: linear-gradient(90deg, #45b061, #2d8d4a);
+}
+
+/* Lista de condiciones del cupon. */
+.promotionCouponCard__conditions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+/* Item individual de condicion de elegibilidad. */
+.promotionCouponCard__conditions li {
+  margin: 0;
+  border: 1px solid #dce4df;
+  border-radius: 0.6rem;
+  padding: 0.26rem 0.45rem;
+  font-size: 0.73rem;
+  color: #50675a;
+  background: #f7faf8;
+}
+
+/* Footer de la card con nota de integracion futura. */
+.promotionCouponCard__footer p {
+  margin: 0;
+  color: #6a8073;
+  font-size: 0.72rem;
+}
+
+/* Ajustes responsive para stats y formulario. */
+@media (max-width: 1200px) {
+  .promotionsManagementTab__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .promotionsManagementTab__formGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .promotionsManagementTab__cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Ajustes responsive para movil. */
+@media (max-width: 760px) {
+  .promotionsManagementTab__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .promotionsManagementTab__formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .promotionsManagementTab__conditions {
+    grid-template-columns: 1fr;
+  }
+}

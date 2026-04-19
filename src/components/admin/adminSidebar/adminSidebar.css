@@ -1,0 +1,171 @@
+/* Panel lateral principal con contraste alto para enfoque admin. */
+.adminSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding: 1rem 0.75rem;
+  background: linear-gradient(170deg, #0f2c1b 0%, #0c2417 45%, #0a1d13 100%);
+  color: #d3e8d9;
+}
+
+/* Contenedor de marca con logo y subtitulo. */
+.adminSidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.3rem 0.4rem 0.9rem;
+  border-bottom: 1px solid rgba(207, 235, 216, 0.15);
+}
+
+/* Bloque visual de logo textual FitFuel. */
+.adminSidebar__logo {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.6rem;
+  display: grid;
+  place-content: center;
+  background: linear-gradient(135deg, #57b56d, #2f8f48);
+  color: #f6fff7;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+/* Nombre de la marca en el menu lateral. */
+.adminSidebar__name {
+  margin: 0;
+  color: #f5fff8;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+/* Subtitulo contextual del panel. */
+.adminSidebar__subtitle {
+  margin: 0;
+  color: #b4d2bd;
+  font-size: 0.72rem;
+}
+
+/* Lista vertical de secciones del administrador. */
+.adminSidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+/* Estilo base de enlace convertido a boton para fase estatica. */
+.adminSidebar__link {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 0.7rem;
+  padding: 0.52rem 0.52rem;
+  background: transparent;
+  color: #d4e7d8;
+  text-align: left;
+}
+
+/* Estado hover para indicar interaccion de navegacion. */
+.adminSidebar__link:hover {
+  border-color: rgba(191, 224, 200, 0.24);
+  background: rgba(85, 156, 106, 0.12);
+}
+
+/* Estado activo de la opcion actual (dashboard). */
+.adminSidebar__link.is-active {
+  background: linear-gradient(90deg, rgba(77, 161, 102, 0.28), rgba(77, 161, 102, 0.04));
+  border-color: rgba(191, 224, 200, 0.22);
+  color: #f6fff9;
+}
+
+/* Icono textual corto de cada seccion. */
+.adminSidebar__icon {
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 0.45rem;
+  display: grid;
+  place-content: center;
+  font-size: 0.68rem;
+  font-weight: 800;
+  background: rgba(109, 176, 128, 0.19);
+}
+
+/* Label principal de seccion de menu. */
+.adminSidebar__label {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* Badge para cantidad de pendientes (ej. pedidos). */
+.adminSidebar__badge {
+  min-width: 1.2rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 999px;
+  background: #ff9858;
+  color: #3d1f10;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+/* Pie del sidebar con acciones transversales del rol admin. */
+.adminSidebar__footer {
+  margin-top: auto;
+  display: grid;
+  gap: 0.55rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(207, 235, 216, 0.15);
+}
+
+/* Ajustes de compacidad para pantallas medianas. */
+@media (max-width: 1080px) {
+  .adminSidebar {
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
+  }
+
+  .adminSidebar__label,
+  .adminSidebar__name,
+  .adminSidebar__subtitle {
+    display: none;
+  }
+
+  .adminSidebar__brand {
+    justify-content: center;
+  }
+
+  .adminSidebar__link {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .adminSidebar__badge {
+    position: absolute;
+    transform: translate(0.75rem, -0.65rem);
+  }
+}
+
+/* Reordena sidebar a barra horizontal en movil. */
+@media (max-width: 860px) {
+  .adminSidebar {
+    border-bottom: 1px solid rgba(20, 41, 29, 0.12);
+    gap: 0.8rem;
+  }
+
+  .adminSidebar__nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+  }
+
+  .adminSidebar__link {
+    min-width: 3.2rem;
+  }
+
+  .adminSidebar__footer {
+    grid-template-columns: 1fr 1fr;
+  }
+}

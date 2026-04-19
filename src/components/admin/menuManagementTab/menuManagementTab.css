@@ -1,0 +1,308 @@
+/* Contenedor principal de la pestaña de menu. */
+.menuManagementTab {
+  display: grid;
+  gap: 0.9rem;
+}
+
+/* Cabecera principal de gestion de menu. */
+.menuManagementTab__header {
+  display: grid;
+  gap: 0.15rem;
+}
+
+/* Titulo fuerte de la pestaña. */
+.menuManagementTab__title {
+  margin: 0;
+  font-family: 'Sora', 'Manrope', sans-serif;
+  font-size: 2rem;
+  color: #172a23;
+}
+
+/* Subtitulo con cantidad de productos. */
+.menuManagementTab__subtitle {
+  margin: 0;
+  color: #607468;
+}
+
+/* Barra superior con buscador y CTA de alta. */
+.menuManagementTab__toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.65rem;
+}
+
+/* Buscador con icono para filtrar platos rapido. */
+.menuManagementTab__search {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.45rem;
+  align-items: center;
+  border: 1px solid #dce4df;
+  border-radius: 0.9rem;
+  padding: 0.35rem 0.65rem;
+  background: #ffffff;
+}
+
+/* Input interior del buscador sin borde duplicado. */
+.menuManagementTab__search input {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0.5rem 0.25rem;
+}
+
+/* Boton principal para mostrar formulario de nuevo plato. */
+.menuManagementTab__newDishButton {
+  border: 0;
+  border-radius: 0.9rem;
+  padding: 0.6rem 0.95rem;
+  background: linear-gradient(135deg, #4db267, #2f8f48);
+  color: #f4fff7;
+  font-weight: 700;
+}
+
+/* Barra de filtros por categoria del menu. */
+.menuManagementTab__categories {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+/* Boton base de categoria para filtrado dinamico. */
+.menuManagementTab__categoryButton {
+  border: 1px solid #d6dfd9;
+  border-radius: 999px;
+  padding: 0.33rem 0.7rem;
+  background: #ffffff;
+  color: #385346;
+  font-size: 0.79rem;
+  font-weight: 700;
+}
+
+/* Estado activo de categoria seleccionada. */
+.menuManagementTab__categoryButton.is-active {
+  background: #3fa15e;
+  border-color: #3fa15e;
+  color: #f5fff8;
+}
+
+/* Formulario de alta rapida para nuevo plato. */
+.menuManagementTab__createForm {
+  display: grid;
+  gap: 0.8rem;
+}
+
+/* Titulo del formulario de creacion de plato. */
+.menuManagementTab__formTitle {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #1d3027;
+}
+
+/* Grid de inputs para datos cortos del plato. */
+.menuManagementTab__formGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+/* Etiquetas verticales de campos de formulario. */
+.menuManagementTab__formGrid label {
+  display: grid;
+  gap: 0.25rem;
+  color: #385649;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+/* Campo de descripcion en ancho completo. */
+.menuManagementTab__descriptionField {
+  display: grid;
+  gap: 0.25rem;
+  color: #385649;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+/* Actions del formulario de creacion de plato. */
+.menuManagementTab__formActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Boton guardar del formulario de plato. */
+.menuManagementTab__saveDishButton {
+  border: 0;
+  border-radius: 0.75rem;
+  padding: 0.55rem 0.95rem;
+  background: #2f8f48;
+  color: #f5fff8;
+  font-weight: 700;
+}
+
+/* Grid responsive de tarjetas de menu. */
+.menuManagementTab__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+/* Tarjeta individual de un platillo del menu. */
+.menuDishCard {
+  border: 1px solid #dce4df;
+  border-radius: 0.95rem;
+  background: #ffffff;
+  padding: 0.75rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+/* Header de card con categoria y destacado. */
+.menuDishCard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Badge de categoria por platillo. */
+.menuDishCard__badge {
+  border-radius: 999px;
+  border: 1px solid #d7e0da;
+  padding: 0.13rem 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #476154;
+}
+
+/* Estrella de destacado del platillo. */
+.menuDishCard__featured {
+  font-size: 0.95rem;
+}
+
+/* Emoji principal del plato en burbuja central. */
+.menuDishCard__emoji {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.9rem;
+  display: grid;
+  place-content: center;
+  font-size: 1.7rem;
+  background: #eff5f1;
+}
+
+/* Cabecera interna con nombre y precio. */
+.menuDishCard__heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+/* Titulo del platillo en la card. */
+.menuDishCard__heading h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #1f332a;
+}
+
+/* Precio principal del platillo. */
+.menuDishCard__heading strong {
+  color: #358a52;
+  font-size: 1rem;
+}
+
+/* Descripcion corta del platillo. */
+.menuDishCard__description {
+  margin: 0;
+  font-size: 0.81rem;
+  color: #5f7568;
+}
+
+/* Bloque de macros nutricionales en tres columnas. */
+.menuDishCard__macros {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+/* Tarjeta interna de cada macro (cal/prot/carbs). */
+.menuDishCard__macros div {
+  border-radius: 0.6rem;
+  background: #f4f8f5;
+  border: 1px solid #dce5df;
+  text-align: center;
+  padding: 0.25rem;
+}
+
+/* Valor numerico del macro. */
+.menuDishCard__macros span {
+  display: block;
+  font-size: 0.83rem;
+  font-weight: 800;
+  color: #2d4338;
+}
+
+/* Etiqueta del macro. */
+.menuDishCard__macros small {
+  display: block;
+  font-size: 0.69rem;
+  color: #6b8074;
+}
+
+/* Footer de card con rating y acciones. */
+.menuDishCard__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Texto de rating y reviews de la card. */
+.menuDishCard__footer p {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #5f7569;
+}
+
+/* Contenedor de botones icono de accion rapida. */
+.menuDishCard__footer div {
+  display: flex;
+  gap: 0.28rem;
+}
+
+/* Botones icono para editar/eliminar plato. */
+.menuDishCard__footer button {
+  border: 1px solid #d6dfd9;
+  border-radius: 999px;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: grid;
+  place-content: center;
+  background: #ffffff;
+  font-size: 0.74rem;
+}
+
+/* Ajustes para grid y form en pantallas medianas. */
+@media (max-width: 1200px) {
+  .menuManagementTab__formGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .menuManagementTab__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Ajustes para movil y pantallas pequenas. */
+@media (max-width: 760px) {
+  .menuManagementTab__toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .menuManagementTab__formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .menuManagementTab__grid {
+    grid-template-columns: 1fr;
+  }
+}

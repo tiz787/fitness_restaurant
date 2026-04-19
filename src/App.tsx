@@ -1,88 +1,76 @@
-import { useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
-/* import viteLogo from '/vite.svg' */
-import htmlLogo from './assets/html.png'
-import jslogo from './assets/js.webp'
+// Importa el hook de estado para controlar la vista actual.
+import { useState } from 'react'
+// Importa los estilos generales de la aplicacion.
 import './App.css'
-import NavBar from './components/navbar/navBar'
-import ProductCard from './components/productCard/productCard'
-import {buttonText} from './components/buttonText/buttonText'
+// Importa el formulario de acceso por roles.
+import AccessSwitcherForm from './components/auth/accessSwitcherForm/accessSwitcherForm'
+// Importa la vista principal del panel admin.
+import AdminDashboard from './components/admin/adminDashboard/adminDashboard'
+// Importa la vista principal inicial de cliente basada en catalogo.
+import ClientMenuView from './components/client/clientMenuView/clientMenuView'
+// Importa el tipo de datos del formulario de acceso.
+import type { AccessFormValues } from './components/auth/accessSwitcherForm/accessSwitcherForm.types'
 
-import CatCard from './components/catCard/catCard'
-import type { CatCardProps } from './components/catCard/catCard.types'
+// Define las vistas posibles de la aplicacion en esta primera etapa.
+type AppView = 'access' | 'admin' | 'client-placeholder'
 
-
+// Componente raiz de la aplicacion.
 function App() {
+  // Guarda la vista actual para alternar entre acceso, admin y cliente temporal.
+  const [currentView, setCurrentView] = useState<AppView>('access')
+  // Guarda el correo del admin para mostrarlo en el panel.
+  const [activeAdminEmail, setActiveAdminEmail] = useState<string>('admin@fitfuel.com')
 
-  const [cats, setCats] = useState <CatCardProps[]>([]);
+  // Maneja el envio del formulario admin y cambia la vista al dashboard.
+  const handleEnterAdmin = (values: AccessFormValues): void => {
+    // Si no hay email escrito, deja un email por defecto para la demo visual.
+    const nextEmail = values.email.trim() || 'admin@fitfuel.com'
+    // Actualiza el email que se muestra en cabecera del panel.
+    setActiveAdminEmail(nextEmail)
+    // Navega a la vista de administrador.
+    setCurrentView('admin')
+  }
 
-  const [count, setCount] = useState(0)
-  
+  // Cambia a la vista temporal del cliente (sin logica de negocio aun).
+  const handleEnterClientPlaceholder = (): void => {
+    // Muestra la pantalla de "proximamente" para cliente.
+    setCurrentView('client-placeholder')
+  }
 
+  // Regresa a la pantalla de acceso para cambiar de rol.
+  const handleBackToAccess = (): void => {
+    // Reestablece la vista de seleccion de rol.
+    setCurrentView('access')
+  }
 
-  useEffect(() => {
-    const fetchCats = async () => {
-      const respuesta = await fetch('https://api.thecatapi.com/v1/images/search?limit=50&mime_types=gif',
-        {
-            headers: {
-            'x-api-key': 'live_uNG8HmdB7WMgJJayqJ7mp4Hbazj8O1yTocsKQY3ZbcGTBGtiPhHICdYJ6oEfIG9F'
-          }
-        }       
-      )
-      const data = await respuesta.json()
-      setCats(data)
-    } 
-
-    fetchCats()
-  }, [])
-
- 
-
-
+  // Renderiza el layout base y decide que vista mostrar.
   return (
-    <>
-     {cats.map((cat) => (
-    <CatCard 
-      key = {cat.id}
-      id={cat.id}
-      url={cat.url} 
-      width={cat.width} 
-      height={cat.height} 
-      breeds={cat.breeds}/>
-  ))}
-      <NavBar seccion1="Inicio" seccion2="Acerca de" seccion3="Contacto" />
+    <div
+      className={`appRoot ${currentView === 'admin' ? 'appRoot--admin' : ''} ${currentView === 'client-placeholder' ? 'appRoot--client' : ''}`}
+    >
+      {currentView === 'access' ? (
+        <div className="appCenterPanel">
+          <AccessSwitcherForm
+            onEnterAdmin={handleEnterAdmin}
+            onEnterClient={handleEnterClientPlaceholder}
+          />
+        </div>
+      ) : null}
 
-    <div className="listProducts">
-      <ProductCard url="batido" nombre="batido" precio={10000} descripcion="Delicioso batido proteinico para disfrutar." boton={buttonText({ text: "Comprar", onClick: () => {}, options: 'primary' })}/>
-      <ProductCard url="ensalada" nombre="ensalada" precio={15000} descripcion="Fresca ensalada llena de nutrientes para tu bienestar." boton={buttonText({ text: "Comprar", onClick: () => {}, options: 'primary' })}/>
-      <ProductCard url="brownie" nombre="brownie" precio={25000} descripcion="Delicioso brownie de chocolate para satisfacer tu antojo con una buena compañia que endulce la tarde." boton={buttonText({ text: "Comprar", onClick: () => {}, options: 'primary' })}/>  
+      {currentView === 'admin' ? (
+        <AdminDashboard
+          adminEmail={activeAdminEmail}
+          onSignOut={handleBackToAccess}
+          onOpenClientPreview={handleEnterClientPlaceholder}
+        />
+      ) : null}
+
+      {currentView === 'client-placeholder' ? (
+        <ClientMenuView onBackToAccess={handleBackToAccess} />
+      ) : null}
     </div>
-      <div>--
-        <a href="" target="_blank">
-          <img src={jslogo} className="logo" alt="JavaScript logo" />
-        </a>
-        <a href="" target="_blank">
-          <img src={htmlLogo} className="html " alt="HTML logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Emmanuel Perez Castrillon</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Primer <code>Hola mundo</code> con React y Vite
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Primer codigo modificado en React con Vite
-      </p>
-
-    </>
   )
 }
 
+// Exporta el componente para usarlo en el punto de entrada.
 export default App

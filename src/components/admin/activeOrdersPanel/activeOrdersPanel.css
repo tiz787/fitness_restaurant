@@ -1,0 +1,88 @@
+/* Panel con listado operativo de pedidos activos. */
+.activeOrdersPanel {
+  min-height: 17rem;
+}
+
+/* Lista vertical de pedidos en proceso. */
+.activeOrdersPanel__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.52rem;
+}
+
+/* Fila base de pedido con distribucion de info y total. */
+.activeOrdersPanel__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0;
+  border-radius: 0.65rem;
+  border: 1px solid #dde5e0;
+  padding: 0.6rem 0.7rem;
+}
+
+/* Variacion de fondo para estado recibido. */
+.activeOrdersPanel__item--recibido {
+  background: #f6efe5;
+}
+
+/* Variacion de fondo para estado en camino. */
+.activeOrdersPanel__item--en-camino {
+  background: #f6f0d4;
+}
+
+/* Variacion de fondo para estado preparando. */
+.activeOrdersPanel__item--preparando {
+  background: #eaf0f7;
+}
+
+/* Codigo unico del pedido. */
+.activeOrdersPanel__id {
+  margin: 0;
+  color: #263a30;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+/* Meta de cliente y cantidad de platos. */
+.activeOrdersPanel__meta {
+  margin: 0.14rem 0 0;
+  color: #5a7062;
+  font-size: 0.75rem;
+}
+
+/* Bloque derecho con total y estado. */
+.activeOrdersPanel__summary {
+  text-align: right;
+}
+
+/* Total economico del pedido. */
+.activeOrdersPanel__total {
+  color: #1f3128;
+  font-size: 0.9rem;
+}
+
+/* Estado textual del pedido. */
+.activeOrdersPanel__status {
+  margin: 0.2rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* Color de texto para estado recibido. */
+.activeOrdersPanel__status--recibido {
+  color: #b3622f;
+}
+
+/* Color de texto para estado en camino. */
+.activeOrdersPanel__status--en-camino {
+  color: #a7771f;
+}
+
+/* Color de texto para estado preparando. */
+.activeOrdersPanel__status--preparando {
+  color: #2f62a2;
+}

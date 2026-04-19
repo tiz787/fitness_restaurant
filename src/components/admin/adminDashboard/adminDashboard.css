@@ -1,0 +1,207 @@
+/* Layout general del dashboard con sidebar + area principal. */
+.adminDashboardLayout {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 16.5rem 1fr;
+  background: #eef2f3;
+}
+
+/* Area principal donde vive topbar y paneles operativos. */
+.adminWorkspace {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Cabecera superior del panel con titulo y perfil activo. */
+.adminTopbar {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.4rem;
+  border-bottom: 1px solid #dce4e8;
+  background: #f5f7f8;
+}
+
+/* Titulo principal de la seccion activa. */
+.adminTopbar__title {
+  margin: 0;
+  font-family: 'Sora', 'Manrope', sans-serif;
+  font-size: 1.6rem;
+  color: #1f3027;
+}
+
+/* Subtitulo con fecha de referencia del dashboard. */
+.adminTopbar__subtitle {
+  margin: 0.15rem 0 0;
+  color: #607266;
+  font-size: 0.87rem;
+}
+
+/* Contenedor de perfil y estado de usuario admin. */
+.adminTopbar__profile {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+/* Indicador de estado en linea del usuario. */
+.adminTopbar__status {
+  border-radius: 999px;
+  padding: 0.14rem 0.48rem;
+  border: 1px solid #b6dbbc;
+  background: #eaf9ee;
+  color: #2f8a4f;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* Avatar textual del administrador. */
+.adminTopbar__avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  display: grid;
+  place-content: center;
+  background: #ffe8cf;
+  color: #7b4722;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+/* Nombre del usuario administrador. */
+.adminTopbar__name {
+  margin: 0;
+  color: #273b2f;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+/* Rol/correo del admin conectado. */
+.adminTopbar__role {
+  margin: 0;
+  color: #5f7768;
+  font-size: 0.78rem;
+}
+
+/* Zona principal con todos los paneles y separaciones. */
+.adminMain {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem 1.4rem 1.4rem;
+}
+
+/* Variante de main para pestañas con una sola vista principal. */
+.adminMain--single {
+  align-content: start;
+}
+
+/* Grid de tarjetas KPI superiores. */
+.adminMetricsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+/* Grid de analitica (linea + dona). */
+.adminAnalyticsGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 0.8rem;
+}
+
+/* Grid de operacion (pedidos + ranking platos). */
+.adminOperationsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+/* Clase compartida para dar apariencia uniforme a paneles. */
+.panelCard {
+  border: 1px solid #dce3e7;
+  border-radius: 1rem;
+  background: #ffffff;
+  padding: 0.95rem;
+  box-shadow: 0 12px 28px rgba(31, 45, 35, 0.06);
+}
+
+/* Header comun de paneles secundarios. */
+.panelCard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+}
+
+/* Titulo comun de panel para estandarizar tipografia. */
+.panelCard__title {
+  margin: 0;
+  font-size: 1.06rem;
+  color: #1e3228;
+}
+
+/* Chip contextual usado por paneles para rangos/estado. */
+.panelCard__chip {
+  border: 1px solid #d8e2d8;
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: #f5faf5;
+  color: #3f5c4b;
+}
+
+/* Tarjeta placeholder para modulos que aun no se implementan. */
+.adminPlaceholderCard {
+  min-height: 14rem;
+  align-content: center;
+}
+
+/* Texto de apoyo para modulos en construccion. */
+.adminPlaceholderCard__text {
+  max-width: 42rem;
+  margin: 0;
+  color: #5f7667;
+}
+
+/* Ajuste para pantallas medianas: reduce sidebar y compacta grids. */
+@media (max-width: 1200px) {
+  .adminDashboardLayout {
+    grid-template-columns: 5.1rem 1fr;
+  }
+
+  .adminMetricsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .adminAnalyticsGrid,
+  .adminOperationsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Ajuste movil: sidebar arriba y topbar en columna ligera. */
+@media (max-width: 860px) {
+  .adminDashboardLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .adminTopbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .adminTopbar__profile {
+    width: 100%;
+  }
+
+  .adminMetricsGrid {
+    grid-template-columns: 1fr;
+  }
+}

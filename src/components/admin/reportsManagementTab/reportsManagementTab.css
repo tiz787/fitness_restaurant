@@ -1,0 +1,263 @@
+/* Contenedor principal de la pestaña reportes. */
+.reportsManagementTab {
+  display: grid;
+  gap: 0.9rem;
+}
+
+/* Fila superior con filtros de periodo y boton exportar. */
+.reportsManagementTab__topActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Grupo de botones del filtro temporal. */
+.reportsManagementTab__periodFilters {
+  display: inline-flex;
+  border: 1px solid #dce5e0;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  padding: 0.2rem;
+  gap: 0.2rem;
+}
+
+/* Boton base del filtro de periodo. */
+.reportsManagementTab__periodButton {
+  border: 0;
+  border-radius: 0.58rem;
+  padding: 0.4rem 0.72rem;
+  background: transparent;
+  color: #567063;
+  font-size: 0.77rem;
+  font-weight: 700;
+}
+
+/* Estado activo del filtro temporal. */
+.reportsManagementTab__periodButton.is-active {
+  background: #eff8f0;
+  color: #2f8c49;
+}
+
+/* Boton exportar con estilo secundario. */
+.reportsManagementTab__exportButton {
+  border: 1px solid #dce5e0;
+  border-radius: 0.75rem;
+  padding: 0.45rem 0.8rem;
+  background: #ffffff;
+  color: #476356;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* Tarjeta del filtro personalizado por fecha. */
+.reportsManagementTab__customRange {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* Etiqueta e input del rango personalizado. */
+.reportsManagementTab__customRange label {
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #426151;
+}
+
+/* Nota de rango aplicado. */
+.reportsManagementTab__customRange p {
+  margin: 0;
+  color: #61796b;
+  font-size: 0.8rem;
+}
+
+/* Grilla superior de metricas KPI. */
+.reportsManagementTab__metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.72rem;
+}
+
+/* Card de metrica de reportes. */
+.reportsMetricCard {
+  display: grid;
+  gap: 0.14rem;
+}
+
+/* Valor principal de la metrica. */
+.reportsMetricCard__value {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #172b22;
+}
+
+/* Label secundario de la metrica. */
+.reportsMetricCard__label {
+  margin: 0;
+  color: #647c6f;
+  font-size: 0.84rem;
+}
+
+/* Texto de variacion vs periodo anterior. */
+.reportsMetricCard__change {
+  margin: 0.12rem 0 0;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+/* Color para variacion positiva. */
+.reportsMetricCard__change--positive {
+  color: #30914f;
+}
+
+/* Color para variacion negativa. */
+.reportsMetricCard__change--negative {
+  color: #bf4454;
+}
+
+/* Color para variacion neutral. */
+.reportsMetricCard__change--neutral {
+  color: #597267;
+}
+
+/* Grilla de 4 graficos (2x2). */
+.reportsManagementTab__chartsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.72rem;
+}
+
+/* Card base de grafico. */
+.reportsChartCard {
+  display: grid;
+  align-content: start;
+}
+
+/* Lienzo interno para Recharts. */
+.reportsChartCard__canvas {
+  width: 100%;
+  height: 15rem;
+}
+
+/* Nota inferior del panel de horas pico. */
+.reportsChartCard__footnote {
+  margin: 0.35rem 0 0;
+  color: #6b8174;
+  font-size: 0.74rem;
+}
+
+/* Contenedor de tabla top platos. */
+.reportsTopDishesTable {
+  display: grid;
+  gap: 0.3rem;
+}
+
+/* Header de columnas de top platos. */
+.reportsTopDishesTable__head {
+  display: grid;
+  grid-template-columns: 5.5rem 2fr 1fr 1fr 1.25fr;
+  gap: 0.45rem;
+  padding: 0.25rem 0.2rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #748578;
+  text-transform: uppercase;
+}
+
+/* Fila de top plato. */
+.reportsTopDishesTable__row {
+  display: grid;
+  grid-template-columns: 5.5rem 2fr 1fr 1fr 1.25fr;
+  gap: 0.45rem;
+  align-items: center;
+  border-top: 1px solid #e4ebe6;
+  padding: 0.45rem 0.2rem;
+  color: #415b4d;
+  font-size: 0.79rem;
+}
+
+/* Burbuja de posicion del ranking. */
+.reportsTopDishesTable__position {
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  display: grid;
+  place-content: center;
+  background: #ea9a3d;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.72rem;
+}
+
+/* Nombre del plato en top ranking. */
+.reportsTopDishesTable__name {
+  color: #1f362b;
+  font-weight: 700;
+}
+
+/* Columna de participacion con barra y porcentaje. */
+.reportsTopDishesTable__share {
+  display: grid;
+  gap: 0.16rem;
+}
+
+/* Pista base de participacion. */
+.reportsTopDishesTable__shareTrack {
+  width: 100%;
+  height: 0.34rem;
+  border-radius: 999px;
+  background: #e7ede9;
+  overflow: hidden;
+}
+
+/* Barra activa de participacion por plato. */
+.reportsTopDishesTable__shareTrack span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+
+/* Etiqueta de porcentaje final. */
+.reportsTopDishesTable__share small {
+  color: #667f71;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* Ajustes responsive para pantallas medianas. */
+@media (max-width: 1200px) {
+  .reportsManagementTab__metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .reportsManagementTab__chartsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .reportsTopDishesTable__head,
+  .reportsTopDishesTable__row {
+    grid-template-columns: 4.5rem 1.7fr 1fr 1fr 1.2fr;
+  }
+}
+
+/* Ajustes responsive para movil. */
+@media (max-width: 760px) {
+  .reportsManagementTab__metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .reportsTopDishesTable__head {
+    display: none;
+  }
+
+  .reportsTopDishesTable__row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+    align-items: start;
+  }
+}

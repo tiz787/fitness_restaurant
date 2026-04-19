@@ -1,0 +1,265 @@
+/* Contenedor principal de la pestaña usuarios. */
+.usersManagementTab {
+  display: grid;
+  gap: 0.9rem;
+}
+
+/* Header principal de gestion de usuarios. */
+.usersManagementTab__header {
+  display: grid;
+  gap: 0.15rem;
+}
+
+/* Titulo principal de usuarios. */
+.usersManagementTab__title {
+  margin: 0;
+  font-family: 'Sora', 'Manrope', sans-serif;
+  font-size: 2rem;
+  color: #172a23;
+}
+
+/* Subtitulo de contexto de cantidad de usuarios. */
+.usersManagementTab__subtitle {
+  margin: 0;
+  color: #607468;
+}
+
+/* Grid de metricas superiores de usuarios. */
+.usersManagementTab__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+/* Card base de metricas en seccion usuarios. */
+.usersStatCard {
+  border: 1px solid #dce4df;
+  border-radius: 0.9rem;
+  background: #ffffff;
+  padding: 0.7rem;
+}
+
+/* Valor principal de metrica de usuario. */
+.usersStatCard p {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #2e493c;
+}
+
+/* Etiqueta secundaria de metrica de usuario. */
+.usersStatCard span {
+  color: #637a6d;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* Nota de politica de roles (solo clientes). */
+.usersManagementTab__policyNote {
+  margin: 0;
+  border: 1px solid #dce4df;
+  border-radius: 0.8rem;
+  background: #f6faf7;
+  color: #547063;
+  font-size: 0.84rem;
+  padding: 0.55rem 0.7rem;
+}
+
+/* Fila de filtros de busqueda y selects. */
+.usersManagementTab__filters {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.6rem;
+}
+
+/* Buscador principal con icono integrado. */
+.usersManagementTab__search {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid #dce4df;
+  border-radius: 0.9rem;
+  padding: 0.35rem 0.65rem;
+  background: #ffffff;
+}
+
+/* Input interno del buscador sin borde duplicado. */
+.usersManagementTab__search input {
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  padding: 0.5rem 0.2rem;
+}
+
+/* Estilo de select para filtros auxiliares. */
+.usersManagementTab__filters select {
+  min-width: 10.5rem;
+  border: 1px solid #dce4df;
+  border-radius: 0.9rem;
+  background: #ffffff;
+  padding: 0.55rem 0.75rem;
+}
+
+/* Grid de tarjetas de clientes. */
+.usersManagementTab__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+/* Card individual de cliente. */
+.userCard {
+  border: 1px solid #dce4df;
+  border-radius: 0.95rem;
+  background: #ffffff;
+  padding: 0.8rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+/* Header de identidad de cliente. */
+.userCard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Bloque de avatar emoji y texto principal. */
+.userCard__identity {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+/* Avatar temporal con emoji de persona. */
+.userCard__avatar {
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 999px;
+  border: 1px solid #dce5df;
+  background: #f5faf7;
+  display: grid;
+  place-content: center;
+  font-size: 1.15rem;
+}
+
+/* Nombre del cliente en card. */
+.userCard__name {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #233b30;
+}
+
+/* Rol visible del cliente (fijo). */
+.userCard__role {
+  margin: 0.16rem 0 0;
+  font-size: 0.76rem;
+  color: #3a8f55;
+  font-weight: 700;
+}
+
+/* Lista de datos del cliente. */
+.userCard__details {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.2rem;
+}
+
+/* Item de detalle de cliente. */
+.userCard__details li {
+  margin: 0;
+  color: #5d7568;
+  font-size: 0.79rem;
+}
+
+/* Grupo de botones de accion de card usuario. */
+.userCard__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+}
+
+/* Boton principal de acciones de usuario. */
+.userCard__actions button {
+  border: 1px solid #d6dfd9;
+  border-radius: 999px;
+  padding: 0.42rem 0.62rem;
+  background: #ffffff;
+  color: #335244;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Estado visual de boton deshabilitado. */
+.userCard__actions button:disabled {
+  background: #f4f7f5;
+  color: #8a9b90;
+}
+
+/* Panel expandible con historial de pedidos del cliente. */
+.userCard__orders {
+  border-top: 1px solid #e3eae5;
+  padding-top: 0.5rem;
+}
+
+/* Titulo del bloque de pedidos del cliente. */
+.userCard__ordersTitle {
+  margin: 0;
+  color: #335244;
+  font-size: 0.77rem;
+  font-weight: 700;
+}
+
+/* Lista de pedidos del cliente. */
+.userCard__orders ul {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.3rem;
+}
+
+/* Fila de pedido con columnas compactas. */
+.userCard__orders li {
+  margin: 0;
+  border: 1px solid #dce4df;
+  border-radius: 0.6rem;
+  background: #f8fbf9;
+  padding: 0.3rem 0.45rem;
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 0.4rem;
+  align-items: center;
+  font-size: 0.72rem;
+  color: #566f62;
+}
+
+/* Ajustes responsive para filtros y cards. */
+@media (max-width: 1200px) {
+  .usersManagementTab__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Ajustes responsive para vista movil. */
+@media (max-width: 760px) {
+  .usersManagementTab__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .usersManagementTab__filters {
+    grid-template-columns: 1fr;
+  }
+
+  .usersManagementTab__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .userCard__orders li {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,67 @@
+/* Panel de dona para ventas por categoria. */
+.categorySalesPanel {
+  min-height: 18rem;
+}
+
+/* Layout interno para alinear dona y leyenda. */
+.categorySalesPanel__layout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Dona principal construida con conic-gradient dinamico. */
+.categorySalesPanel__donut {
+  width: 8.9rem;
+  height: 8.9rem;
+}
+
+/* Lista de categorias y porcentajes. */
+.categorySalesPanel__legend {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.38rem;
+}
+
+/* Fila de categoria con color, nombre y valor. */
+.categorySalesPanel__legend li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+}
+
+/* Punto de color asociado a cada categoria. */
+.categorySalesPanel__dot {
+  width: 0.58rem;
+  height: 0.58rem;
+  border-radius: 999px;
+}
+
+/* Nombre de categoria en leyenda. */
+.categorySalesPanel__name {
+  color: #4f6557;
+  font-size: 0.83rem;
+}
+
+/* Porcentaje de categoria con mayor contraste. */
+.categorySalesPanel__percentage {
+  color: #22362b;
+  font-size: 0.78rem;
+}
+
+/* Ajuste movil para apilar dona y leyenda. */
+@media (max-width: 480px) {
+  .categorySalesPanel__layout {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .categorySalesPanel__legend {
+    width: 100%;
+  }
+}

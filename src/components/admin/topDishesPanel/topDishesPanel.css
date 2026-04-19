@@ -1,0 +1,86 @@
+/* Panel con ranking de platos mas vendidos. */
+.topDishesPanel {
+  min-height: 17rem;
+}
+
+/* Lista ordenada limpia del ranking. */
+.topDishesPanel__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.55rem;
+}
+
+/* Fila de plato con indice y contenido. */
+.topDishesPanel__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 0.55rem;
+  margin: 0;
+}
+
+/* Numero de posicion del ranking. */
+.topDishesPanel__rank {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  display: grid;
+  place-content: center;
+  background: #2f9a50;
+  color: #f4fff6;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+/* Cuerpo principal con nombre y barra de progreso. */
+.topDishesPanel__body {
+  display: grid;
+  gap: 0.2rem;
+}
+
+/* Cabecera de nombre y revenue del plato. */
+.topDishesPanel__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Nombre del plato dentro del ranking. */
+.topDishesPanel__name {
+  margin: 0;
+  color: #25392e;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+/* Ingreso generado por el plato. */
+.topDishesPanel__revenue {
+  color: #1f3228;
+  font-size: 0.82rem;
+}
+
+/* Pista de progreso base para comparativo visual. */
+.topDishesPanel__track {
+  height: 0.4rem;
+  border-radius: 999px;
+  background: #e5ece7;
+  overflow: hidden;
+}
+
+/* Barra de progreso proporcional a cantidad de pedidos. */
+.topDishesPanel__progress {
+  height: 100%;
+  border-radius: inherit;
+  display: block;
+  background: linear-gradient(90deg, #45b061, #2d8d4a);
+}
+
+/* Texto auxiliar de cantidad de pedidos. */
+.topDishesPanel__meta {
+  margin: 0;
+  color: #62786a;
+  font-size: 0.73rem;
+}

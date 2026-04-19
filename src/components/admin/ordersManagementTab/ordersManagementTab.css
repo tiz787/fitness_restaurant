@@ -1,0 +1,289 @@
+/* Contenedor principal de la pestaña de pedidos. */
+.ordersManagementTab {
+  display: grid;
+  gap: 0.9rem;
+}
+
+/* Header de contexto de la gestion de pedidos. */
+.ordersManagementTab__header {
+  display: grid;
+  gap: 0.15rem;
+}
+
+/* Titulo principal de la pestaña. */
+.ordersManagementTab__title {
+  margin: 0;
+  font-family: 'Sora', 'Manrope', sans-serif;
+  font-size: 2rem;
+  color: #162a22;
+}
+
+/* Subtitulo con total de pedidos. */
+.ordersManagementTab__subtitle {
+  margin: 0;
+  color: #607266;
+}
+
+/* Grid de tarjetas de estado resumen. */
+.ordersManagementTab__statusGrid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+/* Tarjeta base de estado de pedidos. */
+.ordersStatusCard {
+  border: 1px solid #dce4e0;
+  border-radius: 0.9rem;
+  padding: 0.75rem;
+  background: #ffffff;
+  text-align: center;
+}
+
+/* Valor numerico del estado. */
+.ordersStatusCard__value {
+  margin: 0;
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #284537;
+}
+
+/* Label del estado del pedido. */
+.ordersStatusCard__label {
+  margin: 0.1rem 0 0;
+  font-size: 0.85rem;
+  color: #5d7265;
+  font-weight: 700;
+}
+
+/* Tonos por estado para visualizacion rapida. */
+.ordersStatusCard--recibido {
+  background: #f8f0e7;
+}
+
+/* Tonos por estado para visualizacion rapida. */
+.ordersStatusCard--preparando {
+  background: #ecf1fa;
+}
+
+/* Tonos por estado para visualizacion rapida. */
+.ordersStatusCard--listo {
+  background: #efeef8;
+}
+
+/* Tonos por estado para visualizacion rapida. */
+.ordersStatusCard--en-camino {
+  background: #f6f0d4;
+}
+
+/* Tonos por estado para visualizacion rapida. */
+.ordersStatusCard--entregado {
+  background: #e9f5ec;
+}
+
+/* Tonos por estado para visualizacion rapida. */
+.ordersStatusCard--cancelado {
+  background: #f8ecee;
+}
+
+/* Fila de controles de busqueda y filtrado. */
+.ordersManagementTab__filters {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.7rem;
+}
+
+/* Input de busqueda con icono incrustado. */
+.ordersManagementTab__search {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.45rem;
+  align-items: center;
+  border: 1px solid #d9e2dd;
+  border-radius: 0.9rem;
+  padding: 0.35rem 0.65rem;
+  background: #ffffff;
+}
+
+/* Input de busqueda sin borde interno para limpieza visual. */
+.ordersManagementTab__search input {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0.5rem 0.25rem;
+}
+
+/* Select de estado con estilo compacto. */
+.ordersManagementTab__filters select {
+  min-width: 11rem;
+  border: 1px solid #d9e2dd;
+  border-radius: 0.9rem;
+  background: #ffffff;
+  padding: 0.55rem 0.75rem;
+}
+
+/* Contenedor de tabla con scroll horizontal en pantallas chicas. */
+.ordersManagementTab__tableWrapper {
+  overflow-x: auto;
+  border-radius: 1rem;
+  border: 1px solid #dce3e7;
+  background: #ffffff;
+}
+
+/* Tabla principal de pedidos. */
+.ordersManagementTab__table {
+  min-width: 980px;
+  margin: 0;
+}
+
+/* Encabezado de columnas. */
+.ordersManagementTab__table thead th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  color: #6e8376;
+  letter-spacing: 0.02em;
+  background: #f7faf8;
+}
+
+/* ID principal del pedido en tabla. */
+.ordersManagementTab__orderId {
+  margin: 0;
+  font-weight: 800;
+  color: #1d3428;
+}
+
+/* Hora secundaria del pedido en tabla. */
+.ordersManagementTab__time {
+  margin: 0.18rem 0 0;
+  color: #6f8477;
+  font-size: 0.77rem;
+}
+
+/* Nombre del cliente en cada fila. */
+.ordersManagementTab__customerName {
+  margin: 0;
+  color: #1f352b;
+  font-weight: 700;
+}
+
+/* Bandera del cliente en texto auxiliar. */
+.ordersManagementTab__flag {
+  margin: 0.17rem 0 0;
+  font-size: 0.8rem;
+}
+
+/* Grupo de emojis que representa platos del pedido. */
+.ordersManagementTab__dishes {
+  display: flex;
+  gap: 0.28rem;
+}
+
+/* Burbuja individual de emoji de plato. */
+.ordersManagementTab__dishes span {
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 999px;
+  display: grid;
+  place-content: center;
+  background: #eef4ef;
+  border: 1px solid #d6e0da;
+  font-size: 1rem;
+}
+
+/* Total monetario de pedido. */
+.ordersManagementTab__total {
+  font-weight: 800;
+  color: #182d24;
+}
+
+/* Chip de estado por fila. */
+.ordersManagementTab__status {
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Color de estado recibido. */
+.ordersManagementTab__status--recibido {
+  background: #ffe6d2;
+  color: #bc642a;
+}
+
+/* Color de estado preparando. */
+.ordersManagementTab__status--preparando {
+  background: #dfe8ff;
+  color: #2f66c6;
+}
+
+/* Color de estado listo. */
+.ordersManagementTab__status--listo {
+  background: #ece7ff;
+  color: #7053d2;
+}
+
+/* Color de estado en camino. */
+.ordersManagementTab__status--en-camino {
+  background: #ffeeba;
+  color: #9e741d;
+}
+
+/* Color de estado entregado. */
+.ordersManagementTab__status--entregado {
+  background: #ddf7e3;
+  color: #32934f;
+}
+
+/* Color de estado cancelado. */
+.ordersManagementTab__status--cancelado {
+  background: #fde5e8;
+  color: #b63f4f;
+}
+
+/* Contenedor de acciones de la fila. */
+.ordersManagementTab__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Boton principal de avance de estado. */
+.ordersManagementTab__primaryAction {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.35rem 0.72rem;
+  background: #3aa35a;
+  color: #f4fff7;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+/* Botones icono secundarios de la fila. */
+.ordersManagementTab__iconAction {
+  border: 1px solid #d4ddd7;
+  border-radius: 999px;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: grid;
+  place-content: center;
+  background: #ffffff;
+  font-size: 0.75rem;
+}
+
+/* Ajustes responsive para grillas en tablet y movil. */
+@media (max-width: 1200px) {
+  .ordersManagementTab__statusGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Ajustes responsive para grillas en tablet y movil. */
+@media (max-width: 760px) {
+  .ordersManagementTab__statusGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ordersManagementTab__filters {
+    grid-template-columns: 1fr;
+  }
+}
