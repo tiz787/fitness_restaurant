@@ -1,5 +1,18 @@
 // Importa estado y memo para filtros y visualizacion de clientes.
 import { useMemo, useState, type ChangeEvent } from 'react'
+// Importa componentes de Recharts para visualizacion de metricas.
+import {
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
 // Importa tipo de usuario gestionado por admin.
 import type { ManagedUser } from '../adminDashboard/adminDashboard.types'
 // Importa estilos dedicados de la pestaña usuarios.
@@ -89,6 +102,50 @@ export default function UsersManagementTab({ initialUsers }: UsersManagementTabP
     }
   }, [users])
 
+  // Calcula datos para el grafico de distribucion por antiguedad.
+  const antiquityChartData = useMemo(() => {
+    let newUsers = 0 // 0-6 meses
+    let regularUsers = 0 // 7-12 meses
+    let veteranUsers = 0 // 13-24 meses
+    let loyalUsers = 0 // >24 meses
+
+    users.forEach((u) => {
+      if (u.memberMonths <= 6) newUsers++
+      else if (u.memberMonths <= 12) regularUsers++
+      else if (u.memberMonths <= 24) veteranUsers++
+      else loyalUsers++
+    })
+
+    return [
+      { name: 'Nuevos (0-6m)', value: newUsers, color: '#3a8f55' },
+      { name: 'Regulares (7-12m)', value: regularUsers, color: '#547063' },
+      { name: 'Veteranos (13-24m)', value: veteranUsers, color: '#8caba4' },
+      { name: 'Fieles (>24m)', value: loyalUsers, color: '#2e493c' },
+    ].filter((segment) => segment.value > 0)
+  }, [users])
+
+  // Calcula datos para el grafico de actividad (cantidad de pedidos).
+  const activityChartData = useMemo(() => {
+    let none = 0
+    let low = 0
+    let medium = 0
+    let high = 0
+
+    users.forEach((u) => {
+      if (u.totalOrders === 0) none++
+      else if (u.totalOrders <= 5) low++
+      else if (u.totalOrders <= 10) medium++
+      else high++
+    })
+
+    return [
+      { group: '0 pedidos', count: none },
+      { group: '1-5 pedidos', count: low },
+      { group: '6-10 pedidos', count: medium },
+      { group: '11+ pedidos', count: high },
+    ]
+  }, [users])
+
   // Aplica filtros de busqueda, antiguedad y cantidad de pedidos.
   const filteredUsers = useMemo(() => {
     // Normaliza busqueda para comparacion case-insensitive.
@@ -155,6 +212,75 @@ export default function UsersManagementTab({ initialUsers }: UsersManagementTabP
         </article>
       </section>
 
+      {/* Contenedor de graficos de analitica de usuarios */}
+      <section className="usersManagementTab__charts" aria-label="Analiticas de clientes">
+        <article className="usersChartCard">
+          <h3 className="usersChartCard__title">Tramos de Antigüedad</h3>
+          <div style={{ width: '100%', height: 220 }}>
+            {antiquityChartData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Tooltip
+                    contentStyle={{ borderRadius: '0.8rem', border: '1px solid #dce4df' }}
+                    itemStyle={{ color: '#172a23', fontWeight: '600' }}
+                  />
+                  <Pie
+                    data={antiquityChartData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={80}
+                    paddingAngle={5}
+                  >
+                    {antiquityChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <p style={{ color: '#607468', fontSize: '0.9rem', textAlign: 'center', marginTop: '3rem' }}>
+                No hay datos disponibles
+              </p>
+            )}
+          </div>
+        </article>
+
+        <article className="usersChartCard">
+          <h3 className="usersChartCard__title">Tramos de Actividad (Pedidos)</h3>
+          <div style={{ width: '100%', height: 220 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={activityChartData}
+                margin={{ top: 20, right: 30, left: -20, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e9ecea" />
+                <XAxis
+                  dataKey="group"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{ fill: '#607468', fontSize: '0.75rem' }}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{ fill: '#607468', fontSize: '0.75rem' }}
+                  allowDecimals={false}
+                />
+                <Tooltip
+                  cursor={{ fill: '#f6faf7' }}
+                  contentStyle={{ borderRadius: '0.8rem', border: '1px solid #dce4df' }}
+                  itemStyle={{ color: '#2e493c', fontWeight: '800' }}
+                />
+                <Bar dataKey="count" fill="#3a8f55" radius={[4, 4, 0, 0]} barSize={40} name="Usuarios" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </article>
+      </section>
+
       <p className="usersManagementTab__policyNote">
         Esta seccion solo gestiona clientes. No se permite cambiar rol a administrador en esta
         etapa.
@@ -195,10 +321,17 @@ export default function UsersManagementTab({ initialUsers }: UsersManagementTabP
         </select>
       </div>
 
-      <div className="usersManagementTab__grid" aria-label="Listado de clientes">
-        {filteredUsers.map((user) => (
-          <article key={user.id} className="userCard">
-            <header className="userCard__header">
+      {filteredUsers.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#607468' }}>
+          <p style={{ fontSize: '2rem', margin: '0 0 1rem' }}>🔍</p>
+          <p style={{ fontWeight: '600' }}>No encontramos usuarios con esos criterios.</p>
+          <p style={{ fontSize: '0.85rem' }}>Intenta ajustar tus filtros de búsqueda.</p>
+        </div>
+      ) : (
+        <div className="usersManagementTab__grid" aria-label="Listado de clientes">
+          {filteredUsers.map((user) => (
+            <article key={user.id} className="userCard">
+              <header className="userCard__header">
               <div className="userCard__identity">
                 <span className="userCard__avatar" aria-hidden>
                   {user.avatarEmoji}
@@ -245,7 +378,8 @@ export default function UsersManagementTab({ initialUsers }: UsersManagementTabP
             ) : null}
           </article>
         ))}
-      </div>
+        </div>
+      )}
     </section>
   )
 }

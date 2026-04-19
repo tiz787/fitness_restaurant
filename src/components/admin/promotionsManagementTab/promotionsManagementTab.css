@@ -321,3 +321,291 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Overlay para el modal de promociones */
+.promotionsManagementTab__modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Contenido del modal */
+.promotionsManagementTab__modalContent {
+  background: #ffffff;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.promotionsManagementTab__modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.promotionsManagementTab__closeButton {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  color: #607468;
+  cursor: pointer;
+}
+
+.promotionsManagementTab__closeButton:hover {
+  color: #172a23;
+}
+
+.promotionsManagementTab__successMessage {
+  padding: 1rem;
+  background: #d4edda;
+  color: #155724;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* Fix CSS de los inputs (Color de letra y legibilidad) */
+.promotionsManagementTab__form input[type="text"],
+.promotionsManagementTab__form input[type="number"],
+.promotionsManagementTab__form input[type="date"],
+.promotionsManagementTab__form select,
+.promotionsManagementTab__form textarea {
+  color: #111111;
+  background-color: #ffffff;
+  border: 1px solid #dce4df;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  width: 100%;
+}
+
+.promotionsManagementTab__form input:focus,
+.promotionsManagementTab__form select:focus,
+.promotionsManagementTab__form textarea:focus {
+  border-color: #4db267;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(77, 178, 103, 0.2);
+}
+
+/* Estilos de acciones en el footer del cupon */
+.promotionCouponCard__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.promotionCouponCard__actions button {
+  background: #f4f8f5;
+  border: 1px solid #dce5df;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  color: #385346;
+  font-weight: 600;
+}
+
+.promotionCouponCard__actions button:hover {
+  background: #e9f2eb;
+}
+
+.promotionCouponCard__actions button.is-danger {
+  color: #dc3545;
+  border-color: #ffcdd2;
+  background: #fff5f5;
+}
+
+.promotionCouponCard__actions button.is-danger:hover {
+  background: #ffebeb;
+}
+
+/* Detalles de vista de un cupon */
+.promotionsManagementTab__detailsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #1d3027;
+}
+
+/* MODAL DE CUPONES */
+.promotionsManagementTab__modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.promotionsManagementTab__modalContent {
+  background: #ffffff;
+  width: 100%;
+  max-width: 650px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.promotionsManagementTab__modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.promotionsManagementTab__closeModalButton {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  color: #607468;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.promotionsManagementTab__closeModalButton:hover {
+  color: #172a23;
+}
+
+.promotionsManagementTab__successMessage {
+  padding: 1.25rem;
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.promotionsManagementTab__viewDetails p {
+  margin: 0 0 0.5rem 0;
+  color: #1d3027;
+  font-size: 0.95rem;
+}
+
+/* FIX PARA INPUT VISUALIZATION (COLOR NEGRO) */
+.promotionsManagementTab__form input,
+.promotionsManagementTab__form select,
+.promotionsManagementTab__form textarea {
+  color: #111111;
+  background-color: #ffffff;
+  border: 1px solid #dce4df;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.promotionsManagementTab__form input:focus,
+.promotionsManagementTab__form select:focus,
+.promotionsManagementTab__form textarea:focus {
+  border-color: #4db267;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(77, 178, 103, 0.2);
+}
+
+.promotionsManagementTab__formCheckboxes {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.promotionsManagementTab__formCheckboxes label {
+  color: #385649;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* BOTONES DE LA CARD DE CUPON */
+.promotionCouponCard__actionButtons {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin-top: 1rem;
+  border-top: 1px solid #dce5df;
+  padding-top: 0.8rem;
+}
+
+.promotionCouponCard__actionButtons button {
+  border: 1px solid #d6dfd9;
+  background: #ffffff;
+  color: #385346;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.promotionCouponCard__actionButtons button:hover {
+  background: #eef7f0;
+  border-color: #c9e1cf;
+}
+
+.promotionCouponCard__actionButtons button.btn-danger {
+  color: #dc3545;
+}
+
+.promotionCouponCard__actionButtons button.btn-danger:hover {
+  background: #ffeded;
+  border-color: #ffcdd2;
+}
+
+.promotionCouponCard.is-inactive {
+  opacity: 0.65;
+  filter: grayscale(0.5);
+}
+
+/* ESTADO VACIO DE CUPONES */
+.promotionsManagementTab__emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #ffffff;
+  border: 1px dashed #dce4df;
+  border-radius: 1rem;
+  margin-top: 1rem;
+}
+
+.promotionsManagementTab__emptyIcon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.8;
+}
+
+.promotionsManagementTab__emptyState h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  color: #1d3027;
+}
+
+.promotionsManagementTab__emptyState p {
+  margin: 0 0 1.5rem;
+  color: #607468;
+  font-size: 1rem;
+  max-width: 400px;
+}

@@ -31,6 +31,34 @@
   gap: 0.65rem;
 }
 
+/* Grid superior de graficos. */
+.usersManagementTab__charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Contenedor individual de grafico. */
+.usersChartCard {
+  border: 1px solid #dce4df;
+  border-radius: 1.2rem;
+  background: #ffffff;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Titulo del grafico. */
+.usersChartCard__title {
+  margin: 0;
+  font-family: 'Sora', 'Manrope', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #172a23;
+}
+
 /* Card base de metricas en seccion usuarios. */
 .usersStatCard {
   border: 1px solid #dce4df;
@@ -90,6 +118,13 @@
   box-shadow: none;
   background: transparent;
   padding: 0.5rem 0.2rem;
+  color: #111111;
+  width: 100%;
+}
+
+/* Para que se vea bien el placehoder */
+.usersManagementTab__search input::placeholder {
+  color: #607468;
 }
 
 /* Estilo de select para filtros auxiliares. */
@@ -99,6 +134,9 @@
   border-radius: 0.9rem;
   background: #ffffff;
   padding: 0.55rem 0.75rem;
+  color: #111111;
+  font-weight: 500;
+  cursor: pointer;
 }
 
 /* Grid de tarjetas de clientes. */
@@ -247,6 +285,10 @@
 
 /* Ajustes responsive para vista movil. */
 @media (max-width: 760px) {
+  .usersManagementTab__charts {
+    grid-template-columns: 1fr;
+  }
+
   .usersManagementTab__stats {
     grid-template-columns: 1fr;
   }

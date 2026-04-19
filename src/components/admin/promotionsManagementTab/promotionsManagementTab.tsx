@@ -105,21 +105,28 @@ const toCouponStatusToken = (status: PromotionCoupon['status']): string =>
 export default function PromotionsManagementTab({ initialCoupons }: PromotionsManagementTabProps) {
   // Guarda lista local de cupones para interacciones de UI.
   const [coupons, setCoupons] = useState<PromotionCoupon[]>(initialCoupons)
-  // Controla visibilidad del formulario de nuevo cupon.
-  const [isCreateFormVisible, setIsCreateFormVisible] = useState<boolean>(false)
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
+  const [editingCouponId, setEditingCouponId] = useState<string | null>(null);
+  const [selectedCoupon, setSelectedCoupon] = useState<PromotionCoupon | null>(null);
   // Controla valores del formulario de creacion.
   const [formValues, setFormValues] = useState<NewCouponFormValues>(initialNewCouponFormValues)
+  // Controla el mensaje de exito
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
-  // Calcula metricas superiores de la pestaña promociones.
+  // Obtiene cupones activos (no eliminados por soft-delete).
+  const activeDirectoryCoupons = useMemo(() => coupons.filter(c => !c.isDeleted), [coupons])
+
+  // Calcula metricas superiores de la pestaña promociones descartando eliminados.
   const couponStats = useMemo(() => {
     // Cuenta cupones activos actuales.
-    const activeCoupons = coupons.filter((coupon) => coupon.status === 'Activo').length
+    const activeCoupons = activeDirectoryCoupons.filter((coupon) => coupon.status === 'Activo').length
     // Cuenta cupones inactivos actuales.
-    const inactiveCoupons = coupons.filter((coupon) => coupon.status === 'Inactivo').length
+    const inactiveCoupons = activeDirectoryCoupons.filter((coupon) => coupon.status === 'Inactivo').length
     // Cuenta cupones vencidos/expirados.
-    const expiredCoupons = coupons.filter((coupon) => coupon.status === 'Expirado').length
-    // Suma total de usos de todos los cupones.
-    const totalUses = coupons.reduce((accumulator, coupon) => accumulator + coupon.currentUses, 0)
+    const expiredCoupons = activeDirectoryCoupons.filter((coupon) => coupon.status === 'Expirado').length
+    // Suma total de usos de todos los cupones no borrados.
+    const totalUses = activeDirectoryCoupons.reduce((accumulator, coupon) => accumulator + coupon.currentUses, 0)
 
     // Retorna objeto final para pintar metricas.
     return {
@@ -128,7 +135,7 @@ export default function PromotionsManagementTab({ initialCoupons }: PromotionsMa
       expiredCoupons,
       totalUses,
     }
-  }, [coupons])
+  }, [activeDirectoryCoupons])
 
   // Actualiza campos de texto del formulario de cupon.
   const updateTextField =
@@ -156,46 +163,134 @@ export default function PromotionsManagementTab({ initialCoupons }: PromotionsMa
       }))
     }
 
-  // Procesa creacion visual de un nuevo cupon.
-  const handleCreateCoupon = (event: FormEvent<HTMLFormElement>): void => {
+  // Procesa creacion o edicion de un cupon.
+  const handleSaveCoupon = (event: FormEvent<HTMLFormElement>): void => {
     // Evita recarga completa de pagina al enviar formulario.
     event.preventDefault()
 
-    // Evita crear si faltan campos clave del cupon.
+    // Evita guardar si faltan campos clave del cupon.
     if (formValues.code.trim().length === 0 || formValues.title.trim().length === 0) {
       return
     }
 
-    // Construye nuevo cupon basado en formulario actual.
-    const nextCoupon: PromotionCoupon = {
-      id: `coupon-${Date.now()}`,
-      code: formValues.code.trim().toUpperCase(),
-      title: formValues.title.trim(),
-      description:
-        formValues.description.trim().length > 0
-          ? formValues.description.trim()
-          : 'Cupon creado desde panel admin (modo visual).',
-      discountType: formValues.discountType,
-      discountValue:
-        formValues.discountType === 'free-shipping' ? 0 : toNumber(formValues.discountValue),
-      currentUses: 0,
-      maxUses: Math.max(1, toNumber(formValues.maxUses)),
-      expiresOn: formatDateLabel(formValues.expiresOn),
-      status: 'Activo',
-      conditions: {
-        minOrderTotal: Math.max(0, toNumber(formValues.minOrderTotal)),
-        takeoutOnly: formValues.takeoutOnly,
-        minItems: Math.max(1, toNumber(formValues.minItems)),
-        firstOrderOnly: formValues.firstOrderOnly,
-      },
+    if (modalMode === 'edit' && editingCouponId) {
+      setCoupons((prev) => 
+        prev.map((c) => c.id === editingCouponId ? {
+          ...c,
+          code: formValues.code.trim().toUpperCase(),
+          title: formValues.title.trim(),
+          description: formValues.description.trim(),
+          discountType: formValues.discountType,
+          discountValue: formValues.discountType === 'free-shipping' ? 0 : toNumber(formValues.discountValue),
+          maxUses: Math.max(1, toNumber(formValues.maxUses)),
+          expiresOn: formatDateLabel(formValues.expiresOn),
+          conditions: {
+            ...c.conditions,
+            minOrderTotal: Math.max(0, toNumber(formValues.minOrderTotal)),
+            takeoutOnly: formValues.takeoutOnly,
+            minItems: Math.max(1, toNumber(formValues.minItems)),
+            firstOrderOnly: formValues.firstOrderOnly,
+          }
+        } : c)
+      )
+      setSuccessMessage('Cupon actualizado correctamente.')
+    } else {
+      // Construye nuevo cupon basado en formulario actual.
+      const nextCoupon: PromotionCoupon = {
+        id: `coupon-${Date.now()}`,
+        code: formValues.code.trim().toUpperCase(),
+        title: formValues.title.trim(),
+        description:
+          formValues.description.trim().length > 0
+            ? formValues.description.trim()
+            : 'Cupon creado desde panel admin.',
+        discountType: formValues.discountType,
+        discountValue:
+          formValues.discountType === 'free-shipping' ? 0 : toNumber(formValues.discountValue),
+        currentUses: 0,
+        maxUses: Math.max(1, toNumber(formValues.maxUses)),
+        expiresOn: formatDateLabel(formValues.expiresOn),
+        status: 'Activo',
+        conditions: {
+          minOrderTotal: Math.max(0, toNumber(formValues.minOrderTotal)),
+          takeoutOnly: formValues.takeoutOnly,
+          minItems: Math.max(1, toNumber(formValues.minItems)),
+          firstOrderOnly: formValues.firstOrderOnly,
+        },
+      }
+      setCoupons((previousCoupons) => [nextCoupon, ...previousCoupons])
+      setSuccessMessage('Cupon creado correctamente.')
     }
 
-    // Inserta cupon al inicio para feedback inmediato.
-    setCoupons((previousCoupons) => [nextCoupon, ...previousCoupons])
-    // Reinicia valores del formulario tras crear.
+    setTimeout(() => {
+      setSuccessMessage(null)
+      setIsModalOpen(false)
+    }, 3000)
+
     setFormValues(initialNewCouponFormValues)
-    // Oculta el formulario para volver al listado.
-    setIsCreateFormVisible(false)
+    setEditingCouponId(null)
+  }
+
+  // Prepara modal para crear
+  const handleOpenCreateModal = (): void => {
+    setModalMode('create')
+    setFormValues(initialNewCouponFormValues)
+    setEditingCouponId(null)
+    setSelectedCoupon(null)
+    setSuccessMessage(null)
+    setIsModalOpen(true)
+  }
+
+  // Prepara modal para editar
+  const handleOpenEditModal = (coupon: PromotionCoupon): void => {
+    setModalMode('edit')
+    setFormValues({
+      code: coupon.code,
+      title: coupon.title,
+      description: coupon.description,
+      discountType: coupon.discountType,
+      discountValue: coupon.discountValue.toString(),
+      maxUses: coupon.maxUses.toString(),
+      expiresOn: coupon.expiresOn,
+      minOrderTotal: coupon.conditions.minOrderTotal.toString(),
+      minItems: coupon.conditions.minItems.toString(),
+      takeoutOnly: coupon.conditions.takeoutOnly,
+      firstOrderOnly: coupon.conditions.firstOrderOnly,
+    })
+    setEditingCouponId(coupon.id)
+    setSelectedCoupon(null)
+    setSuccessMessage(null)
+    setIsModalOpen(true)
+  }
+
+  // Prepara modal para ver detalles
+  const handleOpenViewModal = (coupon: PromotionCoupon): void => {
+    setModalMode('view')
+    setSelectedCoupon(coupon)
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = (): void => {
+    setIsModalOpen(false)
+    setSuccessMessage(null)
+  }
+
+  // Cambia el estado del cupon a Activo o Inactivo
+  const handleToggleStatus = (coupon: PromotionCoupon): void => {
+    const nextStatus = coupon.status === 'Activo' ? 'Inactivo' : 'Activo'
+    setCoupons((prev) => 
+      prev.map((c) => c.id === coupon.id ? { ...c, status: nextStatus } : c)
+    )
+  }
+
+  // Soft delete para eliminar temporalmente de la vista.
+  const handleDeleteCoupon = (couponId: string): void => {
+    const userConfirmed = window.confirm('¿Seguro que deseas eliminar este cupon? (Soft delete)')
+    if (userConfirmed) {
+      setCoupons((prev) => 
+        prev.map((c) => c.id === couponId ? { ...c, isDeleted: true } : c)
+      )
+    }
   }
 
   // Renderiza metricas, formulario y lista de cupones.
@@ -212,7 +307,7 @@ export default function PromotionsManagementTab({ initialCoupons }: PromotionsMa
         <button
           type="button"
           className="promotionsManagementTab__newCouponButton"
-          onClick={() => setIsCreateFormVisible((previous) => !previous)}
+          onClick={handleOpenCreateModal}
         >
           ➕ Nuevo cupon
         </button>
@@ -240,165 +335,218 @@ export default function PromotionsManagementTab({ initialCoupons }: PromotionsMa
         </article>
       </section>
 
-      {isCreateFormVisible ? (
-        <form className="promotionsManagementTab__form panelCard" onSubmit={handleCreateCoupon}>
-          <h3 className="promotionsManagementTab__formTitle">Crear cupon</h3>
+      {isModalOpen ? (
+        <div className="promotionsManagementTab__modalOverlay" onClick={handleCloseModal}>
+          <div
+            className="promotionsManagementTab__modalContent panelCard"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="promotionsManagementTab__modalHeader">
+              <h3 className="promotionsManagementTab__formTitle">
+                {modalMode === 'create' ? 'Crear nuevo cupon' : modalMode === 'edit' ? `Editar cupon: ${formValues.code}` : `Detalles del cupon: ${selectedCoupon?.code}`}
+              </h3>
+              <button
+                type="button"
+                className="promotionsManagementTab__closeModalButton"
+                onClick={handleCloseModal}
+              >
+                ✖
+              </button>
+            </div>
 
-          <div className="promotionsManagementTab__formGrid">
-            <label>
-              Codigo
-              <input value={formValues.code} onChange={updateTextField('code')} required />
-            </label>
+            {successMessage ? (
+              <div className="promotionsManagementTab__successMessage">{successMessage}</div>
+            ) : modalMode === 'view' && selectedCoupon ? (
+              <div className="promotionsManagementTab__viewDetails">
+                <p><strong>ID:</strong> {selectedCoupon.id}</p>
+                <p><strong>Codigo:</strong> {selectedCoupon.code}</p>
+                <p><strong>Titulo:</strong> {selectedCoupon.title}</p>
+                <p><strong>Descripcion:</strong> {selectedCoupon.description}</p>
+                <p><strong>Estado:</strong> {selectedCoupon.status}</p>
+                <p><strong>Tipo de descuento:</strong> {selectedCoupon.discountType}</p>
+                <p><strong>Valor Descuento:</strong> {selectedCoupon.discountValue}</p>
+                <p><strong>Usos:</strong> {selectedCoupon.currentUses} de {selectedCoupon.maxUses}</p>
+                <p><strong>Vence el:</strong> {selectedCoupon.expiresOn}</p>
+                <p><strong>Pedido Minimo:</strong> ${selectedCoupon.conditions.minOrderTotal}</p>
+                <p><strong>Minimo Productos:</strong> {selectedCoupon.conditions.minItems}</p>
+                <p><strong>Solo llevar:</strong> {selectedCoupon.conditions.takeoutOnly ? 'Si' : 'No'}</p>
+                <p><strong>Primera Orden:</strong> {selectedCoupon.conditions.firstOrderOnly ? 'Si' : 'No'}</p>
+              </div>
+            ) : (
+              <form className="promotionsManagementTab__form" onSubmit={handleSaveCoupon}>
+                <div className="promotionsManagementTab__formGrid">
+                  <label>
+                    Codigo
+                    <input value={formValues.code} onChange={updateTextField('code')} required />
+                  </label>
 
-            <label>
-              Titulo
-              <input value={formValues.title} onChange={updateTextField('title')} required />
-            </label>
+                  <label>
+                    Titulo
+                    <input value={formValues.title} onChange={updateTextField('title')} required />
+                  </label>
 
-            <label>
-              Tipo de descuento
-              <select value={formValues.discountType} onChange={updateTextField('discountType')}>
-                <option value="percentage">Porcentaje</option>
-                <option value="fixed-amount">Monto fijo</option>
-                <option value="free-shipping">Envio gratis</option>
-              </select>
-            </label>
+                  <label>
+                    Tipo de descuento
+                    <select value={formValues.discountType} onChange={updateTextField('discountType')}>
+                      <option value="percentage">Porcentaje</option>
+                      <option value="fixed-amount">Monto fijo</option>
+                      <option value="free-shipping">Envio gratis</option>
+                    </select>
+                  </label>
 
-            <label>
-              Valor descuento
-              <input
-                type="number"
-                min="0"
-                value={formValues.discountValue}
-                onChange={updateTextField('discountValue')}
-                disabled={formValues.discountType === 'free-shipping'}
-              />
-            </label>
+                  <label>
+                    Valor descuento
+                    <input
+                      type="number"
+                      min="0"
+                      value={formValues.discountValue}
+                      onChange={updateTextField('discountValue')}
+                      disabled={formValues.discountType === 'free-shipping'}
+                    />
+                  </label>
 
-            <label>
-              Max usos
-              <input
-                type="number"
-                min="1"
-                value={formValues.maxUses}
-                onChange={updateTextField('maxUses')}
-              />
-            </label>
+                  <label>
+                    Max usos
+                    <input
+                      type="number"
+                      min="1"
+                      value={formValues.maxUses}
+                      onChange={updateTextField('maxUses')}
+                    />
+                  </label>
 
-            <label>
-              Vence el
-              <input type="date" value={formValues.expiresOn} onChange={updateTextField('expiresOn')} />
-            </label>
+                  <label>
+                    Vence el
+                    <input type="text" placeholder="dd/mm/aaaa o yyyy-mm-dd" value={formValues.expiresOn} onChange={updateTextField('expiresOn')} />
+                  </label>
 
-            <label>
-              Pedido minimo
-              <input
-                type="number"
-                min="0"
-                value={formValues.minOrderTotal}
-                onChange={updateTextField('minOrderTotal')}
-              />
-            </label>
+                  <label>
+                    Pedido minimo
+                    <input
+                      type="number"
+                      min="0"
+                      value={formValues.minOrderTotal}
+                      onChange={updateTextField('minOrderTotal')}
+                    />
+                  </label>
 
-            <label>
-              Min productos
-              <input
-                type="number"
-                min="1"
-                value={formValues.minItems}
-                onChange={updateTextField('minItems')}
-              />
-            </label>
+                  <label>
+                    Min productos
+                    <input
+                      type="number"
+                      min="1"
+                      value={formValues.minItems}
+                      onChange={updateTextField('minItems')}
+                    />
+                  </label>
+                </div>
+
+                <label className="promotionsManagementTab__descriptionField">
+                  Descripcion
+                  <textarea
+                    rows={2}
+                    value={formValues.description}
+                    onChange={updateTextField('description')}
+                    placeholder="Texto corto para describir el objetivo del cupon"
+                  />
+                </label>
+
+                <div className="promotionsManagementTab__formCheckboxes">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={formValues.takeoutOnly}
+                      onChange={updateToggleField('takeoutOnly')}
+                    />
+                    Solo para llevar/retiro
+                  </label>
+
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={formValues.firstOrderOnly}
+                      onChange={updateToggleField('firstOrderOnly')}
+                    />
+                    Solo primer pedido
+                  </label>
+                </div>
+
+                <div className="promotionsManagementTab__formActions">
+                  <button type="submit" className="promotionsManagementTab__saveButton">
+                    {modalMode === 'edit' ? 'Guardar cambios' : 'Crear cupon'}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
-
-          <label className="promotionsManagementTab__descriptionField">
-            Descripcion
-            <textarea
-              rows={2}
-              value={formValues.description}
-              onChange={updateTextField('description')}
-              placeholder="Texto corto para describir el objetivo del cupon"
-            />
-          </label>
-
-          <div className="promotionsManagementTab__toggles">
-            <label>
-              <input
-                type="checkbox"
-                checked={formValues.takeoutOnly}
-                onChange={updateToggleField('takeoutOnly')}
-              />
-              Solo para llevar/retiro
-            </label>
-
-            <label>
-              <input
-                type="checkbox"
-                checked={formValues.firstOrderOnly}
-                onChange={updateToggleField('firstOrderOnly')}
-              />
-              Solo primer pedido
-            </label>
-          </div>
-
-          <div className="promotionsManagementTab__formActions">
-            <button type="submit">Guardar cupon</button>
-          </div>
-        </form>
+        </div>
       ) : null}
 
-      <div className="promotionsManagementTab__cards" aria-label="Listado de cupones">
-        {coupons.map((coupon) => {
-          // Calcula porcentaje de uso para barra de progreso.
-          const usagePercentage = Math.min((coupon.currentUses / Math.max(coupon.maxUses, 1)) * 100, 100)
+      {activeDirectoryCoupons.length === 0 ? (
+         <div className="promotionsManagementTab__emptyState">
+           <div className="promotionsManagementTab__emptyIcon" aria-hidden>🎟️</div>
+           <h3>¡No tienes cupones activos!</h3>
+           <p>Impulsa tus ventas creando promociones atractivas para tus clientes.</p>
+           <button
+             type="button"
+             className="promotionsManagementTab__newCouponButton"
+             onClick={handleOpenCreateModal}
+           >
+             ➕ Crear mi primer cupon
+           </button>
+         </div>
+      ) : (
+        <div className="promotionsManagementTab__cards" aria-label="Listado de cupones">
+          {activeDirectoryCoupons.map((coupon) => {
+            // Calcula porcentaje de uso para barra de progreso.
+            const usagePercentage = Math.min((coupon.currentUses / Math.max(coupon.maxUses, 1)) * 100, 100)
 
-          // Renderiza card de cupon con condiciones de elegibilidad.
-          return (
-            <article key={coupon.id} className="promotionCouponCard">
-              <header className="promotionCouponCard__header">
-                <div>
-                  <p className="promotionCouponCard__code">🎟️ {coupon.code}</p>
-                  <p className="promotionCouponCard__title">{coupon.title}</p>
+            return (
+              <article key={coupon.id} className={`promotionCouponCard ${coupon.status === 'Inactivo' ? 'is-inactive' : ''}`}>
+                <header className="promotionCouponCard__header">
+                  <div>
+                    <p className="promotionCouponCard__code">🎟️ {coupon.code}</p>
+                    <p className="promotionCouponCard__title">{coupon.title}</p>
+                  </div>
+
+                  <div className="promotionCouponCard__rightHeader">
+                    <span className={`promotionCouponCard__status promotionCouponCard__status--${toCouponStatusToken(coupon.status)}`}>
+                      {coupon.status}
+                    </span>
+                    <strong>{formatDiscountValue(coupon)}</strong>
+                  </div>
+                </header>
+
+                <p className="promotionCouponCard__description">{coupon.description}</p>
+                <div className="promotionCouponCard__usageInfo">
+                  <span>Usos: {coupon.currentUses}/{coupon.maxUses}</span>
+                  <span>Vence: {coupon.expiresOn || 'Sin fecha'}</span>
+                </div>
+                <div className="promotionCouponCard__usageTrack" aria-hidden>
+                  <span style={{ width: `${usagePercentage}%` }} />
                 </div>
 
-                <div className="promotionCouponCard__rightHeader">
-                  <span className={`promotionCouponCard__status promotionCouponCard__status--${toCouponStatusToken(coupon.status)}`}>
-                    {coupon.status}
-                  </span>
-                  <strong>{formatDiscountValue(coupon)}</strong>
+                <div className="promotionCouponCard__actionButtons">
+                  <button type="button" onClick={() => handleOpenViewModal(coupon)}>
+                    👁️ Ver 
+                  </button>
+                  <button type="button" onClick={() => handleOpenEditModal(coupon)}>
+                    ✏️ Editar
+                  </button>
+                  <button type="button" onClick={() => handleToggleStatus(coupon)}>
+                    {coupon.status === 'Activo' ? '⏸️ Desactivar' : '▶️ Activar'}
+                  </button>
+                  <button type="button" className="btn-danger" onClick={() => handleDeleteCoupon(coupon.id)}>
+                    🗑️ Eliminar
+                  </button>
                 </div>
-              </header>
-
-              <p className="promotionCouponCard__description">{coupon.description}</p>
-
-              <div className="promotionCouponCard__usageInfo">
-                <span>
-                  Usos: {coupon.currentUses}/{coupon.maxUses}
-                </span>
-                <span>Vence: {coupon.expiresOn || 'Sin fecha'}</span>
-              </div>
-
-              <div className="promotionCouponCard__usageTrack" aria-hidden>
-                <span style={{ width: `${usagePercentage}%` }} />
-              </div>
-
-              <ul className="promotionCouponCard__conditions" aria-label="Condiciones del cupon">
-                <li>Pedido minimo: ${coupon.conditions.minOrderTotal}</li>
-                <li>Solo llevar: {coupon.conditions.takeoutOnly ? 'Si' : 'No'}</li>
-                <li>Min productos: {coupon.conditions.minItems}</li>
-                <li>Primer pedido: {coupon.conditions.firstOrderOnly ? 'Si' : 'No'}</li>
-              </ul>
-
-              <footer className="promotionCouponCard__footer">
-                <p>
-                  En checkout (fase siguiente) se validara elegibilidad segun monto, tipo de entrega,
-                  cantidad de productos y primer pedido.
-                </p>
-              </footer>
-            </article>
-          )
-        })}
-      </div>
+              </article>
+            )
+          })}
+        </div>
+      )}
     </section>
   )
 }

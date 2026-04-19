@@ -176,6 +176,8 @@ export interface MenuDish {
   category: MenuDishCategory
   // Marca visual para destacados.
   featured?: boolean
+  // Indica si el plato ha sido eliminado (soft delete).
+  isDeleted?: boolean
 }
 
 // Define tipos de descuento disponibles para cupones.
@@ -220,6 +222,8 @@ export interface PromotionCoupon {
   status: CouponStatus
   // Condiciones de elegibilidad del cupon.
   conditions: CouponConditions
+  // Indica si el cupon fue eliminado temporalmente (soft delete).
+  isDeleted?: boolean
 }
 
 // Define metricas resumen para la pestaña promociones.

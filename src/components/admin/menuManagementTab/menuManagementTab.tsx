@@ -81,8 +81,11 @@ export default function MenuManagementTab({ initialDishes, categories }: MenuMan
     // Normaliza busqueda para comparacion case-insensitive.
     const normalizedSearch = searchTerm.trim().toLowerCase()
 
-    // Retorna solo platos que cumplen ambos filtros activos.
+    // Retorna solo platos activos que cumplen ambos filtros.
     return dishes.filter((dish) => {
+      // Ignora platos eliminados (soft delete).
+      if (dish.isDeleted) return false
+
       // Verifica coincidencia de texto por nombre o descripcion.
       const matchBySearch =
         normalizedSearch.length === 0 ||
@@ -204,21 +207,26 @@ export default function MenuManagementTab({ initialDishes, categories }: MenuMan
     setSuccessMessage(null)
   }
 
-  // Elimina un plato con confirmacion basica.
+  // Elimina un plato con confirmacion basica (soft delete).
   const handleDeleteDish = (dishId: string): void => {
     // Confirmacion nativa para evitar borrados accidentales.
     const userConfirmed = window.confirm('¿Seguro que deseas eliminar este plato del menu?')
     if (userConfirmed) {
-      setDishes((prev) => prev.filter((dish) => dish.id !== dishId))
+      setDishes((prev) =>
+        prev.map((dish) => (dish.id === dishId ? { ...dish, isDeleted: true } : dish)),
+      )
     }
   }
+
+  // Array de platos no eliminados
+  const activeDishes = dishes.filter((d) => !d.isDeleted)
 
   // Renderiza cabecera, filtros, formulario y cards de platos.
   return (
     <section className="menuManagementTab" aria-label="Gestion de menu">
       <header className="menuManagementTab__header">
         <h2 className="menuManagementTab__title">Gestion de menu</h2>
-        <p className="menuManagementTab__subtitle">{dishes.length} productos en el menu</p>
+        <p className="menuManagementTab__subtitle">{activeDishes.length} productos en el menu</p>
       </header>
 
       <div className="menuManagementTab__toolbar">
@@ -364,7 +372,7 @@ export default function MenuManagementTab({ initialDishes, categories }: MenuMan
         </div>
       ) : null}
 
-      {dishes.length === 0 ? (
+      {activeDishes.length === 0 ? (
         <div className="menuManagementTab__emptyState">
           <div className="menuManagementTab__emptyIcon" aria-hidden>🍽️</div>
           <h3>¡Tu menú está vacío!</h3>
