@@ -306,3 +306,127 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Overlay del modal de creacion/edicion de platos */
+.menuManagementTab__modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Contenido interno del modal de plato */
+.menuManagementTab__modalContent {
+  background: #ffffff;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Header del modal con titulo y boton de cierre */
+.menuManagementTab__modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Boton de cierre x del modal */
+.menuManagementTab__closeModalButton {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  color: #607468;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.menuManagementTab__closeModalButton:hover {
+  color: #172a23;
+}
+
+/* Mensaje de exito en el modal */
+.menuManagementTab__successMessage {
+  padding: 1.25rem;
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* Forzar que el texto en los inputs y textareas sea visible (negro) */
+.menuManagementTab__createForm input,
+.menuManagementTab__createForm select,
+.menuManagementTab__createForm textarea {
+  color: #111111;
+  background-color: #ffffff;
+  border: 1px solid #dce4df;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.menuManagementTab__createForm input:focus,
+.menuManagementTab__createForm select:focus,
+.menuManagementTab__createForm textarea:focus {
+  border-color: #4db267;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(77, 178, 103, 0.2);
+}
+
+/* Boton de eliminar interactivo */
+.menuDishCard__footer div button[aria-label="Eliminar plato"]:hover {
+  background: #ffeded;
+  border-color: #ffcdd2;
+  color: #dc3545;
+}
+
+.menuDishCard__footer div button[aria-label="Editar plato"]:hover {
+  background: #eef7f0;
+  border-color: #c9e1cf;
+}
+
+/* Estado vacio del menu cuando no hay platos */
+.menuManagementTab__emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #ffffff;
+  border: 1px dashed #dce4df;
+  border-radius: 1rem;
+  margin-top: 1rem;
+}
+
+.menuManagementTab__emptyIcon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.8;
+}
+
+.menuManagementTab__emptyState h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  color: #1d3027;
+}
+
+.menuManagementTab__emptyState p {
+  margin: 0 0 1.5rem;
+  color: #607468;
+  font-size: 1rem;
+  max-width: 400px;
+}

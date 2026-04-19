@@ -65,9 +65,13 @@ export default function MenuManagementTab({ initialDishes, categories }: MenuMan
   const [searchTerm, setSearchTerm] = useState<string>('')
   // Controla la categoria activa para el filtrado.
   const [activeCategory, setActiveCategory] = useState<MenuFilterCategory>('Todos')
-  // Controla visibilidad del formulario de nuevo plato.
-  const [isCreateFormVisible, setIsCreateFormVisible] = useState<boolean>(false)
-  // Controla los valores del formulario de alta.
+  // Controla visibilidad del formulario modal de plato (crear o editar).
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  // Controla si se esta editando un plato existente, guarda su ID.
+  const [editingDishId, setEditingDishId] = useState<string | null>(null)
+  // Controla el mensaje de exito despues de crear/editar un plato.
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  // Controla los valores del formulario de alta o edicion.
   const [newDishFormValues, setNewDishFormValues] = useState<NewDishFormValues>(
     initialNewDishFormValues,
   )
@@ -106,39 +110,107 @@ export default function MenuManagementTab({ initialDishes, categories }: MenuMan
       }))
     }
 
-  // Procesa el alta rapida de un nuevo plato en memoria local.
-  const handleCreateDish = (event: FormEvent<HTMLFormElement>): void => {
+  // Procesa el alta o edicion de un plato en memoria local.
+  const handleSaveDish = (event: FormEvent<HTMLFormElement>): void => {
     // Evita recarga de pagina en submit.
     event.preventDefault()
 
-    // Evita crear si faltan campos clave basicos.
+    // Evita guardar si faltan campos clave basicos.
     if (newDishFormValues.name.trim().length === 0 || newDishFormValues.emoji.trim().length === 0) {
       return
     }
 
-    // Construye el nuevo registro con valores convertidos.
-    const nextDish: MenuDish = {
-      id: `dish-${Date.now()}`,
-      name: newDishFormValues.name.trim(),
-      description: newDishFormValues.description.trim() || 'Plato nuevo agregado desde admin.',
-      emoji: newDishFormValues.emoji.trim(),
-      category: newDishFormValues.category,
-      price: parseNumber(newDishFormValues.price),
-      calories: parseNumber(newDishFormValues.calories),
-      protein: parseNumber(newDishFormValues.protein),
-      carbs: parseNumber(newDishFormValues.carbs),
-      rating: 0,
-      reviews: 0,
+    if (editingDishId) {
+      // Actualiza plato existente.
+      setDishes((prevDishes) =>
+        prevDishes.map((dish) =>
+          dish.id === editingDishId
+            ? {
+                ...dish,
+                name: newDishFormValues.name.trim(),
+                description: newDishFormValues.description.trim(),
+                emoji: newDishFormValues.emoji.trim(),
+                category: newDishFormValues.category,
+                price: parseNumber(newDishFormValues.price),
+                calories: parseNumber(newDishFormValues.calories),
+                protein: parseNumber(newDishFormValues.protein),
+                carbs: parseNumber(newDishFormValues.carbs),
+              }
+            : dish,
+        ),
+      )
+      setSuccessMessage('Plato actualizado correctamente.')
+    } else {
+      // Construye el nuevo registro con valores convertidos.
+      const nextDish: MenuDish = {
+        id: `dish-${Date.now()}`,
+        name: newDishFormValues.name.trim(),
+        description: newDishFormValues.description.trim() || 'Plato nuevo agregado desde admin.',
+        emoji: newDishFormValues.emoji.trim(),
+        category: newDishFormValues.category,
+        price: parseNumber(newDishFormValues.price),
+        calories: parseNumber(newDishFormValues.calories),
+        protein: parseNumber(newDishFormValues.protein),
+        carbs: parseNumber(newDishFormValues.carbs),
+        rating: 0,
+        reviews: 0,
+      }
+
+      // Inserta plato nuevo al inicio para feedback inmediato.
+      setDishes((previousDishes) => [nextDish, ...previousDishes])
+      setSuccessMessage('Plato creado correctamente.')
     }
 
-    // Inserta plato nuevo al inicio para feedback inmediato.
-    setDishes((previousDishes) => [nextDish, ...previousDishes])
-    // Reinicia formulario para siguientes altas.
+    // Limpia mensaje de exito despues de 3 segundos y cierra modal
+    setTimeout(() => {
+      setSuccessMessage(null)
+      setIsModalOpen(false)
+    }, 3000)
+    
+    // Reinicia formulario para el futuro
     setNewDishFormValues(initialNewDishFormValues)
-    // Cierra el formulario tras completar alta local.
-    setIsCreateFormVisible(false)
-    // Cambia filtro a todos para ver el nuevo item sin bloqueo.
+    setEditingDishId(null)
     setActiveCategory('Todos')
+  }
+
+  // Prepara el modal para editar un plato existente.
+  const handleEditDishClick = (dish: MenuDish): void => {
+    setNewDishFormValues({
+      name: dish.name,
+      description: dish.description,
+      emoji: dish.emoji,
+      category: dish.category,
+      price: dish.price.toString(),
+      calories: dish.calories.toString(),
+      protein: dish.protein.toString(),
+      carbs: dish.carbs.toString(),
+    })
+    setEditingDishId(dish.id)
+    setSuccessMessage(null)
+    setIsModalOpen(true)
+  }
+
+  // Abre el modal para nuevo plato.
+  const handleOpenNewDishModal = (): void => {
+    setNewDishFormValues(initialNewDishFormValues)
+    setEditingDishId(null)
+    setSuccessMessage(null)
+    setIsModalOpen(true)
+  }
+
+  // Cierra el modal sin guardar.
+  const handleCloseModal = (): void => {
+    setIsModalOpen(false)
+    setSuccessMessage(null)
+  }
+
+  // Elimina un plato con confirmacion basica.
+  const handleDeleteDish = (dishId: string): void => {
+    // Confirmacion nativa para evitar borrados accidentales.
+    const userConfirmed = window.confirm('¿Seguro que deseas eliminar este plato del menu?')
+    if (userConfirmed) {
+      setDishes((prev) => prev.filter((dish) => dish.id !== dishId))
+    }
   }
 
   // Renderiza cabecera, filtros, formulario y cards de platos.
@@ -164,7 +236,7 @@ export default function MenuManagementTab({ initialDishes, categories }: MenuMan
         <button
           type="button"
           className="menuManagementTab__newDishButton"
-          onClick={() => setIsCreateFormVisible((previous) => !previous)}
+          onClick={handleOpenNewDishModal}
         >
           ➕ Nuevo plato
         </button>
@@ -183,140 +255,184 @@ export default function MenuManagementTab({ initialDishes, categories }: MenuMan
         ))}
       </div>
 
-      {isCreateFormVisible ? (
-        <form className="menuManagementTab__createForm panelCard" onSubmit={handleCreateDish}>
-          <h3 className="menuManagementTab__formTitle">Agregar nuevo plato</h3>
+      {isModalOpen ? (
+        <div className="menuManagementTab__modalOverlay" onClick={handleCloseModal}>
+          <div
+            className="menuManagementTab__modalContent panelCard"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="menuManagementTab__modalHeader">
+              <h3 className="menuManagementTab__formTitle">
+                {editingDishId ? 'Editar plato' : 'Agregar nuevo plato'}
+              </h3>
+              <button
+                type="button"
+                className="menuManagementTab__closeModalButton"
+                onClick={handleCloseModal}
+                aria-label="Cerrar modal"
+              >
+                ✖
+              </button>
+            </div>
 
-          <div className="menuManagementTab__formGrid">
-            <label>
-              Nombre
-              <input value={newDishFormValues.name} onChange={updateFormField('name')} required />
-            </label>
+            {successMessage ? (
+              <div className="menuManagementTab__successMessage">{successMessage}</div>
+            ) : (
+              <form className="menuManagementTab__createForm" onSubmit={handleSaveDish}>
+                <div className="menuManagementTab__formGrid">
+                  <label>
+                    Nombre
+                    <input value={newDishFormValues.name} onChange={updateFormField('name')} required />
+                  </label>
 
-            <label>
-              Emoji
-              <input value={newDishFormValues.emoji} onChange={updateFormField('emoji')} required />
-            </label>
+                  <label>
+                    Emoji
+                    <input value={newDishFormValues.emoji} onChange={updateFormField('emoji')} required />
+                  </label>
 
-            <label>
-              Categoria
-              <select value={newDishFormValues.category} onChange={updateFormField('category')}>
-                <option value="Desayuno">Desayuno</option>
-                <option value="Almuerzo">Almuerzo</option>
-                <option value="Cena">Cena</option>
-                <option value="Smoothies">Smoothies</option>
-                <option value="Snacks">Snacks</option>
-                <option value="Suplementos">Suplementos</option>
-              </select>
-            </label>
+                  <label>
+                    Categoria
+                    <select value={newDishFormValues.category} onChange={updateFormField('category')}>
+                      {categories.filter(c => c !== 'Todos').map(category => (
+                        <option key={category} value={category}>{category}</option>
+                      ))}
+                    </select>
+                  </label>
 
-            <label>
-              Precio
-              <input
-                type="number"
-                min="0"
-                value={newDishFormValues.price}
-                onChange={updateFormField('price')}
-              />
-            </label>
+                  <label>
+                    Precio
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={newDishFormValues.price}
+                      onChange={updateFormField('price')}
+                    />
+                  </label>
 
-            <label>
-              Calorias
-              <input
-                type="number"
-                min="0"
-                value={newDishFormValues.calories}
-                onChange={updateFormField('calories')}
-              />
-            </label>
+                  <label>
+                    Calorias
+                    <input
+                      type="number"
+                      min="0"
+                      value={newDishFormValues.calories}
+                      onChange={updateFormField('calories')}
+                    />
+                  </label>
 
-            <label>
-              Proteinas
-              <input
-                type="number"
-                min="0"
-                value={newDishFormValues.protein}
-                onChange={updateFormField('protein')}
-              />
-            </label>
+                  <label>
+                    Proteinas
+                    <input
+                      type="number"
+                      min="0"
+                      value={newDishFormValues.protein}
+                      onChange={updateFormField('protein')}
+                    />
+                  </label>
 
-            <label>
-              Carbohidratos
-              <input
-                type="number"
-                min="0"
-                value={newDishFormValues.carbs}
-                onChange={updateFormField('carbs')}
-              />
-            </label>
+                  <label>
+                    Carbohidratos
+                    <input
+                      type="number"
+                      min="0"
+                      value={newDishFormValues.carbs}
+                      onChange={updateFormField('carbs')}
+                    />
+                  </label>
+                </div>
+
+                <label className="menuManagementTab__descriptionField">
+                  Descripcion
+                  <textarea
+                    rows={3}
+                    value={newDishFormValues.description}
+                    onChange={updateFormField('description')}
+                    placeholder="Descripcion corta del plato"
+                  />
+                </label>
+
+                <div className="menuManagementTab__formActions">
+                  <button type="submit" className="menuManagementTab__saveDishButton">
+                    {editingDishId ? 'Guardar cambios' : 'Crear plato'}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
-
-          <label className="menuManagementTab__descriptionField">
-            Descripcion
-            <textarea
-              rows={3}
-              value={newDishFormValues.description}
-              onChange={updateFormField('description')}
-              placeholder="Descripcion corta del plato"
-            />
-          </label>
-
-          <div className="menuManagementTab__formActions">
-            <button type="submit" className="menuManagementTab__saveDishButton">
-              Guardar plato
-            </button>
-          </div>
-        </form>
+        </div>
       ) : null}
 
-      <div className="menuManagementTab__grid" aria-label="Listado de platillos">
-        {filteredDishes.map((dish) => (
-          <article key={dish.id} className="menuDishCard">
-            <header className="menuDishCard__header">
-              <span className="menuDishCard__badge">{dish.category}</span>
-              {dish.featured ? <span className="menuDishCard__featured">⭐</span> : null}
-            </header>
+      {dishes.length === 0 ? (
+        <div className="menuManagementTab__emptyState">
+          <div className="menuManagementTab__emptyIcon" aria-hidden>🍽️</div>
+          <h3>¡Tu menú está vacío!</h3>
+          <p>Es el momento perfecto para agregar tu primer platillo y empezar a vender.</p>
+          <button
+            type="button"
+            className="menuManagementTab__newDishButton"
+            onClick={handleOpenNewDishModal}
+          >
+            ➕ Crear mi primer plato
+          </button>
+        </div>
+      ) : filteredDishes.length === 0 ? (
+        <div className="menuManagementTab__emptyState">
+          <div className="menuManagementTab__emptyIcon" aria-hidden>🔍</div>
+          <h3>No hay resultados</h3>
+          <p>No se encontraron platos que coincidan con los filtros actuales.</p>
+        </div>
+      ) : (
+        <div className="menuManagementTab__grid" aria-label="Listado de platillos">
+          {filteredDishes.map((dish) => (
+            <article key={dish.id} className="menuDishCard">
+              <header className="menuDishCard__header">
+                <span className="menuDishCard__badge">{dish.category}</span>
+                {dish.featured ? <span className="menuDishCard__featured">⭐</span> : null}
+              </header>
 
-            <div className="menuDishCard__emoji" aria-hidden>
-              {dish.emoji}
-            </div>
-
-            <div className="menuDishCard__heading">
-              <h3>{dish.name}</h3>
-              <strong>${dish.price}</strong>
-            </div>
-
-            <p className="menuDishCard__description">{dish.description}</p>
-
-            <div className="menuDishCard__macros">
-              <div>
-                <span>{dish.calories}</span>
-                <small>Cal</small>
+              <div className="menuDishCard__emoji" aria-hidden>
+                {dish.emoji}
               </div>
-              <div>
-                <span>{dish.protein}g</span>
-                <small>Prot</small>
-              </div>
-              <div>
-                <span>{dish.carbs}g</span>
-                <small>Carbs</small>
-              </div>
-            </div>
 
-            <footer className="menuDishCard__footer">
-              <p>⭐ {dish.rating.toFixed(1)} ({dish.reviews})</p>
-              <div>
-                <button type="button" aria-label="Editar plato">
-                  ✏️
-                </button>
-                <button type="button" aria-label="Eliminar plato">
-                  🗑️
-                </button>
+              <div className="menuDishCard__heading">
+                <h3>{dish.name}</h3>
+                <strong>${dish.price}</strong>
               </div>
-            </footer>
-          </article>
-        ))}
-      </div>
+
+              <p className="menuDishCard__description">{dish.description}</p>
+
+              <div className="menuDishCard__macros">
+                <div>
+                  <span>{dish.calories}</span>
+                  <small>Cal</small>
+                </div>
+                <div>
+                  <span>{dish.protein}g</span>
+                  <small>Prot</small>
+                </div>
+                <div>
+                  <span>{dish.carbs}g</span>
+                  <small>Carbs</small>
+                </div>
+              </div>
+
+              <footer className="menuDishCard__footer">
+                <p>⭐ {dish.rating.toFixed(1)} ({dish.reviews})</p>
+                <div>
+                  <button type="button" aria-label="Editar plato" onClick={() => handleEditDishClick(dish)}>
+                    ✏️
+                  </button>
+                  <button type="button" aria-label="Eliminar plato" onClick={() => handleDeleteDish(dish.id)}>
+                    🗑️
+                  </button>
+                </div>
+              </footer>
+            </article>
+          ))}
+        </div>
+      )}
     </section>
   )
 }
