@@ -287,3 +287,87 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Correccion de contraste en inputs de filtro */
+.ordersManagementTab__search input,
+.ordersManagementTab__filters select {
+  color: #162a22; /* Texto oscuro para legibilidad */
+}
+
+/* MODAL DE DETALLE DE PEDIDO */
+.ordersManagementTab__modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: grid;
+  place-content: center;
+  z-index: 1000;
+}
+
+.ordersManagementTab__modalContent {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  max-width: 450px;
+  width: 90vw;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ordersManagementTab__modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #dce3e7;
+  padding-bottom: 0.75rem;
+}
+
+.ordersManagementTab__modalHeader h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #1d3428;
+}
+
+.ordersManagementTab__modalClose {
+  background: #fdf5f5;
+  color: #c94053;
+  border: 1px solid #fad2d8;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.ordersManagementTab__modalBody p {
+  margin: 0.35rem 0;
+  color: #4b5e54;
+  font-size: 0.95rem;
+}
+
+.ordersManagementTab__modalBody p strong {
+  color: #1d3428;
+}
+
+.ordersManagementTab__modalSection {
+  margin-top: 1rem;
+  background: #f7faf8;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.ordersManagementTab__modalSection h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  color: #1d3428;
+}
+
+/* Boton primario en estado de carga al cambiar un pedido */
+.ordersManagementTab__primaryAction.is-loading {
+  background: #aab5ad;
+  cursor: wait;
+}

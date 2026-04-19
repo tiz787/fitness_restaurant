@@ -29,10 +29,70 @@ const toStatusToken = (status: ManagedOrderStatus): string => status.toLowerCase
 
 // Renderiza la pestaña completa de gestion de pedidos del admin.
 export default function OrdersManagementTab({ orders }: OrdersManagementTabProps) {
+  // Manejo de estado local para editar los pedidos (demo)
+  const [localOrders, setLocalOrders] = useState<ManagedOrder[]>(orders)
+  
   // Guarda el texto de busqueda por ID o cliente.
   const [searchTerm, setSearchTerm] = useState<string>('')
   // Guarda el filtro actual por estado del pedido.
   const [statusFilter, setStatusFilter] = useState<OrdersFilterStatus>('Todos los estados')
+
+  // Modal detail
+  const [selectedOrder, setSelectedOrder] = useState<ManagedOrder | null>(null)
+
+  // Estado para feedback visual de actualizacion
+  const [updatingOrders, setUpdatingOrders] = useState<Record<string, boolean>>({})
+
+  // Funciones para avanzar y cancelar
+  const advanceOrderStatus = (orderId: string) => {
+    // 1. Mostrar estado de carga en el boton clickeado
+    setUpdatingOrders(prev => ({ ...prev, [orderId]: true }))
+    
+    // 2. Simular un leve retraso de red para dar mejor feedback visual
+    setTimeout(() => {
+      setLocalOrders(prev => prev.map(o => {
+        if (o.id !== orderId) return o;
+        let nextStatus: ManagedOrderStatus = o.status;
+        let nextAction = o.primaryAction;
+
+        if (o.status === 'Recibido') {
+          nextStatus = 'Preparando';
+          nextAction = 'Marcar listo';
+        } else if (o.status === 'Preparando') {
+          nextStatus = 'Listo';
+          nextAction = o.deliveryType === 'Delivery' ? 'Despachar' : 'Entregar';
+        } else if (o.status === 'Listo') {
+          if (o.deliveryType === 'Delivery') {
+            nextStatus = 'En camino';
+            nextAction = 'Marcar entregado';
+          } else {
+            nextStatus = 'Entregado';
+            nextAction = undefined;
+          }
+        } else if (o.status === 'En camino') {
+          nextStatus = 'Entregado';
+          nextAction = undefined;
+        }
+
+        return { ...o, status: nextStatus, primaryAction: nextAction }
+      }))
+
+      // 3. Remover el estado de carga
+      setUpdatingOrders(prev => {
+        const next = { ...prev }
+        delete next[orderId]
+        return next
+      })
+    }, 500) // Medio segundo de feedback "Procesando..."
+  }
+
+  const cancelOrder = (orderId: string) => {
+    if(confirm('¿Estás seguro de cancelar este pedido?')) {
+      setLocalOrders(prev => prev.map(o => 
+        o.id === orderId ? { ...o, status: 'Cancelado', primaryAction: undefined } : o
+      ))
+    }
+  }
 
   // Genera el contador por estado para las tarjetas resumen superiores.
   const statusCountMap = useMemo(() => {
@@ -47,13 +107,13 @@ export default function OrdersManagementTab({ orders }: OrdersManagementTabProps
     }
 
     // Recorre pedidos y suma uno segun estado detectado.
-    return orders.reduce((countMap, currentOrder) => {
+    return localOrders.reduce((countMap, currentOrder) => {
       // Aumenta el contador del estado actual.
       countMap[currentOrder.status] += 1
       // Devuelve el acumulado actualizado para el reduce.
       return countMap
     }, initialCount)
-  }, [orders])
+  }, [localOrders])
 
   // Filtra pedidos por texto y estado seleccionado.
   const filteredOrders = useMemo(() => {
@@ -61,7 +121,7 @@ export default function OrdersManagementTab({ orders }: OrdersManagementTabProps
     const normalizedSearch = searchTerm.trim().toLowerCase()
 
     // Devuelve solo pedidos que cumplen ambos filtros.
-    return orders.filter((order) => {
+    return localOrders.filter((order) => {
       // Verifica coincidencia contra ID o nombre de cliente.
       const matchBySearch =
         normalizedSearch.length === 0 ||
@@ -74,7 +134,7 @@ export default function OrdersManagementTab({ orders }: OrdersManagementTabProps
       // Mantiene pedido solo si cumple ambos criterios.
       return matchBySearch && matchByStatus
     })
-  }, [orders, searchTerm, statusFilter])
+  }, [localOrders, searchTerm, statusFilter])
 
   // Actualiza el estado de busqueda cuando el usuario escribe.
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -177,16 +237,33 @@ export default function OrdersManagementTab({ orders }: OrdersManagementTabProps
                 <td>
                   <div className="ordersManagementTab__actions">
                     {order.primaryAction ? (
-                      <button type="button" className="ordersManagementTab__primaryAction">
-                        {order.primaryAction}
+                      <button 
+                        type="button" 
+                        className={`ordersManagementTab__primaryAction ${updatingOrders[order.id] ? 'is-loading' : ''}`}
+                        onClick={() => advanceOrderStatus(order.id)}
+                        disabled={updatingOrders[order.id]}
+                      >
+                        {updatingOrders[order.id] ? 'Cambiando...' : order.primaryAction}
                       </button>
                     ) : null}
-                    <button type="button" className="ordersManagementTab__iconAction" aria-label="Ver detalle de pedido">
+                    <button 
+                      type="button" 
+                      className="ordersManagementTab__iconAction" 
+                      aria-label="Ver detalle de pedido"
+                      onClick={() => setSelectedOrder(order)}
+                    >
                       👁️
                     </button>
-                    <button type="button" className="ordersManagementTab__iconAction" aria-label="Cancelar pedido">
-                      ❌
-                    </button>
+                    {order.status !== 'Cancelado' && order.status !== 'Entregado' && (
+                      <button 
+                        type="button" 
+                        className="ordersManagementTab__iconAction" 
+                        aria-label="Cancelar pedido"
+                        onClick={() => cancelOrder(order.id)}
+                      >
+                        ❌
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>
@@ -194,6 +271,39 @@ export default function OrdersManagementTab({ orders }: OrdersManagementTabProps
           </tbody>
         </table>
       </div>
+
+      {selectedOrder && (
+        <div className="ordersManagementTab__modalOverlay" onClick={() => setSelectedOrder(null)}>
+          <div className="ordersManagementTab__modalContent" onClick={(e) => e.stopPropagation()}>
+            <header className="ordersManagementTab__modalHeader">
+              <h3>Detalles del pedido {selectedOrder.id}</h3>
+              <button 
+                type="button" 
+                className="ordersManagementTab__modalClose"
+                onClick={() => setSelectedOrder(null)}
+              >
+                Cerrar
+              </button>
+            </header>
+            <div className="ordersManagementTab__modalBody">
+              <p><strong>Cliente:</strong> {selectedOrder.customerName} {selectedOrder.customerFlag}</p>
+              <p><strong>Hora entrada:</strong> {selectedOrder.timeLabel}</p>
+              <p><strong>Tipo entrega:</strong> {selectedOrder.deliveryType}</p>
+              <p><strong>Estado actual:</strong> {selectedOrder.status}</p>
+              <p><strong>Total:</strong> {selectedOrder.total}</p>
+              
+              <div className="ordersManagementTab__modalSection">
+                <h4>Platos (Emojis de demo)</h4>
+                <div className="ordersManagementTab__dishes">
+                  {selectedOrder.dishEmojis.map((dishEmoji, index) => (
+                    <span key={`${selectedOrder.id}-modal-${dishEmoji}-${index}`}>{dishEmoji}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   )
 }
