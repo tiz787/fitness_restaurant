@@ -418,3 +418,16 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ====== ESTILOS DEL CARRITO ====== */
+
+.cart-badge {
+  background-color: var(--fitness-primary);
+  color: white;
+  border-radius: 50%;
+  padding: 0.15rem 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: 0.25rem;
+}
+

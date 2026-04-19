@@ -77,8 +77,8 @@
 /* MODO OSCURO (OPCIONAL - Para cocina) */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-bg-primary: #1a1a1a;
-    --color-bg-secondary: #2d2d2d;
+    --color-bg-primary: #025240;
+    --color-bg-secondary: #c8e9d881;
     --color-text-primary: #f8f9fa;
     --color-text-secondary: #b0b0b0;
     --color-border: #3d3d3d;
