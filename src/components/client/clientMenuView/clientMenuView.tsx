@@ -1,5 +1,8 @@
-// Importa estado local para filtros y busqueda del menu cliente.
-import { useMemo, useState, type ChangeEvent } from 'react'
+// Importa estado y hooks de React
+import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
+// Importa Firebase services
+import { listenToAllProducts } from '../../../services/firebase/products.services'
+import { createOrder } from '../../../services/firebase/orders.services'
 // Importa tipos de categorias y ordenamiento de la vista.
 import type {
   ClientDishCategory,
@@ -36,154 +39,7 @@ interface ClientDish {
 // Define filtro de categoria (incluye opcion global).
 type ClientCategoryFilter = 'Todos' | ClientDishCategory
 
-// Dataset estatico de platillos para la primera version visual cliente.
-const clientDishesData: ClientDish[] = [
-  {
-    id: 'dish-01',
-    name: 'Salmon Fit Bowl',
-    description: 'Filete de salmon al horno con vegetales mediterraneos y quinoa.',
-    price: 34000,
-    calories: 480,
-    protein: 42,
-    carbs: 18,
-    rating: 4.9,
-    etaMinutes: 20,
-    category: 'Cenas',
-    featured: true,
-    available: true,
-    emoji: '🥗',
-  },
-  {
-    id: 'dish-02',
-    name: 'Meal Prep Box',
-    description: 'Caja con 5 comidas balanceadas para tu semana fitness.',
-    price: 140000,
-    calories: 480,
-    protein: 40,
-    carbs: 50,
-    rating: 4.9,
-    etaMinutes: 30,
-    category: 'Almuerzos',
-    featured: true,
-    available: true,
-    emoji: '🍱',
-  },
-  {
-    id: 'dish-03',
-    name: 'Power Chicken Bowl',
-    description: 'Pechuga de pollo a la plancha con quinoa y brocoli asado.',
-    price: 28000,
-    calories: 520,
-    protein: 48,
-    carbs: 42,
-    rating: 4.8,
-    etaMinutes: 15,
-    category: 'Almuerzos',
-    featured: true,
-    available: true,
-    emoji: '🍲',
-  },
-  {
-    id: 'dish-04',
-    name: 'Acai Power Bowl',
-    description: 'Bowl de acai con platano, fresas, granola y semillas.',
-    price: 22000,
-    calories: 380,
-    protein: 12,
-    carbs: 62,
-    rating: 4.7,
-    etaMinutes: 8,
-    category: 'Desayunos',
-    featured: true,
-    available: true,
-    emoji: '🫐',
-  },
-  {
-    id: 'dish-05',
-    name: 'Tuna Steak Fresh',
-    description: 'Atun sellado con papas baby y ensalada crocante.',
-    price: 42000,
-    calories: 440,
-    protein: 52,
-    carbs: 22,
-    rating: 4.7,
-    etaMinutes: 18,
-    category: 'Cenas',
-    available: true,
-    emoji: '🐟',
-  },
-  {
-    id: 'dish-06',
-    name: 'Avocado Toast Fit',
-    description: 'Pan de centeno tostado con aguacate, huevo y microgreens.',
-    price: 18000,
-    calories: 410,
-    protein: 18,
-    carbs: 38,
-    rating: 4.6,
-    etaMinutes: 10,
-    category: 'Desayunos',
-    available: true,
-    emoji: '🥑',
-  },
-  {
-    id: 'dish-07',
-    name: 'Protein Pancakes',
-    description: 'Stack de 3 pancakes de avena con sirope y frutos rojos.',
-    price: 18000,
-    calories: 450,
-    protein: 35,
-    carbs: 52,
-    rating: 4.6,
-    etaMinutes: 12,
-    category: 'Snacks',
-    available: true,
-    emoji: '🥞',
-  },
-  {
-    id: 'dish-08',
-    name: 'Green Detox Smoothie',
-    description: 'Espinaca, pepino, manzana verde y limon organico.',
-    price: 14000,
-    calories: 180,
-    protein: 4,
-    carbs: 36,
-    rating: 4.5,
-    etaMinutes: 5,
-    category: 'Smoothies',
-    featured: true,
-    available: true,
-    emoji: '🥤',
-  },
-  {
-    id: 'dish-09',
-    name: 'Berry Chia Cup',
-    description: 'Pudin de chia con frutos rojos y yogurt natural.',
-    price: 16000,
-    calories: 240,
-    protein: 10,
-    carbs: 28,
-    rating: 4.5,
-    etaMinutes: 6,
-    category: 'Snacks',
-    available: true,
-    emoji: '🍓',
-  },
-  {
-    id: 'dish-10',
-    name: 'Energy Shot Mix',
-    description: 'Batido energizante para pre-entreno con maca y cacao.',
-    price: 9000,
-    calories: 210,
-    protein: 8,
-    carbs: 24,
-    rating: 4.2,
-    etaMinutes: 6,
-    category: 'Smoothies',
-    available: false,
-    emoji: '🍽️',
-  },
-]
+// Eliminar los platos estáticos ya que ahora son obtenidos de Firebase en setClientDishesData
 
 // Filtros de categoria visibles en la parte superior del catalogo.
 const categoryFilters: Array<{ id: ClientCategoryFilter; emoji: string; label: string }> = [
@@ -207,6 +63,34 @@ const formatPrice = (price: number): string => `COP ${price.toLocaleString('es-C
 
 // Renderiza la vista principal de menu para cliente.
 export default function ClientMenuView({ onBackToAccess }: ClientMenuViewProps) {
+  // Estado local para los productos dinámicos de Firebase
+  const [clientDishesData, setClientDishesData] = useState<ClientDish[]>([])
+  
+  // Efecto para escuchar los productos en tiempo real desde Firebase
+  useEffect(() => {
+    // Nos suscribimos a Firebase y convertimos ProductDocument a ClientDish
+    const unsubscribe = listenToAllProducts((products) => {
+      const mappedDishes: ClientDish[] = products.map((prod) => ({
+        id: prod.id || '',
+        name: prod.name,
+        description: prod.description,
+        price: prod.price,
+        calories: prod.macros?.calories || 0,
+        protein: prod.macros?.protein || 0,
+        carbs: prod.macros?.carbs || 0,
+        rating: 5.0, // Default for now
+        etaMinutes: 15, // Default for now
+        category: prod.category as ClientDishCategory, // Mapeo directo
+        available: prod.isActive,
+        emoji: prod.imageUrl || '🍽️', // Usando imageUrl para el emoji temporalmente
+      }))
+      setClientDishesData(mappedDishes)
+    })
+    
+    // Limpiamos el proceso cuando se cierra el componente
+    return () => unsubscribe()
+  }, [])
+
   // Guarda pestaña activa principal
   const [activeTab, setActiveTab] = useState<'menu' | 'cart' | 'checkout' | 'success' | 'account'>('menu')
   // Guarda ultimo pedido confirmado
@@ -219,33 +103,8 @@ export default function ClientMenuView({ onBackToAccess }: ClientMenuViewProps) 
   // Guarda criterio actual de ordenamiento.
   const [sortOption, setSortOption] = useState<ClientMenuSortOption>('top-rated')
 
-  // Estado mock del carrito para la demostración
-  const [cartItems, setCartItems] = useState<ClientCartItem[]>([
-    {
-      id: 'dish-01',
-      name: 'Salmon Mediterráneo',
-      subtext: 'Regular (180g)',
-      quantity: 1,
-      price: 34000,
-      emoji: '🥗',
-    },
-    {
-      id: 'dish-02',
-      name: 'Meal Prep Box Semanal',
-      subtext: '5 comidas',
-      quantity: 3,
-      price: 140000,
-      emoji: '🍱',
-    },
-    {
-      id: 'dish-03',
-      name: 'Power Chicken Bowl',
-      subtext: 'Regular',
-      quantity: 1,
-      price: 28000,
-      emoji: '🍲',
-    },
-  ])
+  // Estado del carrito vacio para iniciar realmente en limpio conectado a Firebase
+  const [cartItems, setCartItems] = useState<ClientCartItem[]>([])
   const [promoCode, setPromoCode] = useState<string>('')
 
   // Controladores del carrito
@@ -285,13 +144,18 @@ export default function ClientMenuView({ onBackToAccess }: ClientMenuViewProps) 
     const normalizedSearch = searchTerm.trim().toLowerCase()
 
     const filtered = clientDishesData.filter((dish) => {
-      const matchesCategory = activeCategory === 'Todos' || dish.category === activeCategory
+      // Usamos toLowerCase() en ambos lados para asegurarnos de que "Cenas" valga igual que "cenas"
+      // y prevenir problemas con lo que escribe el admin desde Firestore
+      const dishCat = (dish.category || '').toLowerCase()
+      const searchCat = activeCategory.toLowerCase()
+      const matchesCategory = activeCategory === 'Todos' || dishCat === searchCat
       const matchesSearch =
         normalizedSearch.length === 0 ||
         dish.name.toLowerCase().includes(normalizedSearch) ||
         dish.description.toLowerCase().includes(normalizedSearch)
 
-      return matchesCategory && matchesSearch
+      // Además filtramos solo los activados ("isActive: true" -> "available: true")
+      return matchesCategory && matchesSearch && dish.available
     })
 
     const sorted = [...filtered]
@@ -308,7 +172,7 @@ export default function ClientMenuView({ onBackToAccess }: ClientMenuViewProps) 
 
     sorted.sort((a, b) => b.protein - a.protein)
     return sorted
-  }, [activeCategory, searchTerm, sortOption])
+  }, [clientDishesData, activeCategory, searchTerm, sortOption])
 
   // Actualiza el valor del buscador principal.
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -487,15 +351,41 @@ export default function ClientMenuView({ onBackToAccess }: ClientMenuViewProps) 
           <ClientCheckoutView 
             items={cartItems}
             onBackToCart={() => setActiveTab('cart')}
-            onConfirmOrder={(method, totalAmount) => {
-              setLastOrder({
-                id: `ORD-${Math.floor(100000 + Math.random() * 900000)}`,
-                deliveryMethod: method,
-                estimatedMinutes: method === 'delivery' ? 35 : 15,
-                totalPaid: totalAmount,
-              })
-              setCartItems([])
-              setActiveTab('success')
+            onConfirmOrder={async (method, totalAmount) => {
+              try {
+                // Sincronización en tiempo real: Guardamos la orden en Firebase
+                const newOrderId = await createOrder({
+                  userId: 'user-demo-123', // ID temporal hasta conectar Firebase Auth
+                  items: cartItems.map(item => ({
+                    productId: item.id,
+                    name: item.name,
+                    quantity: item.quantity,
+                    unitPrice: item.price,
+                    totalPrice: item.price * item.quantity
+                  })),
+                  subtotal: totalAmount,
+                  taxes: 0,
+                  total: totalAmount,
+                  status: 'pending',
+                  // createdAt es inyectado por nuestro service (serverTimestamp)
+                });
+
+                // Pasamos al usuario a la pantalla de éxito con el ID real
+                setLastOrder({
+                  id: newOrderId, // ID directo de Firebase Firestore
+                  deliveryMethod: method,
+                  estimatedMinutes: method === 'delivery' ? 35 : 15,
+                  totalPaid: totalAmount,
+                })
+                
+                // Vaciamos carrito
+                setCartItems([])
+                setActiveTab('success')
+                
+              } catch (error) {
+                console.error("Error procesando pedido:", error)
+                alert("Hubo un problema guardando tu pedido.")
+              }
             }}
           />
         )}

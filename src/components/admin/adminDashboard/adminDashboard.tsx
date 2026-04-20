@@ -1,7 +1,9 @@
 // Importa estado local para controlar la pestaña activa del admin.
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+// Firebase real-time services
+import { listenToAllOrders } from '../../../services/firebase/orders.services'
 // Importa tipos para validar el contrato de entrada del dashboard.
-import type { AdminDashboardProps, AdminTabId } from './adminDashboard.types'
+import type { AdminDashboardProps, AdminTabId, ActiveOrder } from './adminDashboard.types'
 // Importa datos estaticos para renderizar la UI sin backend por ahora.
 import {
   activeOrdersData,
@@ -42,10 +44,45 @@ export default function AdminDashboard({
   onSignOut,
   onOpenClientPreview,
 }: AdminDashboardProps) {
-  // Controla la pestaña activa del panel para renderizar su contenido.
+  // Controla la Pestaña Activa
   const [activeTab, setActiveTab] = useState<AdminTabId>('dashboard')
   // Obtiene titulo y subtitulo de la pestaña actual.
   const activeTabLabel = adminTabLabels[activeTab]
+
+  // Estado para la CARGA DINAMICA EN TIEMPO REAL de órdenes activas (desde Firebase)
+  const [realTimeOrders, setRealTimeOrders] = useState<ActiveOrder[]>([])
+
+  // Suscripción al stream de Firebase cuando el componente se monta
+  useEffect(() => {
+    // Al invocar listenToAllOrders, nos da actualizaciones en vivo de todos los clientes!
+    const unsubscribe = listenToAllOrders((incomingOrders) => {
+      // Mapeamos lo que viene de Firebase a lo que necesita el diseño Admin (ActiveOrder)
+      const mappedOrders: ActiveOrder[] = incomingOrders.map(doc => {
+        // Obtenemos un conteo base o cantidad de items total
+        const itemsCount = doc.items?.reduce((acc, curr) => acc + curr.quantity, 0) || 0
+        
+        let uiStatus: ActiveOrder['status'] = 'Recibido';
+        if (doc.status === 'preparing' || doc.status === 'ready') uiStatus = 'Preparando';
+        if (doc.status === 'delivered') uiStatus = 'En camino';
+
+        return {
+          id: doc.id || 'N/A',
+          customer: doc.userId || 'Cliente', // o el nombre en un esquema más completo
+          items: itemsCount,
+          total: `COP ${doc.total.toLocaleString('es-CO')}`,
+          status: uiStatus
+        }
+      })
+      
+      // Entregamos las órdenes activas (que no sean canceladas ni entregadas si prefieres)
+      const activeOnly = mappedOrders.filter(o => o.status !== 'En camino');
+      setRealTimeOrders(activeOnly)
+    })
+    
+    // Matamos la suscripción si nos vamos de la vista Admin (importante ahorrar recursos cloud).
+    return () => unsubscribe()
+  }, [])
+
 
   // Renderiza contenido segun pestaña seleccionada en sidebar.
   const renderActiveTabContent = () => {
@@ -65,7 +102,7 @@ export default function AdminDashboard({
           </section>
 
           <section className="adminOperationsGrid" aria-label="Operacion en tiempo real">
-            <ActiveOrdersPanel orders={activeOrdersData} />
+            <ActiveOrdersPanel orders={realTimeOrders.length > 0 ? realTimeOrders : activeOrdersData} />
             <TopDishesPanel dishes={topDishesData} />
           </section>
 
