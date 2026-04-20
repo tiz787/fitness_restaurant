@@ -22,10 +22,10 @@ interface SalesTrendPanelProps {
 // Formatea ticks monetarios del eje Y.
 const formatCurrencyTick = (value: number): string => {
   if (value >= 1000) {
-    return `$${(value / 1000).toFixed(0)}k`
+    return `COP ${(value / 1000).toFixed(0)}k`
   }
 
-  return `$${value}`
+  return `COP ${value.toLocaleString('es-CO')}`
 }
 
 // Renderiza panel de tendencia de ventas ultimos dias.

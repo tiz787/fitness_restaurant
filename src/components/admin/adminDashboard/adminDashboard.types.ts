@@ -123,8 +123,6 @@ export interface ManagedOrder {
   timeLabel: string
   // Nombre visible del cliente.
   customerName: string
-  // Emoji de bandera para ubicar origen rapido.
-  customerFlag: string
   // Lista de emojis de platos para ahorrar recursos.
   dishEmojis: string[]
   // Valor total formateado para UI.

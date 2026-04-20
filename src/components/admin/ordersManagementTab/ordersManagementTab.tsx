@@ -211,7 +211,6 @@ export default function OrdersManagementTab({ orders }: OrdersManagementTabProps
 
                 <td>
                   <p className="ordersManagementTab__customerName">{order.customerName}</p>
-                  <p className="ordersManagementTab__flag">{order.customerFlag}</p>
                 </td>
 
                 <td>
@@ -286,7 +285,7 @@ export default function OrdersManagementTab({ orders }: OrdersManagementTabProps
               </button>
             </header>
             <div className="ordersManagementTab__modalBody">
-              <p><strong>Cliente:</strong> {selectedOrder.customerName} {selectedOrder.customerFlag}</p>
+              <p><strong>Cliente:</strong> {selectedOrder.customerName}</p>
               <p><strong>Hora entrada:</strong> {selectedOrder.timeLabel}</p>
               <p><strong>Tipo entrega:</strong> {selectedOrder.deliveryType}</p>
               <p><strong>Estado actual:</strong> {selectedOrder.status}</p>

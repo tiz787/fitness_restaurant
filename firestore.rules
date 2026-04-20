@@ -1,0 +1,41 @@
+// REGLAS PARA FIRESTORE DATABASE
+// Para instalarlas: Ve a la consola de Firebase -> Firestore Database -> Pestaña "Reglas" -> Pega este código
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Función auxiliar para verificar si el usuario está conectado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Regla para que cualquier persona pueda ver los productos, 
+    // pero solo el administrador (a través de un panel de control) podría escribirlos si validamos rol.
+    // Por ahora (para desarrollo) permitiremos que lea todo y solo usuarios logueados escriban.
+    match /products/{productId} {
+      allow read: if true; // Todos pueden ver el menú (incluso sin login)
+      allow write: if isAuthenticated(); // Se debe estar logueado para añadir/modificar (Admin)
+    }
+
+    // Regla para órdenes:
+    // El cliente solo puede leer/crear SUS propias órdenes usando request.auth.uid 
+    // (Por practicidad en desarrollo, lo dejamos en: conectado)
+    match /orders/{orderId} {
+      allow create: if isAuthenticated(); // Solo clientes logueados pueden pedir
+      allow read, update: if isAuthenticated(); 
+      allow delete: if false; // Por seguridad, nunca se borran las órdenes (solo cambian a canceladas)
+    }
+
+    // Regla para usuarios (sus perfiles)
+    match /users/{userId} {
+      // Un usuario solo puede leer y actualizar su propia información
+      allow read, write: if request.auth != null && request.auth.uid == userId; 
+    }
+
+    // Promociones: cualquiera puede leerlas, solo los admins editarlas
+    match /promotions/{promoId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+  }
+}

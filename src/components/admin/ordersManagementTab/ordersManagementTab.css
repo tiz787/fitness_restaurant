@@ -166,12 +166,6 @@
   font-weight: 700;
 }
 
-/* Bandera del cliente en texto auxiliar. */
-.ordersManagementTab__flag {
-  margin: 0.17rem 0 0;
-  font-size: 0.8rem;
-}
-
 /* Grupo de emojis que representa platos del pedido. */
 .ordersManagementTab__dishes {
   display: flex;

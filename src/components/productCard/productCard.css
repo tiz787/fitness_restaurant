@@ -10,10 +10,15 @@
     background-color: #ebebeb78;
 }
 
-.productImage{
+.productEmoji{
     width: 100%;
-    height: auto;
     border-radius: 8px;
+    background: #f4fbf6;
+    border: 1px solid #dce4df;
+    display: grid;
+    place-content: center;
+    font-size: 3rem;
+    padding: 0.4rem 0;
 }
 
 .productName{
@@ -24,7 +29,7 @@
 
 .productPrice{
     font-size: 1.5rem;
-    color: #fffffffe;
+    color: #1f352b;
     margin-bottom: 16px;
     font-weight: 600;
 

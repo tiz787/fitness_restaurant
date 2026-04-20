@@ -4,7 +4,7 @@ export interface ClientCartItem {
   subtext: string
   quantity: number
   price: number
-  image: string
+  emoji: string
 }
 
 export interface ClientCartViewProps {

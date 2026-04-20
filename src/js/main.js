@@ -2,7 +2,7 @@
  * Obtener info de los platillos 
  */
 function obtenerPlatillos() {
-  let guardados = localStorage.getItem('mi_base_de_datos_platillos');
+  let guardados = null; // Forced reset for new emoji/COP data
 
   // Si ya tenemos datos guardados, los usamos
   if (guardados) {
@@ -10,71 +10,71 @@ function obtenerPlatillos() {
   }
 
   // Si no hay datos (primera vez o borramos el historial), creamos una lista por defecto
-  let listaPorDefecto = [
+    let listaPorDefecto = [
     {
       id: 1,
-      nombre: "Pizza",
-      precio: 30000,
-      calorias: 300,
-      proteinas: 12,
-      carbohidratos: 40,
-      grasas: 10,
-      descripcion: "Deliciosa pizza con ingredientes frescos.",
-      categoria: "Comida Rápida",
+      nombre: "Power Chicken Bowl",
+      precio: 28000,
+      calorias: 520,
+      proteinas: 48,
+      carbohidratos: 42,
+      grasas: 20,
+      descripcion: "Pechuga de pollo a la plancha con quinoa y brocoli asado.",
+      categoria: "Almuerzo",
       disponible: true,
-      imagen: "assets/images/imagen1-EnsaladaVeganaPremiun.jpeg"
+      emoji: "🍲"
     },
     {
       id: 2,
-      nombre: "Hamburguesa",
-      precio: 15000,
-      calorias: 400,
-      proteinas: 20,
-      carbohidratos: 30,
-      grasas: 10,
-      descripcion: "Deliciosa hamburguesa con ingredientes frescos.",
-      categoria: "Comida Rápida",
+      nombre: "Salmon Fit Bowl",
+      precio: 34000,
+      calorias: 480,
+      proteinas: 42,
+      carbohidratos: 18,
+      grasas: 25,
+      descripcion: "Filete de salmon al horno con vegetales mediterraneos.",
+      categoria: "Cena",
       disponible: true,
-      imagen: "assets/images/imagen2-PechugaAsadaFitness.jpeg"
+      emoji: "🥗"
     },
     {
       id: 3,
-      nombre: "Ensalada César",
-      precio: 12000,
-      calorias: 250,
-      proteinas: 8,
-      carbohidratos: 20,
-      grasas: 15,
-      descripcion: "Ensalada César fresca con ingredientes orgánicos.",
-      categoria: "Comida Rápida",
+      nombre: "Acai Power Bowl",
+      precio: 22000,
+      calorias: 380,
+      proteinas: 12,
+      carbohidratos: 62,
+      grasas: 10,
+      descripcion: "Bowl de acai con platano, fresas, granola y semillas.",
+      categoria: "Desayuno",
       disponible: true,
-      imagen: "assets/images/imagen3-BuddhaBowlDetox.jpeg"
+      emoji: "🫐"
     },
     {
       id: 4,
-      nombre: "salchipapa",
-      precio: 20000,
-      calorias: 300,
-      proteinas: 12,
-      carbohidratos: 40,
-      grasas: 10,
-      descripcion: "Deliciosa salchipapa con ingredientes frescos.",
-      categoria: "Comida Rápida",
+      nombre: "Green Detox Smoothie",
+      precio: 14000,
+      calorias: 180,
+      proteinas: 4,
+      carbohidratos: 36,
+      grasas: 1,
+      descripcion: "Espinaca, manzana verde, limon, jengibre.",
+      categoria: "Smoothies",
       disponible: true,
-      imagen: "assets/images/imagen6-JugoNaranjaZanahoria.jpeg"
+      emoji: "🥤"
     },
     {
       id: 5,
-      nombre: "Plato Especial sin Foto",
-      precio: 25000,
-      calorias: 500,
-      proteinas: 30,
+      nombre: "Meal Prep Box",
+      precio: 140000,
+      calorias: 480,
+      proteinas: 40,
       carbohidratos: 50,
       grasas: 15,
-      descripcion: "Este plato no tiene foto, usará un emoji.",
-      categoria: "Especiales",
+      descripcion: "Caja con 5 comidas balanceadas para tu semana fitness.",
+      categoria: "Almuerzo",
       disponible: true,
-      imagen: "" // Está vacío, y mostrar un emoji
+      emoji: "🍱"
     }
   ];
 
@@ -171,10 +171,10 @@ function dibujarCarrito() {
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #444;">
                 <div>
                     <strong style="color: white; display: block;">${producto.nombre}</strong>
-                    <span style="color: #bbb; font-size: 0.8rem;">Cant: ${producto.cantidad} x $${producto.precio.toFixed(2)}</span>
+                    <span style="color: #bbb; font-size: 0.8rem;">Cant: ${producto.cantidad} x COP ${producto.precio.toLocaleString("es-CO")}</span>
                 </div>
                 <div style="font-weight: bold; color: var(--color-primary);">
-                    $${(producto.cantidad * producto.precio).toFixed(2)}
+                    COP ${(producto.cantidad * producto.precio).toLocaleString("es-CO")}
                 </div>
             </div>
         `;
@@ -232,8 +232,8 @@ function render() {
     let codigoImagen = "";
 
     // Si tiene la palabra "imagen" y no está vacía, usamos la foto
-    if (platillo.imagen && platillo.imagen.trim() !== "") {
-      let rutaFija = platillo.imagen;
+    if (platillo.emoji && platillo.emoji.trim() !== "") {
+      let rutaFija = platillo.emoji;
 
       // miramos si estamos en una subcarpeta (como pages/)
       // si la URL tiene /pages/ necesitamos subir un nivel con ../
@@ -268,7 +268,7 @@ function render() {
                 <span>💪 ${platillo.proteinas}g Prot</span>
               </div>
               
-              <div class="card__price">$${platillo.precio}</div>
+              <div class="card__price">COP ${platillo.precio.toLocaleString("es-CO")}</div>
               
               <div class="card__actions gap-sm">
                 <!-- Usamos el ID verdadero del plato -->
@@ -337,8 +337,8 @@ function dibujarCatalogo() {
   listaA.forEach(platillo => {
     // Lógica de Imagen / Emoji simple para la tabla
     let vistaImagen = "";
-    if (platillo.imagen) {
-      let rutaImg = platillo.imagen;
+    if (platillo.emoji) {
+      let rutaImg = platillo.emoji;
       let enSubcarpeta = window.location.pathname.includes("/pages/");
       if (enSubcarpeta && !rutaImg.startsWith("http") && !rutaImg.startsWith("../")) {
         rutaImg = "../" + rutaImg;
@@ -356,7 +356,7 @@ function dibujarCatalogo() {
                 <td><strong>#00${platillo.id}</strong><br />${platillo.nombre}</td>
                 <td>${platillo.descripcion}</td>
                 <td>${platillo.categoria}</td>
-                <td>$${platillo.precio}</td>
+                <td>COP ${platillo.precio.toLocaleString("es-CO")}</td>
                 <td>${platillo.calorias} cal</td>
                 <td>
                   <div class="toggle-switch ${switchActivo}"></div>

@@ -1,6 +1,8 @@
 import type { ClientCartViewProps } from './clientCartView.types'
 import './clientCartView.css'
 
+const formatCOP = (amount: number): string => `COP ${amount.toLocaleString('es-CO')}`
+
 export default function ClientCartView({
   items,
   onAddMoreDishes,
@@ -49,7 +51,7 @@ export default function ClientCartView({
             {items.map((item) => (
               <article key={item.id} className="clientCartView__item">
                 <div className="clientCartView__itemImage">
-                  <img src={item.image} alt={item.name} />
+                  <span className="clientCartView__itemEmoji" aria-hidden>{item.emoji}</span>
                 </div>
                 <div className="clientCartView__itemDetails">
                   <div className="clientCartView__itemHeader">
@@ -85,7 +87,7 @@ export default function ClientCartView({
                       </button>
                     </div>
                     <span className="clientCartView__itemPrice">
-                      ${item.price * item.quantity}
+                      {formatCOP(item.price * item.quantity)}
                     </span>
                   </div>
                 </div>
@@ -126,7 +128,7 @@ export default function ClientCartView({
             <div className="clientCartView__summaryTotals">
               <div className="clientCartView__summaryRow">
                 <span>Subtotal</span>
-                <span>${subtotal}</span>
+                <span>{formatCOP(subtotal)}</span>
               </div>
               <div className="clientCartView__summaryRow">
                 <span>Envío</span>
@@ -134,7 +136,7 @@ export default function ClientCartView({
               </div>
               <div className="clientCartView__summaryRow clientCartView__summaryRow--total">
                 <span>Total</span>
-                <span>${total}</span>
+                <span>{formatCOP(total)}</span>
               </div>
             </div>
 
@@ -143,7 +145,7 @@ export default function ClientCartView({
               className="clientCartView__checkoutBtn"
               onClick={onProceedToCheckout}
             >
-              Proceder al pago &rarr; ${total}
+              Proceder al pago &rarr; {formatCOP(total)}
             </button>
 
             <div className="clientCartView__securityNotes">

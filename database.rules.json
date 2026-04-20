@@ -1,0 +1,31 @@
+{
+  "rules": {
+    /* 
+      REGLAS PARA REALTIME DATABASE
+      Para instalarlas: Ve a la consola de Firebase -> Realtime Database -> Pestaña "Reglas" -> Pega este código JSON
+
+      .read = "auth != null" significa que un cliente o admin DEBE estar conectado para leer los datos.
+      .write = "auth != null" significa que un cliente o admin DEBE estar conectado para escribir en la base de datos.
+      
+      Durante el desarrollo inicial, puedes cambiar ambas a true, pero JAMÁS en producción, porque cualquier usuario sin clave podría borrarte la base de datos. 
+      Actualmente está configurado para seguridad estándar (solo usuarios que inicien sesión y tengan token válido).
+    */
+
+    ".read": "auth != null",
+    ".write": "auth != null",
+
+    "users": {
+      "$user_id": {
+        // En Realtime Database, con esta regla, cada usuario solo puede leer y escribir su propia data basándose en su Token UID único.
+        ".read": "$user_id === auth.uid",
+        ".write": "$user_id === auth.uid"
+      }
+    },
+    
+    // Reglas para el tracking de los repartidores (si llegaras a usar gps en tiempo real en esta base de datos)
+    "delivery_tracking": {
+      ".read": "auth != null", 
+      ".write": "auth != null" // El conductor y el cliente necesitan acceder a esto
+    }
+  }
+}

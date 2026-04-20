@@ -43,23 +43,19 @@ const clamp = (value: number, min: number, max: number): number => Math.min(Math
 
 // Formatea montos monetarios para tarjetas y tabla.
 const formatCurrency = (value: number): string =>
-  new Intl.NumberFormat('es-MX', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(value)
+  `COP ${new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(value)}`
 
 // Formatea moneda compacta para ejes de graficos.
 const formatAxisCurrency = (value: number): string => {
   if (value >= 1_000_000) {
-    return `$${(value / 1_000_000).toFixed(1)}M`
+    return `COP ${(value / 1_000_000).toFixed(1)}M`
   }
 
   if (value >= 1_000) {
-    return `$${(value / 1_000).toFixed(0)}k`
+    return `COP ${(value / 1_000).toFixed(0)}k`
   }
 
-  return `$${value}`
+  return `COP ${value.toLocaleString('es-CO')}`
 }
 
 // Formatea porcentaje con signo para variaciones.
@@ -204,7 +200,7 @@ const buildCustomPresetDataset = (
       buildReportMetric(
         'custom-orders',
         'Total pedidos',
-        new Intl.NumberFormat('es-MX').format(currentOrders),
+        new Intl.NumberFormat('es-CO').format(currentOrders),
         formatSignedPercentage(currentOrders, previousOrders),
         'vs periodo anterior',
       ),
@@ -388,7 +384,7 @@ export default function ReportsManagementTab({ presetData, customSeedData }: Rep
                 <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#76877c' }} interval="preserveStartEnd" />
                 <YAxis tick={{ fontSize: 11, fill: '#76877c' }} width={36} />
                 <Tooltip
-                  formatter={(value) => [new Intl.NumberFormat('es-MX').format(Number(value ?? 0)), 'Pedidos']}
+                  formatter={(value) => [new Intl.NumberFormat('es-CO').format(Number(value ?? 0)), 'Pedidos']}
                   labelFormatter={(label) => `Fecha: ${String(label ?? '')}`}
                 />
                 <Bar dataKey="orders" fill="#69bf63" radius={[6, 6, 0, 0]} />
@@ -410,7 +406,7 @@ export default function ReportsManagementTab({ presetData, customSeedData }: Rep
                 <XAxis dataKey="time" tick={{ fontSize: 10, fill: '#76877c' }} interval={0} />
                 <YAxis tick={{ fontSize: 11, fill: '#76877c' }} width={36} />
                 <Tooltip
-                  formatter={(value) => [new Intl.NumberFormat('es-MX').format(Number(value ?? 0)), 'Pedidos']}
+                  formatter={(value) => [new Intl.NumberFormat('es-CO').format(Number(value ?? 0)), 'Pedidos']}
                   labelFormatter={(label) => `Hora: ${String(label ?? '')}`}
                 />
                 <Bar dataKey="orders" radius={[6, 6, 0, 0]}>

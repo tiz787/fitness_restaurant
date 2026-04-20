@@ -57,6 +57,9 @@ const parseNumber = (value: string): number => {
   return Number.isNaN(parsedValue) ? 0 : parsedValue
 }
 
+// Formatea montos en moneda COP para UI admin.
+const formatCOP = (amount: number): string => `COP ${amount.toLocaleString('es-CO')}`
+
 // Renderiza la pestaña de menu con filtros y alta de platos.
 export default function MenuManagementTab({ initialDishes, categories }: MenuManagementTabProps) {
   // Guarda la lista actual de platos visibles en la gestion.
@@ -406,7 +409,7 @@ export default function MenuManagementTab({ initialDishes, categories }: MenuMan
 
               <div className="menuDishCard__heading">
                 <h3>{dish.name}</h3>
-                <strong>${dish.price}</strong>
+                <strong>{formatCOP(dish.price)}</strong>
               </div>
 
               <p className="menuDishCard__description">{dish.description}</p>

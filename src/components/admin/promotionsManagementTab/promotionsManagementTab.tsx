@@ -63,23 +63,34 @@ const toNumber = (value: string): number => {
   return Number.isNaN(numericValue) ? 0 : numericValue
 }
 
-// Formatea fecha de input HTML a formato legible local.
-const formatDateLabel = (rawDate: string): string => {
-  // Si ya viene en formato con slash, se retorna igual.
-  if (rawDate.includes('/')) {
+// Convierte fechas legacy dd/mm/yyyy a yyyy-mm-dd para input type=date.
+const toInputDate = (rawDate: string): string => {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) {
     return rawDate
   }
 
-  // Si no contiene guion, no se intenta transformar.
-  if (!rawDate.includes('-')) {
-    return rawDate
+  const slashDate = rawDate.match(/^(\d{2})\/(\d{2})\/(\d{4})$/)
+  if (slashDate) {
+    const [, day, month, year] = slashDate
+    return `${year}-${month}-${day}`
   }
 
-  // Divide fecha ISO para reconstruir en formato dd/mm/yyyy.
-  const [year, month, day] = rawDate.split('-')
-  // Retorna fecha convertida para UI administrativa.
-  return `${day}/${month}/${year}`
+  return ''
 }
+
+// Convierte yyyy-mm-dd a dd/mm/yyyy para visualizacion.
+const toDisplayDate = (rawDate: string): string => {
+  const isoDate = rawDate.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+  if (isoDate) {
+    const [, year, month, day] = isoDate
+    return `${day}/${month}/${year}`
+  }
+
+  return rawDate
+}
+
+// Formatea montos en moneda colombiana.
+const formatCOP = (amount: number): string => `COP ${amount.toLocaleString('es-CO')}`
 
 // Formatea el valor visual del descuento segun su tipo.
 const formatDiscountValue = (coupon: PromotionCoupon): string => {
@@ -94,7 +105,7 @@ const formatDiscountValue = (coupon: PromotionCoupon): string => {
   }
 
   // Muestra monto en moneda para descuento fijo.
-  return `$${coupon.discountValue}`
+  return formatCOP(coupon.discountValue)
 }
 
 // Convierte estado de cupon a clase CSS utilizable.
@@ -183,7 +194,7 @@ export default function PromotionsManagementTab({ initialCoupons }: PromotionsMa
           discountType: formValues.discountType,
           discountValue: formValues.discountType === 'free-shipping' ? 0 : toNumber(formValues.discountValue),
           maxUses: Math.max(1, toNumber(formValues.maxUses)),
-          expiresOn: formatDateLabel(formValues.expiresOn),
+          expiresOn: formValues.expiresOn,
           conditions: {
             ...c.conditions,
             minOrderTotal: Math.max(0, toNumber(formValues.minOrderTotal)),
@@ -209,7 +220,7 @@ export default function PromotionsManagementTab({ initialCoupons }: PromotionsMa
           formValues.discountType === 'free-shipping' ? 0 : toNumber(formValues.discountValue),
         currentUses: 0,
         maxUses: Math.max(1, toNumber(formValues.maxUses)),
-        expiresOn: formatDateLabel(formValues.expiresOn),
+        expiresOn: formValues.expiresOn,
         status: 'Activo',
         conditions: {
           minOrderTotal: Math.max(0, toNumber(formValues.minOrderTotal)),
@@ -251,7 +262,7 @@ export default function PromotionsManagementTab({ initialCoupons }: PromotionsMa
       discountType: coupon.discountType,
       discountValue: coupon.discountValue.toString(),
       maxUses: coupon.maxUses.toString(),
-      expiresOn: coupon.expiresOn,
+      expiresOn: toInputDate(coupon.expiresOn),
       minOrderTotal: coupon.conditions.minOrderTotal.toString(),
       minItems: coupon.conditions.minItems.toString(),
       takeoutOnly: coupon.conditions.takeoutOnly,
@@ -366,10 +377,10 @@ export default function PromotionsManagementTab({ initialCoupons }: PromotionsMa
                 <p><strong>Descripcion:</strong> {selectedCoupon.description}</p>
                 <p><strong>Estado:</strong> {selectedCoupon.status}</p>
                 <p><strong>Tipo de descuento:</strong> {selectedCoupon.discountType}</p>
-                <p><strong>Valor Descuento:</strong> {selectedCoupon.discountValue}</p>
+                <p><strong>Valor Descuento:</strong> {formatDiscountValue(selectedCoupon)}</p>
                 <p><strong>Usos:</strong> {selectedCoupon.currentUses} de {selectedCoupon.maxUses}</p>
-                <p><strong>Vence el:</strong> {selectedCoupon.expiresOn}</p>
-                <p><strong>Pedido Minimo:</strong> ${selectedCoupon.conditions.minOrderTotal}</p>
+                <p><strong>Vence el:</strong> {toDisplayDate(selectedCoupon.expiresOn)}</p>
+                <p><strong>Pedido Minimo:</strong> {formatCOP(selectedCoupon.conditions.minOrderTotal)}</p>
                 <p><strong>Minimo Productos:</strong> {selectedCoupon.conditions.minItems}</p>
                 <p><strong>Solo llevar:</strong> {selectedCoupon.conditions.takeoutOnly ? 'Si' : 'No'}</p>
                 <p><strong>Primera Orden:</strong> {selectedCoupon.conditions.firstOrderOnly ? 'Si' : 'No'}</p>
@@ -419,7 +430,7 @@ export default function PromotionsManagementTab({ initialCoupons }: PromotionsMa
 
                   <label>
                     Vence el
-                    <input type="text" placeholder="dd/mm/aaaa o yyyy-mm-dd" value={formValues.expiresOn} onChange={updateTextField('expiresOn')} />
+                    <input type="date" value={formValues.expiresOn} onChange={updateTextField('expiresOn')} />
                   </label>
 
                   <label>
@@ -522,7 +533,7 @@ export default function PromotionsManagementTab({ initialCoupons }: PromotionsMa
                 <p className="promotionCouponCard__description">{coupon.description}</p>
                 <div className="promotionCouponCard__usageInfo">
                   <span>Usos: {coupon.currentUses}/{coupon.maxUses}</span>
-                  <span>Vence: {coupon.expiresOn || 'Sin fecha'}</span>
+                  <span>Vence: {coupon.expiresOn ? toDisplayDate(coupon.expiresOn) : 'Sin fecha'}</span>
                 </div>
                 <div className="promotionCouponCard__usageTrack" aria-hidden>
                   <span style={{ width: `${usagePercentage}%` }} />

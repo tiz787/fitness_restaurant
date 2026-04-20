@@ -6,20 +6,12 @@ import type {
   ClientMenuSortOption,
   ClientMenuViewProps,
 } from './clientMenuView.types'
-// Importa imagenes locales para tarjetas del menu.
-import imagePechuga from '../../../assets/images/imagen2-PechugaAsadaFitness.jpeg'
-import imageBowl from '../../../assets/images/imagen3-BuddhaBowlDetox.jpeg'
-import imageAcai from '../../../assets/images/ensalada.jpeg'
-import imageMealPrep from '../../../assets/images/pechuga.jpeg'
-import imageToast from '../../../assets/images/imagen1-EnsaladaVeganaPremiun.jpeg'
-import imagePancakes from '../../../assets/images/brownie.jpeg'
-import imageDetox from '../../../assets/images/imagen5-BatidoGreenDetox.jpeg'
-import imageTuna from '../../../assets/images/BuddhaBowlDetox.jpeg'
-import imageFrutos from '../../../assets/images/imagen4-BrownieProteico.jpeg'
-import imageUnavailable from '../../../assets/images/batido.jpeg'
 // Importa vistas secundarias del cliente.
 import ClientCartView from '../clientCartView/clientCartView'
 import ClientAccountView from '../clientAccountView/clientAccountView'
+import ClientCheckoutView from '../clientCheckoutView/clientCheckoutView'
+import ClientOrderSuccessView from '../clientOrderSuccessView/clientOrderSuccessView'
+import type { OrderSuccessInfo } from '../clientOrderSuccessView/clientOrderSuccessView.types'
 import type { ClientCartItem } from '../clientCartView/clientCartView.types'
 // Importa estilos dedicados de la vista cliente.
 import './clientMenuView.css'
@@ -38,7 +30,7 @@ interface ClientDish {
   category: ClientDishCategory
   featured?: boolean
   available: boolean
-  image: string
+  emoji: string
 }
 
 // Define filtro de categoria (incluye opcion global).
@@ -50,7 +42,7 @@ const clientDishesData: ClientDish[] = [
     id: 'dish-01',
     name: 'Salmon Fit Bowl',
     description: 'Filete de salmon al horno con vegetales mediterraneos y quinoa.',
-    price: 245,
+    price: 34000,
     calories: 480,
     protein: 42,
     carbs: 18,
@@ -59,13 +51,13 @@ const clientDishesData: ClientDish[] = [
     category: 'Cenas',
     featured: true,
     available: true,
-    image: imagePechuga,
+    emoji: '🥗',
   },
   {
     id: 'dish-02',
     name: 'Meal Prep Box',
     description: 'Caja con 5 comidas balanceadas para tu semana fitness.',
-    price: 699,
+    price: 140000,
     calories: 480,
     protein: 40,
     carbs: 50,
@@ -74,13 +66,13 @@ const clientDishesData: ClientDish[] = [
     category: 'Almuerzos',
     featured: true,
     available: true,
-    image: imageMealPrep,
+    emoji: '🍱',
   },
   {
     id: 'dish-03',
     name: 'Power Chicken Bowl',
     description: 'Pechuga de pollo a la plancha con quinoa y brocoli asado.',
-    price: 189,
+    price: 28000,
     calories: 520,
     protein: 48,
     carbs: 42,
@@ -89,13 +81,13 @@ const clientDishesData: ClientDish[] = [
     category: 'Almuerzos',
     featured: true,
     available: true,
-    image: imageBowl,
+    emoji: '🍲',
   },
   {
     id: 'dish-04',
     name: 'Acai Power Bowl',
     description: 'Bowl de acai con platano, fresas, granola y semillas.',
-    price: 155,
+    price: 22000,
     calories: 380,
     protein: 12,
     carbs: 62,
@@ -104,13 +96,13 @@ const clientDishesData: ClientDish[] = [
     category: 'Desayunos',
     featured: true,
     available: true,
-    image: imageAcai,
+    emoji: '🫐',
   },
   {
     id: 'dish-05',
     name: 'Tuna Steak Fresh',
     description: 'Atun sellado con papas baby y ensalada crocante.',
-    price: 265,
+    price: 42000,
     calories: 440,
     protein: 52,
     carbs: 22,
@@ -118,13 +110,13 @@ const clientDishesData: ClientDish[] = [
     etaMinutes: 18,
     category: 'Cenas',
     available: true,
-    image: imageTuna,
+    emoji: '🐟',
   },
   {
     id: 'dish-06',
     name: 'Avocado Toast Fit',
     description: 'Pan de centeno tostado con aguacate, huevo y microgreens.',
-    price: 135,
+    price: 18000,
     calories: 410,
     protein: 18,
     carbs: 38,
@@ -132,13 +124,13 @@ const clientDishesData: ClientDish[] = [
     etaMinutes: 10,
     category: 'Desayunos',
     available: true,
-    image: imageToast,
+    emoji: '🥑',
   },
   {
     id: 'dish-07',
     name: 'Protein Pancakes',
     description: 'Stack de 3 pancakes de avena con sirope y frutos rojos.',
-    price: 125,
+    price: 18000,
     calories: 450,
     protein: 35,
     carbs: 52,
@@ -146,13 +138,13 @@ const clientDishesData: ClientDish[] = [
     etaMinutes: 12,
     category: 'Snacks',
     available: true,
-    image: imagePancakes,
+    emoji: '🥞',
   },
   {
     id: 'dish-08',
     name: 'Green Detox Smoothie',
     description: 'Espinaca, pepino, manzana verde y limon organico.',
-    price: 95,
+    price: 14000,
     calories: 180,
     protein: 4,
     carbs: 36,
@@ -161,13 +153,13 @@ const clientDishesData: ClientDish[] = [
     category: 'Smoothies',
     featured: true,
     available: true,
-    image: imageDetox,
+    emoji: '🥤',
   },
   {
     id: 'dish-09',
     name: 'Berry Chia Cup',
     description: 'Pudin de chia con frutos rojos y yogurt natural.',
-    price: 115,
+    price: 16000,
     calories: 240,
     protein: 10,
     carbs: 28,
@@ -175,13 +167,13 @@ const clientDishesData: ClientDish[] = [
     etaMinutes: 6,
     category: 'Snacks',
     available: true,
-    image: imageFrutos,
+    emoji: '🍓',
   },
   {
     id: 'dish-10',
     name: 'Energy Shot Mix',
     description: 'Batido energizante para pre-entreno con maca y cacao.',
-    price: 85,
+    price: 9000,
     calories: 210,
     protein: 8,
     carbs: 24,
@@ -189,7 +181,7 @@ const clientDishesData: ClientDish[] = [
     etaMinutes: 6,
     category: 'Smoothies',
     available: false,
-    image: imageUnavailable,
+    emoji: '🍽️',
   },
 ]
 
@@ -211,12 +203,14 @@ const sortOptions: Array<{ value: ClientMenuSortOption; label: string }> = [
 ]
 
 // Formatea precio en UI del catalogo.
-const formatPrice = (price: number): string => `$${price}`
+const formatPrice = (price: number): string => `COP ${price.toLocaleString('es-CO')}`
 
 // Renderiza la vista principal de menu para cliente.
 export default function ClientMenuView({ onBackToAccess }: ClientMenuViewProps) {
   // Guarda pestaña activa principal
-  const [activeTab, setActiveTab] = useState<'menu' | 'cart' | 'account'>('menu')
+  const [activeTab, setActiveTab] = useState<'menu' | 'cart' | 'checkout' | 'success' | 'account'>('menu')
+  // Guarda ultimo pedido confirmado
+  const [lastOrder, setLastOrder] = useState<OrderSuccessInfo | null>(null)
   
   // Guarda texto del buscador de platos.
   const [searchTerm, setSearchTerm] = useState<string>('')
@@ -232,24 +226,24 @@ export default function ClientMenuView({ onBackToAccess }: ClientMenuViewProps) 
       name: 'Salmon Mediterráneo',
       subtext: 'Regular (180g)',
       quantity: 1,
-      price: 245,
-      image: imagePechuga,
+      price: 34000,
+      emoji: '🥗',
     },
     {
       id: 'dish-02',
       name: 'Meal Prep Box Semanal',
       subtext: '5 comidas',
       quantity: 3,
-      price: 699,
-      image: imageMealPrep,
+      price: 140000,
+      emoji: '🍱',
     },
     {
       id: 'dish-03',
       name: 'Power Chicken Bowl',
       subtext: 'Regular',
       quantity: 1,
-      price: 189,
-      image: imageBowl,
+      price: 28000,
+      emoji: '🍲',
     },
   ])
   const [promoCode, setPromoCode] = useState<string>('')
@@ -281,7 +275,7 @@ export default function ClientMenuView({ onBackToAccess }: ClientMenuViewProps) 
         subtext: 'Regular',
         quantity: 1,
         price: dish.price,
-        image: dish.image,
+        emoji: dish.emoji,
       }]
     })
   }
@@ -425,7 +419,7 @@ export default function ClientMenuView({ onBackToAccess }: ClientMenuViewProps) 
                   className={`clientDishCard ${!dish.available ? 'is-unavailable' : ''}`}
                 >
                   <div className="clientDishCard__media">
-                    <img src={dish.image} alt={dish.name} loading="lazy" />
+                    <span className="clientDishCard__emoji" aria-hidden>{dish.emoji}</span>
 
                     {dish.featured ? <span className="clientDishCard__badge">⭐ Destacado</span> : null}
 
@@ -485,7 +479,35 @@ export default function ClientMenuView({ onBackToAccess }: ClientMenuViewProps) 
             promoCode={promoCode}
             onPromoCodeChange={setPromoCode}
             onApplyPromoCode={() => { /* Mock promo logic */ }}
-            onProceedToCheckout={() => { alert('Iniciando pago...') }}
+            onProceedToCheckout={() => setActiveTab('checkout')}
+          />
+        )}
+
+        {activeTab === 'checkout' && (
+          <ClientCheckoutView 
+            items={cartItems}
+            onBackToCart={() => setActiveTab('cart')}
+            onConfirmOrder={(method, totalAmount) => {
+              setLastOrder({
+                id: `ORD-${Math.floor(100000 + Math.random() * 900000)}`,
+                deliveryMethod: method,
+                estimatedMinutes: method === 'delivery' ? 35 : 15,
+                totalPaid: totalAmount,
+              })
+              setCartItems([])
+              setActiveTab('success')
+            }}
+          />
+        )}
+
+        {activeTab === 'success' && (
+          <ClientOrderSuccessView
+            orderInfo={lastOrder}
+            onBackToHome={() => setActiveTab('menu')}
+            onTrackOrder={() => {
+              alert('Funcionalidad de seguimiento en desarrollo')
+              setActiveTab('account')
+            }}
           />
         )}
         
