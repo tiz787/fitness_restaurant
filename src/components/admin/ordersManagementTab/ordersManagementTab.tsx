@@ -1,15 +1,11 @@
 // Importa utilidades de estado y memo para filtros de tabla.
-import { useMemo, useState, type ChangeEvent } from 'react'
+import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
+// Importa Firebase services
+import { listenToAllOrders, updateOrderStatus } from '../../../services/firebase/orders.services'
 // Importa tipos para modelar pedidos y estados.
 import type { ManagedOrder, ManagedOrderStatus } from '../adminDashboard/adminDashboard.types'
 // Importa estilos dedicados de la pestaña de pedidos.
 import './ordersManagementTab.css'
-
-// Define las props del componente de gestion de pedidos.
-interface OrdersManagementTabProps {
-  // Lista completa de pedidos estaticos para la UI admin.
-  orders: ManagedOrder[]
-}
 
 // Define el tipo de filtro de estado (incluye opcion global).
 type OrdersFilterStatus = ManagedOrderStatus | 'Todos los estados'
@@ -28,9 +24,9 @@ const statusCards: ManagedOrderStatus[] = [
 const toStatusToken = (status: ManagedOrderStatus): string => status.toLowerCase().replace(/\s+/g, '-')
 
 // Renderiza la pestaña completa de gestion de pedidos del admin.
-export default function OrdersManagementTab({ orders }: OrdersManagementTabProps) {
-  // Manejo de estado local para editar los pedidos (demo)
-  const [localOrders, setLocalOrders] = useState<ManagedOrder[]>(orders)
+export default function OrdersManagementTab() {
+  // Manejo de estado local para editar los pedidos desde Firebase
+  const [localOrders, setLocalOrders] = useState<ManagedOrder[]>([])
   
   // Guarda el texto de busqueda por ID o cliente.
   const [searchTerm, setSearchTerm] = useState<string>('')
@@ -43,54 +39,95 @@ export default function OrdersManagementTab({ orders }: OrdersManagementTabProps
   // Estado para feedback visual de actualizacion
   const [updatingOrders, setUpdatingOrders] = useState<Record<string, boolean>>({})
 
-  // Funciones para avanzar y cancelar
-  const advanceOrderStatus = (orderId: string) => {
-    // 1. Mostrar estado de carga en el boton clickeado
-    setUpdatingOrders(prev => ({ ...prev, [orderId]: true }))
-    
-    // 2. Simular un leve retraso de red para dar mejor feedback visual
-    setTimeout(() => {
-      setLocalOrders(prev => prev.map(o => {
-        if (o.id !== orderId) return o;
-        let nextStatus: ManagedOrderStatus = o.status;
-        let nextAction = o.primaryAction;
+  // Suscripción al stream de Firebase de las órdenes en tiempo real
+  useEffect(() => {
+    const unsubscribe = listenToAllOrders((incomingOrders) => {
+      const mappedOrders: ManagedOrder[] = incomingOrders.map(doc => {
+        let uiStatus: ManagedOrderStatus = 'Recibido';
+        let primaryAction: string | undefined = 'Empezar a preparar';
 
-        if (o.status === 'Recibido') {
-          nextStatus = 'Preparando';
-          nextAction = 'Marcar listo';
-        } else if (o.status === 'Preparando') {
-          nextStatus = 'Listo';
-          nextAction = o.deliveryType === 'Delivery' ? 'Despachar' : 'Entregar';
-        } else if (o.status === 'Listo') {
-          if (o.deliveryType === 'Delivery') {
-            nextStatus = 'En camino';
-            nextAction = 'Marcar entregado';
-          } else {
-            nextStatus = 'Entregado';
-            nextAction = undefined;
-          }
-        } else if (o.status === 'En camino') {
-          nextStatus = 'Entregado';
-          nextAction = undefined;
+        if (doc.status === 'preparing') {
+          uiStatus = 'Preparando';
+          primaryAction = 'Marcar listo';
+        } else if (doc.status === 'ready') {
+          uiStatus = 'Listo';
+          primaryAction = 'Despachar / Entregar';
+        } else if (doc.status === 'delivered') {
+          uiStatus = 'Entregado';
+          primaryAction = undefined;
+        } else if (doc.status === 'cancelled') {
+          uiStatus = 'Cancelado';
+          primaryAction = undefined;
         }
 
-        return { ...o, status: nextStatus, primaryAction: nextAction }
-      }))
+        let dateObj = new Date();
+        if (doc.createdAt) {
+          // Si es un Timestamp de Firebase
+          const createdAtTyped = doc.createdAt as unknown as { toDate?: () => Date };
+          if (typeof createdAtTyped.toDate === 'function') {
+            dateObj = createdAtTyped.toDate();
+          } else if (typeof doc.createdAt === 'string' || typeof doc.createdAt === 'number') {
+            dateObj = new Date(doc.createdAt);
+          }
+        }
+        
+        const timeStr = isNaN(dateObj.getTime()) ? 'Ahora' : dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-      // 3. Remover el estado de carga
+        return {
+          id: doc.id || 'N/A',
+          timeLabel: timeStr,
+          customerName: doc.userId || 'Cliente web',
+          dishEmojis: doc.items?.map(() => '🍽️').slice(0, 3) || ['🥡'],
+          total: `COP ${doc.total.toLocaleString('es-CO')}`,
+          deliveryType: 'Delivery',
+          status: uiStatus,
+          primaryAction: primaryAction
+        };
+      })
+      
+      setLocalOrders(mappedOrders)
+    })
+    
+    return () => unsubscribe()
+  }, [])
+
+  // Funciones para avanzar y cancelar
+  const advanceOrderStatus = async (orderId: string) => {
+    setUpdatingOrders(prev => ({ ...prev, [orderId]: true }))
+    
+    try {
+      const order = localOrders.find(o => o.id === orderId);
+      if (order) {
+        let nextDbStatus: 'pending' | 'preparing' | 'ready' | 'delivered' | 'cancelled' | undefined = undefined;
+        if (order.status === 'Recibido') nextDbStatus = 'preparing';
+        else if (order.status === 'Preparando') nextDbStatus = 'ready';
+        else if (order.status === 'Listo') nextDbStatus = 'delivered';
+        else if (order.status === 'En camino') nextDbStatus = 'delivered';
+
+        if (nextDbStatus) {
+          await updateOrderStatus(orderId, nextDbStatus);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Error avanzando orden');
+    } finally {
       setUpdatingOrders(prev => {
         const next = { ...prev }
         delete next[orderId]
         return next
       })
-    }, 500) // Medio segundo de feedback "Procesando..."
+    }
   }
 
-  const cancelOrder = (orderId: string) => {
+  const cancelOrder = async (orderId: string) => {
     if(confirm('¿Estás seguro de cancelar este pedido?')) {
-      setLocalOrders(prev => prev.map(o => 
-        o.id === orderId ? { ...o, status: 'Cancelado', primaryAction: undefined } : o
-      ))
+      try {
+        await updateOrderStatus(orderId, 'cancelled');
+      } catch (error) {
+        console.error(error);
+        alert('Error cancelando orden');
+      }
     }
   }
 
@@ -155,7 +192,7 @@ export default function OrdersManagementTab({ orders }: OrdersManagementTabProps
     <section className="ordersManagementTab" aria-label="Gestion de pedidos">
       <header className="ordersManagementTab__header">
         <h2 className="ordersManagementTab__title">Gestion de pedidos</h2>
-        <p className="ordersManagementTab__subtitle">{orders.length} pedidos en total</p>
+        <p className="ordersManagementTab__subtitle">{localOrders.length} pedidos en total</p>
       </header>
 
       <div className="ordersManagementTab__statusGrid" aria-label="Resumen por estado">

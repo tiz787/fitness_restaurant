@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { ClientAccountViewProps } from './clientAccountView.types'
+import { listenToUserOrders } from '../../../services/firebase/orders.services'
+import type { OrderDocument } from '../../../services/firebase/types'
 import './clientAccountView.css'
 
 export default function ClientAccountView({ onNavigateToMenu, onLogout }: ClientAccountViewProps) {
@@ -12,6 +14,16 @@ export default function ClientAccountView({ onNavigateToMenu, onLogout }: Client
     email: 'admin@fitfuel.com',
     phone: '+52 55 9876 5432',
   })
+
+  const [orders, setOrders] = useState<OrderDocument[]>([])
+
+  useEffect(() => {
+    // Escuchar órdenes del usuario actual (mock: 'user-demo-123')
+    const unsubscribe = listenToUserOrders('user-demo-123', (userOrders) => {
+      setOrders(userOrders);
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Funciones para manejar los cambios en el formulario
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -112,20 +124,71 @@ export default function ClientAccountView({ onNavigateToMenu, onLogout }: Client
             <h2>
               <span aria-hidden="true">📦</span> Historial de pedidos
             </h2>
-            <span className="clientAccountHistory__count">0 pedidos</span>
+            <span className="clientAccountHistory__count">{orders.length} pedidos</span>
           </header>
           
-          <div className="clientAccountHistory__emptyState">
-            <div className="clientAccountHistory__emptyIcon" aria-hidden="true">🛍️</div>
-            <p>Aún no tienes pedidos</p>
-            <button
-              type="button"
-              className="clientAccountHistory__menuBtn"
-              onClick={onNavigateToMenu}
-            >
-              Ver menú
-            </button>
-          </div>
+          {orders.length === 0 ? (
+            <div className="clientAccountHistory__emptyState">
+              <div className="clientAccountHistory__emptyIcon" aria-hidden="true">🛍️</div>
+              <p>Aún no tienes pedidos</p>
+              <button
+                type="button"
+                className="clientAccountHistory__menuBtn"
+                onClick={onNavigateToMenu}
+              >
+                Ver menú
+              </button>
+            </div>
+          ) : (
+            <div className="clientAccountHistory__list">
+              {orders.map((order) => {
+                let statusLabel = 'Recibido';
+                let statusColor = '#3498db';
+                if (order.status === 'preparing') { statusLabel = 'Preparando'; statusColor = '#f39c12'; }
+                if (order.status === 'ready') { statusLabel = 'Listo'; statusColor = '#9b59b6'; }
+                if (order.status === 'delivered') { statusLabel = 'Entregado'; statusColor = '#2ecc71'; }
+                if (order.status === 'cancelled') { statusLabel = 'Cancelado'; statusColor = '#e74c3c'; }
+
+                let dateObj = new Date();
+                if (order.createdAt) {
+                  const createdAtTyped = order.createdAt as unknown as { toDate?: () => Date };
+                  if (typeof createdAtTyped.toDate === 'function') {
+                    dateObj = createdAtTyped.toDate();
+                  } else if (typeof order.createdAt === 'string' || typeof order.createdAt === 'number') {
+                    dateObj = new Date(order.createdAt);
+                  }
+                }
+                const dateStr = isNaN(dateObj.getTime()) ? '' : dateObj.toLocaleDateString('es-CO', {day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'});
+
+                return (
+                  <div key={order.id} className="clientAccountHistory__item" style={{ borderBottom: '1px solid #eee', padding: '15px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>Pedido #{order.id?.substring(0, 6)}</p>
+                      <p style={{ fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>{dateStr}</p>
+                      <p style={{ fontSize: '0.9rem', color: '#333' }}>
+                        {order.items.map(i => `${i.quantity}x ${i.name}`).join(', ')}
+                      </p>
+                      <p style={{ marginTop: '8px', fontWeight: 'bold' }}>
+                        COP {order.total.toLocaleString('es-CO')}
+                      </p>
+                    </div>
+                    <div>
+                      <span style={{ 
+                        backgroundColor: statusColor, 
+                        color: 'white', 
+                        padding: '4px 10px', 
+                        borderRadius: '12px', 
+                        fontSize: '0.8rem',
+                        fontWeight: 'bold' 
+                      }}>
+                        {statusLabel}
+                      </span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </section>
 
         {/* CERRAR SESIÓN */}

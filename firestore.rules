@@ -14,16 +14,15 @@ service cloud.firestore {
     // Por ahora (para desarrollo) permitiremos que lea todo y solo usuarios logueados escriban.
     match /products/{productId} {
       allow read: if true; // Todos pueden ver el menú (incluso sin login)
-      allow write: if isAuthenticated(); // Se debe estar logueado para añadir/modificar (Admin)
+      allow write: if true; // TEMPORAL: Permitir escritura sin login para desarrollo (volver a if isAuthenticated() con autenticacion completa)
     }
 
     // Regla para órdenes:
-    // El cliente solo puede leer/crear SUS propias órdenes usando request.auth.uid 
-    // (Por practicidad en desarrollo, lo dejamos en: conectado)
+    // MIENTRAS ESTAMOS EN DESARROLLO, dejaremos que cualquiera pueda crear/leer/actualizar órdenes.
+    // Cuando implementemos el Login (Auth), cambiaremos esto a `if isAuthenticated()`.
     match /orders/{orderId} {
-      allow create: if isAuthenticated(); // Solo clientes logueados pueden pedir
-      allow read, update: if isAuthenticated(); 
-      allow delete: if false; // Por seguridad, nunca se borran las órdenes (solo cambian a canceladas)
+      allow create, read, update: if true; 
+      allow delete: if false; // Por seguridad, nunca se borran las órdenes
     }
 
     // Regla para usuarios (sus perfiles)

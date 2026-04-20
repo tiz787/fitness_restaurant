@@ -1,5 +1,7 @@
 // Importa utilidades de estado para filtros y alta de platos.
-import { useMemo, useState, type ChangeEvent, type FormEvent } from 'react'
+import { useMemo, useState, useEffect, type ChangeEvent, type FormEvent } from 'react'
+// Importa Firebase services
+import { listenToAllProducts, createProduct, updateProduct, deleteProduct } from '../../../services/firebase/products.services'
 // Importa tipos para modelo de platos y categorias del menu.
 import type {
   MenuDish,
@@ -11,8 +13,6 @@ import './menuManagementTab.css'
 
 // Define props del componente de gestion de menu.
 interface MenuManagementTabProps {
-  // Coleccion base de platos estaticos cargados en la vista.
-  initialDishes: MenuDish[]
   // Coleccion de categorias disponibles para filtrar.
   categories: MenuFilterCategory[]
 }
@@ -61,9 +61,33 @@ const parseNumber = (value: string): number => {
 const formatCOP = (amount: number): string => `COP ${amount.toLocaleString('es-CO')}`
 
 // Renderiza la pestaña de menu con filtros y alta de platos.
-export default function MenuManagementTab({ initialDishes, categories }: MenuManagementTabProps) {
-  // Guarda la lista actual de platos visibles en la gestion.
-  const [dishes, setDishes] = useState<MenuDish[]>(initialDishes)
+export default function MenuManagementTab({ categories }: MenuManagementTabProps) {
+  // Guarda la lista actual de platos visibles en la gestion conectados con Firebase.
+  const [dishes, setDishes] = useState<MenuDish[]>([])
+  
+  // Conectar con Firebase on mount
+  useEffect(() => {
+    const unsubscribe = listenToAllProducts((products) => {
+      const mappedDishes: MenuDish[] = products.map((prod) => ({
+        id: prod.id || '',
+        name: prod.name,
+        description: prod.description || '',
+        emoji: prod.imageUrl || '🥘',
+        price: prod.price,
+        calories: prod.macros?.calories || 0,
+        protein: prod.macros?.protein || 0,
+        carbs: prod.macros?.carbs || 0,
+        rating: 5.0,
+        reviews: 0,
+        category: (prod.category as MenuDishCategory) || 'Almuerzo',
+        isDeleted: !prod.isActive
+      }))
+      setDishes(mappedDishes)
+    })
+    
+    return () => unsubscribe()
+  }, [])
+
   // Controla el texto de busqueda por nombre de plato.
   const [searchTerm, setSearchTerm] = useState<string>('')
   // Controla la categoria activa para el filtrado.
@@ -116,8 +140,8 @@ export default function MenuManagementTab({ initialDishes, categories }: MenuMan
       }))
     }
 
-  // Procesa el alta o edicion de un plato en memoria local.
-  const handleSaveDish = (event: FormEvent<HTMLFormElement>): void => {
+  // Procesa el alta o edicion de un plato en Firebase.
+  const handleSaveDish = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     // Evita recarga de pagina en submit.
     event.preventDefault()
 
@@ -126,57 +150,57 @@ export default function MenuManagementTab({ initialDishes, categories }: MenuMan
       return
     }
 
-    if (editingDishId) {
-      // Actualiza plato existente.
-      setDishes((prevDishes) =>
-        prevDishes.map((dish) =>
-          dish.id === editingDishId
-            ? {
-                ...dish,
-                name: newDishFormValues.name.trim(),
-                description: newDishFormValues.description.trim(),
-                emoji: newDishFormValues.emoji.trim(),
-                category: newDishFormValues.category,
-                price: parseNumber(newDishFormValues.price),
-                calories: parseNumber(newDishFormValues.calories),
-                protein: parseNumber(newDishFormValues.protein),
-                carbs: parseNumber(newDishFormValues.carbs),
-              }
-            : dish,
-        ),
-      )
-      setSuccessMessage('Plato actualizado correctamente.')
-    } else {
-      // Construye el nuevo registro con valores convertidos.
-      const nextDish: MenuDish = {
-        id: `dish-${Date.now()}`,
-        name: newDishFormValues.name.trim(),
-        description: newDishFormValues.description.trim() || 'Plato nuevo agregado desde admin.',
-        emoji: newDishFormValues.emoji.trim(),
-        category: newDishFormValues.category,
-        price: parseNumber(newDishFormValues.price),
-        calories: parseNumber(newDishFormValues.calories),
-        protein: parseNumber(newDishFormValues.protein),
-        carbs: parseNumber(newDishFormValues.carbs),
-        rating: 0,
-        reviews: 0,
+    try {
+      if (editingDishId) {
+        // Actualiza plato existente en Firebase.
+        await updateProduct(editingDishId, {
+          name: newDishFormValues.name.trim(),
+          description: newDishFormValues.description.trim(),
+          imageUrl: newDishFormValues.emoji.trim(),
+          category: newDishFormValues.category,
+          price: parseNumber(newDishFormValues.price),
+          macros: {
+            calories: parseNumber(newDishFormValues.calories),
+            protein: parseNumber(newDishFormValues.protein),
+            carbs: parseNumber(newDishFormValues.carbs),
+            fats: 0
+          },
+        })
+        setSuccessMessage('Plato actualizado correctamente.')
+      } else {
+        // Construye el nuevo registro para Firebase
+        await createProduct({
+          name: newDishFormValues.name.trim(),
+          description: newDishFormValues.description.trim() || 'Plato nuevo agregado desde admin.',
+          imageUrl: newDishFormValues.emoji.trim(),
+          category: newDishFormValues.category,
+          price: parseNumber(newDishFormValues.price),
+          ingredients: [], // Añadido para cumplir con el tipo ProductDocument
+          macros: {
+            calories: parseNumber(newDishFormValues.calories),
+            protein: parseNumber(newDishFormValues.protein),
+            carbs: parseNumber(newDishFormValues.carbs),
+            fats: 0
+          },
+          isActive: true,
+        })
+        setSuccessMessage('Plato creado correctamente.')
       }
 
-      // Inserta plato nuevo al inicio para feedback inmediato.
-      setDishes((previousDishes) => [nextDish, ...previousDishes])
-      setSuccessMessage('Plato creado correctamente.')
+      // Limpia mensaje de exito despues de 3 segundos y cierra modal
+      setTimeout(() => {
+        setSuccessMessage(null)
+        setIsModalOpen(false)
+      }, 3000)
+      
+      // Reinicia formulario para el futuro
+      setNewDishFormValues(initialNewDishFormValues)
+      setEditingDishId(null)
+      setActiveCategory('Todos')
+    } catch (error) {
+      console.error(error)
+      alert('Error guardando plato')
     }
-
-    // Limpia mensaje de exito despues de 3 segundos y cierra modal
-    setTimeout(() => {
-      setSuccessMessage(null)
-      setIsModalOpen(false)
-    }, 3000)
-    
-    // Reinicia formulario para el futuro
-    setNewDishFormValues(initialNewDishFormValues)
-    setEditingDishId(null)
-    setActiveCategory('Todos')
   }
 
   // Prepara el modal para editar un plato existente.
@@ -210,14 +234,17 @@ export default function MenuManagementTab({ initialDishes, categories }: MenuMan
     setSuccessMessage(null)
   }
 
-  // Elimina un plato con confirmacion basica (soft delete).
-  const handleDeleteDish = (dishId: string): void => {
+  // Elimina un plato en Firebase (soft delete o hard delete).
+  const handleDeleteDish = async (dishId: string): Promise<void> => {
     // Confirmacion nativa para evitar borrados accidentales.
     const userConfirmed = window.confirm('¿Seguro que deseas eliminar este plato del menu?')
     if (userConfirmed) {
-      setDishes((prev) =>
-        prev.map((dish) => (dish.id === dishId ? { ...dish, isDeleted: true } : dish)),
-      )
+      try {
+        await deleteProduct(dishId)
+      } catch (error) {
+        console.error(error)
+        alert('Error eliminando plato')
+      }
     }
   }
 

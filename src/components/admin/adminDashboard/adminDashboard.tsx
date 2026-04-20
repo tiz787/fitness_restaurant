@@ -6,13 +6,10 @@ import { listenToAllOrders } from '../../../services/firebase/orders.services'
 import type { AdminDashboardProps, AdminTabId, ActiveOrder } from './adminDashboard.types'
 // Importa datos estaticos para renderizar la UI sin backend por ahora.
 import {
-  activeOrdersData,
   adminTabLabels,
   categoryDistributionData,
   dashboardMetrics,
-  managedOrdersData,
   managedUsersData,
-  menuDishesData,
   menuFilterCategories,
   promotionCouponsData,
   reportCustomPerformanceSeedData,
@@ -102,7 +99,7 @@ export default function AdminDashboard({
           </section>
 
           <section className="adminOperationsGrid" aria-label="Operacion en tiempo real">
-            <ActiveOrdersPanel orders={realTimeOrders.length > 0 ? realTimeOrders : activeOrdersData} />
+            <ActiveOrdersPanel orders={realTimeOrders} />
             <TopDishesPanel dishes={topDishesData} />
           </section>
 
@@ -111,14 +108,14 @@ export default function AdminDashboard({
       )
     }
 
-    // Si la pestaña activa es pedidos, muestra gestion completa de ordenes.
+    // Si la pestaña activa es pedidos, muestra gestion completa de ordenes con datos reales.
     if (activeTab === 'pedidos') {
-      return <OrdersManagementTab orders={managedOrdersData} />
+      return <OrdersManagementTab />
     }
 
-    // Si la pestaña activa es menu, muestra gestion de platos con filtros.
+    // Si la pestaña activa es menu, muestra gestion de platos con filtros y datos reales.
     if (activeTab === 'menu') {
-      return <MenuManagementTab initialDishes={menuDishesData} categories={menuFilterCategories} />
+      return <MenuManagementTab categories={menuFilterCategories} />
     }
 
     // Si la pestaña activa es promociones, muestra cupones y condiciones.
