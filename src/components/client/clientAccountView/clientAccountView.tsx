@@ -2,24 +2,39 @@ import { useState, useEffect } from 'react'
 import type { ClientAccountViewProps } from './clientAccountView.types'
 import { listenToUserOrders } from '../../../services/firebase/orders.services'
 import type { OrderDocument } from '../../../services/firebase/types'
+import { auth } from '../../../services/firebase/config'
 import './clientAccountView.css'
 
 export default function ClientAccountView({ onNavigateToMenu, onLogout }: ClientAccountViewProps) {
   // Estado para controlar si el usuario está en modo edicion.
-  const [isEditing, setIsEditing] = useState<boolean>(true)
+  const [isEditing, setIsEditing] = useState<boolean>(false)
 
-  // Datos mock del usuario
+  // Datos del usuario real de Firebase Auth
   const [userData, setUserData] = useState({
-    name: 'Sara López',
-    email: 'admin@fitfuel.com',
-    phone: '+52 55 9876 5432',
+    name: '',
+    email: '',
+    phone: '', // Aquí podríamos mapear desde un perfil en firestore, por ahora usaremos displayName si existe.
   })
 
   const [orders, setOrders] = useState<OrderDocument[]>([])
 
   useEffect(() => {
-    // Escuchar órdenes del usuario actual (mock: 'user-demo-123')
-    const unsubscribe = listenToUserOrders('user-demo-123', (userOrders) => {
+    const defaultUser = auth.currentUser;
+    if (defaultUser) {
+      setUserData({
+        name: defaultUser.displayName || 'Cliente Demo',
+        email: defaultUser.email || '',
+        phone: defaultUser.phoneNumber || '+00 0000 0000',
+      })
+    }
+  }, [])
+
+  useEffect(() => {
+    const userId = auth.currentUser?.uid;
+    if (!userId) return;
+
+    // Escuchar órdenes del usuario actual real en la base de datos
+    const unsubscribe = listenToUserOrders(userId, (userOrders) => {
       setOrders(userOrders);
     });
     return () => unsubscribe();

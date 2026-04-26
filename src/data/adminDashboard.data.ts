@@ -42,10 +42,6 @@ export const adminTabLabels: Record<AdminTabId, { title: string; subtitle: strin
     title: 'Menu',
     subtitle: 'Gestion de platillos y macros nutricionales',
   },
-  inventario: {
-    title: 'Inventario',
-    subtitle: 'Modulo en construccion para siguiente iteracion',
-  },
   promociones: {
     title: 'Promociones',
     subtitle: 'Cupones activos y reglas de elegibilidad de compra',
@@ -65,7 +61,6 @@ export const sidebarLinks: SidebarLink[] = [
   { id: 'dashboard', label: 'Dashboard', shortLabel: 'DB' },
   { id: 'pedidos', label: 'Pedidos', shortLabel: 'PD', badge: '2' },
   { id: 'menu', label: 'Menu', shortLabel: 'MN' },
-  { id: 'inventario', label: 'Inventario', shortLabel: 'IN' },
   { id: 'promociones', label: 'Promociones', shortLabel: 'PR' },
   { id: 'reportes', label: 'Reportes', shortLabel: 'RP' },
   { id: 'usuarios', label: 'Usuarios', shortLabel: 'US' },

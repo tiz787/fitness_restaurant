@@ -1,5 +1,13 @@
 // Importa estado y utilidades para manejo local de cupones.
-import { useMemo, useState, type ChangeEvent, type FormEvent } from 'react'
+import { useMemo, useState, useEffect, type ChangeEvent, type FormEvent } from 'react'
+// Importa Firebase services
+import { 
+  listenToAllPromotions, 
+  createPromotion, 
+  updatePromotion, 
+  deletePromotion 
+} from '../../../services/firebase/promotions.services'
+import type { PromotionDocument } from '../../../services/firebase/types'
 // Importa tipos para cupones y sus variantes de descuento.
 import type {
   CouponDiscountType,
@@ -8,11 +16,8 @@ import type {
 // Importa estilos de la pestaña de promociones.
 import './promotionsManagementTab.css'
 
-// Define propiedades del modulo de promociones.
-interface PromotionsManagementTabProps {
-  // Cupones estaticos iniciales que se muestran en pantalla.
-  initialCoupons: PromotionCoupon[]
-}
+// Define propiedades del modulo de promociones (ahora vacio porque los obtiene dinamicamente).
+// Se elimino la interfaz ya que no es requerida ahora.
 
 // Define el modelo del formulario de creacion de cupon.
 interface NewCouponFormValues {
@@ -90,22 +95,28 @@ const toDisplayDate = (rawDate: string): string => {
 }
 
 // Formatea montos en moneda colombiana.
-const formatCOP = (amount: number): string => `COP ${amount.toLocaleString('es-CO')}`
+const formatCOP = (amount: number): string => {
+  const validAmount = Number(amount) || 0;
+  return `COP ${validAmount.toLocaleString('es-CO')}`;
+}
 
 // Formatea el valor visual del descuento segun su tipo.
 const formatDiscountValue = (coupon: PromotionCoupon): string => {
-  // Muestra texto directo para cupon de envio gratis.
-  if (coupon.discountType === 'free-shipping') {
+  const type = coupon.discountType || 'percentage';
+  const value = coupon.discountValue || 0;
+
+  // Muestra texto directo para cupon de envio gratis o si no se tipeó correctamente
+  if (type === 'free-shipping' || !coupon.discountType) {
     return 'Envio gratis'
   }
 
   // Muestra porcentaje cuando el descuento es porcentual.
-  if (coupon.discountType === 'percentage') {
-    return `${coupon.discountValue}%`
+  if (type === 'percentage') {
+    return `${value}%`
   }
 
   // Muestra monto en moneda para descuento fijo.
-  return formatCOP(coupon.discountValue)
+  return formatCOP(value)
 }
 
 // Convierte estado de cupon a clase CSS utilizable.
@@ -113,9 +124,49 @@ const toCouponStatusToken = (status: PromotionCoupon['status']): string =>
   status.toLowerCase().replace(/\s+/g, '-')
 
 // Renderiza la pestaña de promociones y cupones del admin.
-export default function PromotionsManagementTab({ initialCoupons }: PromotionsManagementTabProps) {
-  // Guarda lista local de cupones para interacciones de UI.
-  const [coupons, setCoupons] = useState<PromotionCoupon[]>(initialCoupons)
+export default function PromotionsManagementTab() {
+  // Guarda lista local de cupones para interacciones de UI, conectados con Firebase.
+  const [coupons, setCoupons] = useState<PromotionCoupon[]>([])
+  
+  useEffect(() => {
+    const unsubscribe = listenToAllPromotions((promotions: PromotionDocument[]) => {
+      const mappedCoupons: PromotionCoupon[] = promotions.map(doc => {
+        let derivedStatus: 'Activo' | 'Inactivo' | 'Expirado' = doc.isActive ? 'Activo' : 'Inactivo';
+        
+        // Verifica si expiró
+        if (doc.validUntil && doc.isActive) {
+          const expirationDate = new Date(doc.validUntil);
+          const now = new Date();
+          if (expirationDate < now) {
+            derivedStatus = 'Expirado';
+          }
+        }
+
+        return {
+          id: doc.id || 'N/A',
+          code: doc.code,
+          title: doc.title,
+          description: doc.description,
+          discountType: doc.discountType,
+          discountValue: doc.discountValue,
+          currentUses: doc.currentUses || 0,
+          maxUses: doc.maxUses || 100,
+          expiresOn: doc.validUntil,
+          status: derivedStatus,
+          conditions: {
+            minOrderTotal: doc.conditions?.minOrderTotal || 0,
+            takeoutOnly: doc.conditions?.takeoutOnly || false,
+            minItems: doc.conditions?.minItems || 1,
+            firstOrderOnly: doc.conditions?.firstOrderOnly || false,
+          },
+          isDeleted: false // Soft delete ya no es necesario si eliminamos directo, o podemos mantenerlo en Firebase.
+        };
+      });
+      setCoupons(mappedCoupons);
+    });
+    
+    return () => unsubscribe();
+  }, []);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
   const [editingCouponId, setEditingCouponId] = useState<string | null>(null);
@@ -174,8 +225,8 @@ export default function PromotionsManagementTab({ initialCoupons }: PromotionsMa
       }))
     }
 
-  // Procesa creacion o edicion de un cupon.
-  const handleSaveCoupon = (event: FormEvent<HTMLFormElement>): void => {
+  // Procesa creacion o edicion de un cupon interactuando con Firebase.
+  const handleSaveCoupon = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     // Evita recarga completa de pagina al enviar formulario.
     event.preventDefault()
 
@@ -184,62 +235,61 @@ export default function PromotionsManagementTab({ initialCoupons }: PromotionsMa
       return
     }
 
-    if (modalMode === 'edit' && editingCouponId) {
-      setCoupons((prev) => 
-        prev.map((c) => c.id === editingCouponId ? {
-          ...c,
+    try {
+      if (modalMode === 'edit' && editingCouponId) {
+        await updatePromotion(editingCouponId, {
           code: formValues.code.trim().toUpperCase(),
           title: formValues.title.trim(),
           description: formValues.description.trim(),
           discountType: formValues.discountType,
           discountValue: formValues.discountType === 'free-shipping' ? 0 : toNumber(formValues.discountValue),
           maxUses: Math.max(1, toNumber(formValues.maxUses)),
-          expiresOn: formValues.expiresOn,
+          validUntil: formValues.expiresOn,
           conditions: {
-            ...c.conditions,
             minOrderTotal: Math.max(0, toNumber(formValues.minOrderTotal)),
             takeoutOnly: formValues.takeoutOnly,
             minItems: Math.max(1, toNumber(formValues.minItems)),
             firstOrderOnly: formValues.firstOrderOnly,
           }
-        } : c)
-      )
-      setSuccessMessage('Cupon actualizado correctamente.')
-    } else {
-      // Construye nuevo cupon basado en formulario actual.
-      const nextCoupon: PromotionCoupon = {
-        id: `coupon-${Date.now()}`,
-        code: formValues.code.trim().toUpperCase(),
-        title: formValues.title.trim(),
-        description:
-          formValues.description.trim().length > 0
-            ? formValues.description.trim()
-            : 'Cupon creado desde panel admin.',
-        discountType: formValues.discountType,
-        discountValue:
-          formValues.discountType === 'free-shipping' ? 0 : toNumber(formValues.discountValue),
-        currentUses: 0,
-        maxUses: Math.max(1, toNumber(formValues.maxUses)),
-        expiresOn: formValues.expiresOn,
-        status: 'Activo',
-        conditions: {
-          minOrderTotal: Math.max(0, toNumber(formValues.minOrderTotal)),
-          takeoutOnly: formValues.takeoutOnly,
-          minItems: Math.max(1, toNumber(formValues.minItems)),
-          firstOrderOnly: formValues.firstOrderOnly,
-        },
+        });
+        setSuccessMessage('Cupon actualizado correctamente.')
+      } else {
+        // Construye nuevo cupon basado en formulario actual para Firebase.
+        await createPromotion({
+          code: formValues.code.trim().toUpperCase(),
+          title: formValues.title.trim(),
+          description:
+            formValues.description.trim().length > 0
+              ? formValues.description.trim()
+              : 'Cupon creado desde panel admin.',
+          discountType: formValues.discountType,
+          discountValue:
+            formValues.discountType === 'free-shipping' ? 0 : toNumber(formValues.discountValue),
+          currentUses: 0,
+          maxUses: Math.max(1, toNumber(formValues.maxUses)),
+          validUntil: formValues.expiresOn,
+          isActive: true,
+          conditions: {
+            minOrderTotal: Math.max(0, toNumber(formValues.minOrderTotal)),
+            takeoutOnly: formValues.takeoutOnly,
+            minItems: Math.max(1, toNumber(formValues.minItems)),
+            firstOrderOnly: formValues.firstOrderOnly,
+          },
+        });
+        setSuccessMessage('Cupon creado correctamente.')
       }
-      setCoupons((previousCoupons) => [nextCoupon, ...previousCoupons])
-      setSuccessMessage('Cupon creado correctamente.')
+
+      setTimeout(() => {
+        setSuccessMessage(null)
+        setIsModalOpen(false)
+      }, 3000)
+
+      setFormValues(initialNewCouponFormValues)
+      setEditingCouponId(null)
+    } catch (error) {
+      console.error(error);
+      alert('Hubo un error guardando el cupón.');
     }
-
-    setTimeout(() => {
-      setSuccessMessage(null)
-      setIsModalOpen(false)
-    }, 3000)
-
-    setFormValues(initialNewCouponFormValues)
-    setEditingCouponId(null)
   }
 
   // Prepara modal para crear
@@ -287,20 +337,26 @@ export default function PromotionsManagementTab({ initialCoupons }: PromotionsMa
   }
 
   // Cambia el estado del cupon a Activo o Inactivo
-  const handleToggleStatus = (coupon: PromotionCoupon): void => {
-    const nextStatus = coupon.status === 'Activo' ? 'Inactivo' : 'Activo'
-    setCoupons((prev) => 
-      prev.map((c) => c.id === coupon.id ? { ...c, status: nextStatus } : c)
-    )
+  const handleToggleStatus = async (coupon: PromotionCoupon): Promise<void> => {
+    try {
+      const nextIsActive = coupon.status !== 'Activo';
+      await updatePromotion(coupon.id, { isActive: nextIsActive });
+    } catch(err) {
+      console.error(err);
+      alert('Error cambiando estado del cupón.');
+    }
   }
 
-  // Soft delete para eliminar temporalmente de la vista.
-  const handleDeleteCoupon = (couponId: string): void => {
-    const userConfirmed = window.confirm('¿Seguro que deseas eliminar este cupon? (Soft delete)')
+  // Hard delete en Firebase
+  const handleDeleteCoupon = async (couponId: string): Promise<void> => {
+    const userConfirmed = window.confirm('¿Seguro que deseas eliminar definitivamente este cupon?')
     if (userConfirmed) {
-      setCoupons((prev) => 
-        prev.map((c) => c.id === couponId ? { ...c, isDeleted: true } : c)
-      )
+      try {
+        await deletePromotion(couponId);
+      } catch(err) {
+        console.error(err);
+        alert('Error eliminando cupón.');
+      }
     }
   }
 

@@ -12,12 +12,14 @@ export default function ClientCartView({
   onPromoCodeChange,
   onApplyPromoCode,
   onProceedToCheckout,
+  discountAmount,
+  isFreeShipping,
 }: ClientCartViewProps) {
   // Calculamos el subtotal base
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0)
   // Calculamos el envio gratis siempre para demo
-  const shipping = 0
-  const total = subtotal + shipping
+  const shipping = isFreeShipping ? 0 : 5000 // Supongamos 5000 COP por defecto
+  const total = Math.max(0, subtotal - discountAmount) + shipping
 
   if (items.length === 0) {
     return (
@@ -130,9 +132,15 @@ export default function ClientCartView({
                 <span>Subtotal</span>
                 <span>{formatCOP(subtotal)}</span>
               </div>
+              {discountAmount > 0 && (
+                <div className="clientCartView__summaryRow" style={{color: 'green'}}>
+                  <span>Descuento</span>
+                  <span>-{formatCOP(discountAmount)}</span>
+                </div>
+              )}
               <div className="clientCartView__summaryRow">
                 <span>Envío</span>
-                <span className="clientCartView__summaryFree">¡Gratis!</span>
+                <span className="clientCartView__summaryFree">{isFreeShipping ? '¡Gratis!' : formatCOP(shipping)}</span>
               </div>
               <div className="clientCartView__summaryRow clientCartView__summaryRow--total">
                 <span>Total</span>

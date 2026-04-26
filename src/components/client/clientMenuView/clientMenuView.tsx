@@ -3,6 +3,9 @@ import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
 // Importa Firebase services
 import { listenToAllProducts } from '../../../services/firebase/products.services'
 import { createOrder } from '../../../services/firebase/orders.services'
+import { listenToAllPromotions, updatePromotion } from '../../../services/firebase/promotions.services'
+import { auth } from '../../../services/firebase/config'
+import type { PromotionDocument } from '../../../services/firebase/types'
 // Importa tipos de categorias y ordenamiento de la vista.
 import type {
   ClientDishCategory,
@@ -106,6 +109,16 @@ export default function ClientMenuView({ onBackToAccess }: ClientMenuViewProps) 
   // Estado del carrito vacio para iniciar realmente en limpio conectado a Firebase
   const [cartItems, setCartItems] = useState<ClientCartItem[]>([])
   const [promoCode, setPromoCode] = useState<string>('')
+  const [promotions, setPromotions] = useState<PromotionDocument[]>([])
+  const [appliedPromo, setAppliedPromo] = useState<PromotionDocument | null>(null)
+
+  // Efecto para escuchar promociones
+  useEffect(() => {
+    const unsubscribePromos = listenToAllPromotions((promos) => {
+      setPromotions(promos);
+    })
+    return () => unsubscribePromos()
+  }, [])
 
   // Controladores del carrito
   const handleUpdateQuantity = (id: string, delta: number) => {
@@ -137,6 +150,46 @@ export default function ClientMenuView({ onBackToAccess }: ClientMenuViewProps) 
         emoji: dish.emoji,
       }]
     })
+  }
+
+  const handleApplyPromoCode = () => {
+    const promo = promotions.find(p => p.code === promoCode.toUpperCase() && p.isActive);
+    if (!promo) {
+      alert("Cupón inválido o inactivo.");
+      setAppliedPromo(null);
+      return;
+    }
+    
+    // Validar condiciones
+    const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+    if (promo.conditions?.minOrderTotal && subtotal < promo.conditions.minOrderTotal) {
+      alert(`Este cupón requiere una compra mínima de ${promo.conditions.minOrderTotal}`);
+      return;
+    }
+    if (promo.conditions?.minItems && totalItems < promo.conditions.minItems) {
+      alert(`Este cupón requiere un mínimo de ${promo.conditions.minItems} productos`);
+      return;
+    }
+    if (promo.currentUses >= promo.maxUses) {
+      alert('Este cupón ha alcanzado su límite de usos.');
+      return;
+    }
+
+    setAppliedPromo(promo);
+    alert(`¡Cupón "${promo.title}" aplicado correctamente!`);
+  }
+
+  const getDiscountAmount = (subtotal: number) => {
+    if (!appliedPromo) return 0;
+    if (appliedPromo.discountType === 'percentage') {
+      return subtotal * (appliedPromo.discountValue / 100);
+    } else if (appliedPromo.discountType === 'fixed-amount') {
+      return appliedPromo.discountValue;
+    }
+    // free-shipping se maneja distinto o equivale a 0 en el subtotal
+    return 0;
   }
 
   // Aplica filtros y ordenamiento sobre dataset estatico.
@@ -217,7 +270,7 @@ export default function ClientMenuView({ onBackToAccess }: ClientMenuViewProps) 
             <span className="clientMenuView__adminChip">Admin</span>
             <button type="button" className="clientMenuView__userMenu">
               <span aria-hidden>🧑</span>
-              Sara
+              {auth.currentUser?.displayName || auth.currentUser?.email?.split('@')[0] || 'Cliente'}
               <span aria-hidden>▾</span>
             </button>
             <button type="button" className="clientMenuView__exitButton" onClick={onBackToAccess}>
@@ -342,33 +395,48 @@ export default function ClientMenuView({ onBackToAccess }: ClientMenuViewProps) 
             onRemoveItem={handleRemoveItem}
             promoCode={promoCode}
             onPromoCodeChange={setPromoCode}
-            onApplyPromoCode={() => { /* Mock promo logic */ }}
+            onApplyPromoCode={handleApplyPromoCode}
             onProceedToCheckout={() => setActiveTab('checkout')}
+            discountAmount={getDiscountAmount(cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0))}
+            isFreeShipping={appliedPromo?.discountType === 'free-shipping'}
           />
         )}
 
         {activeTab === 'checkout' && (
           <ClientCheckoutView 
             items={cartItems}
+            discountAmount={getDiscountAmount(cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0))}
+            isFreeShipping={appliedPromo?.discountType === 'free-shipping'}
             onBackToCart={() => setActiveTab('cart')}
             onConfirmOrder={async (method, totalAmount) => {
               try {
+                // Obtenemos el ID real, o usamos un fallback para consistencia de UI en desarrollo sin login riguroso
+                const currentUser = auth.currentUser;
+                const userId = currentUser ? currentUser.uid : 'temp-demo-id';
+
                 // Sincronización en tiempo real: Guardamos la orden en Firebase
                 const newOrderId = await createOrder({
-                  userId: 'user-demo-123', // ID temporal hasta conectar Firebase Auth
+                  userId: userId,
                   items: cartItems.map(item => ({
                     productId: item.id,
                     name: item.name,
+                    emoji: item.emoji,
                     quantity: item.quantity,
                     unitPrice: item.price,
                     totalPrice: item.price * item.quantity
                   })),
-                  subtotal: totalAmount,
+                  subtotal: totalAmount, // Here we could split subtotal, discount, total
                   taxes: 0,
                   total: totalAmount,
                   status: 'pending',
-                  // createdAt es inyectado por nuestro service (serverTimestamp)
                 });
+
+                // Registrar uso del cupon
+                if (appliedPromo && appliedPromo.id) {
+                   await updatePromotion(appliedPromo.id, {
+                     currentUses: appliedPromo.currentUses + 1
+                   });
+                }
 
                 // Pasamos al usuario a la pantalla de éxito con el ID real
                 setLastOrder({
@@ -380,6 +448,8 @@ export default function ClientMenuView({ onBackToAccess }: ClientMenuViewProps) 
                 
                 // Vaciamos carrito
                 setCartItems([])
+                setAppliedPromo(null)
+                setPromoCode('')
                 setActiveTab('success')
                 
               } catch (error) {

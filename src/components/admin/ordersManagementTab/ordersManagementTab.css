@@ -316,15 +316,29 @@
 .ordersManagementTab__modalHeader {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: 0.75rem;
   border-bottom: 1px solid #dce3e7;
   padding-bottom: 0.75rem;
 }
 
-.ordersManagementTab__modalHeader h3 {
+.ordersManagementTab__modalHeaderInfo {
+  min-width: 0;
+  flex: 1;
+}
+
+.ordersManagementTab__modalHeaderInfo h3 {
   margin: 0;
   font-size: 1.25rem;
   color: #1d3428;
+  word-break: break-all;
+}
+
+.ordersManagementTab__modalHeaderInfo p {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: #6f8477;
+  word-break: break-all;
 }
 
 .ordersManagementTab__modalClose {

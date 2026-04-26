@@ -6,7 +6,6 @@ export type AdminTabId =
   | 'dashboard'
   | 'pedidos'
   | 'menu'
-  | 'inventario'
   | 'promociones'
   | 'reportes'
   | 'usuarios'
@@ -125,6 +124,12 @@ export interface ManagedOrder {
   customerName: string
   // Lista de emojis de platos para ahorrar recursos.
   dishEmojis: string[]
+  // Detalle completo original (para vista detallada).
+  fullItems?: { name: string; quantity: number; emoji?: string; unitPrice: number; totalPrice: number }[]
+  // Subtotal opcional
+  subtotal?: number
+  // Valor total numerico real para cálculos.
+  numericTotal?: number
   // Valor total formateado para UI.
   total: string
   // Metodo de entrega del pedido.

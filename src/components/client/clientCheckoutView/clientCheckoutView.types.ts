@@ -11,4 +11,6 @@ export interface ClientCheckoutViewProps {
   items: ClientCartItem[]
   onBackToCart: () => void
   onConfirmOrder: (deliveryMethod: 'delivery' | 'pickup', total: number) => void
+  discountAmount: number
+  isFreeShipping: boolean
 }

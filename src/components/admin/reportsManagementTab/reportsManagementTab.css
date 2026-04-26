@@ -1,20 +1,35 @@
-/* Contenedor principal de la pestaña reportes. */
 .reportsManagementTab {
   display: grid;
   gap: 0.9rem;
 }
 
-/* Fila superior con filtros de periodo y boton exportar. */
-.reportsManagementTab__topActions {
+.reportsManagementTab__header {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.reportsManagementTab__headerTop {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   gap: 0.75rem;
   flex-wrap: wrap;
 }
 
-/* Grupo de botones del filtro temporal. */
-.reportsManagementTab__periodFilters {
+.reportsManagementTab__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #173526;
+}
+
+.reportsManagementTab__subtitle {
+  margin: 0.18rem 0 0;
+  font-size: 0.83rem;
+  color: #60786c;
+}
+
+.reportsManagementTab__filters {
   display: inline-flex;
   border: 1px solid #dce5e0;
   border-radius: 0.75rem;
@@ -23,35 +38,28 @@
   gap: 0.2rem;
 }
 
-/* Boton base del filtro de periodo. */
-.reportsManagementTab__periodButton {
+.reportsManagementTab__filterBtn {
   border: 0;
   border-radius: 0.58rem;
-  padding: 0.4rem 0.72rem;
+  padding: 0.45rem 0.78rem;
   background: transparent;
   color: #567063;
-  font-size: 0.77rem;
+  font-size: 0.79rem;
   font-weight: 700;
+  transition: background-color 0.18s ease, color 0.18s ease;
 }
 
-/* Estado activo del filtro temporal. */
-.reportsManagementTab__periodButton.is-active {
+.reportsManagementTab__filterBtn:hover {
+  background: #f4f8f5;
+  color: #355a49;
+}
+
+.reportsManagementTab__filterBtn--active {
   background: #eff8f0;
   color: #2f8c49;
 }
 
-/* Boton exportar con estilo secundario. */
-.reportsManagementTab__exportButton {
-  border: 1px solid #dce5e0;
-  border-radius: 0.75rem;
-  padding: 0.45rem 0.8rem;
-  background: #ffffff;
-  color: #476356;
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-/* Tarjeta del filtro personalizado por fecha. */
+.reportsManagementTab__rangeControls,
 .reportsManagementTab__customRange {
   display: flex;
   align-items: center;
@@ -59,105 +67,128 @@
   flex-wrap: wrap;
 }
 
-/* Etiqueta e input del rango personalizado. */
-.reportsManagementTab__customRange label {
+.reportsManagementTab__control {
   display: grid;
-  gap: 0.2rem;
-  font-size: 0.76rem;
+  gap: 0.26rem;
+  font-size: 0.74rem;
+  color: #46695a;
   font-weight: 700;
-  color: #426151;
 }
 
-/* Nota de rango aplicado. */
-.reportsManagementTab__customRange p {
-  margin: 0;
-  color: #61796b;
-  font-size: 0.8rem;
+.reportsManagementTab__control select,
+.reportsManagementTab__control input {
+  border: 1px solid #dce5e0;
+  border-radius: 0.65rem;
+  padding: 0.42rem 0.65rem;
+  background: #ffffff;
+  color: #274538;
+  font-size: 0.82rem;
+  min-width: 9rem;
 }
 
-/* Grilla superior de metricas KPI. */
+.reportsManagementTab__control input {
+  min-width: 10.5rem;
+}
+
+.reportsManagementTab__control select:focus,
+.reportsManagementTab__control input:focus {
+  outline: 2px solid #d2ead8;
+  outline-offset: 1px;
+  border-color: #9ecfae;
+}
+
 .reportsManagementTab__metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.72rem;
 }
 
-/* Card de metrica de reportes. */
-.reportsMetricCard {
+.reportMetricCard {
+  border: 1px solid #dce3e7;
+  border-radius: 1rem;
+  background: #ffffff;
+  padding: 0.95rem;
+  box-shadow: 0 10px 24px rgba(31, 45, 35, 0.06);
   display: grid;
   gap: 0.14rem;
 }
 
-/* Valor principal de la metrica. */
-.reportsMetricCard__value {
+.reportMetricCard__value {
   margin: 0;
-  font-size: 2rem;
+  font-size: 1.95rem;
   font-weight: 800;
   color: #172b22;
 }
 
-/* Label secundario de la metrica. */
-.reportsMetricCard__label {
+.reportMetricCard__label {
   margin: 0;
   color: #647c6f;
   font-size: 0.84rem;
 }
 
-/* Texto de variacion vs periodo anterior. */
-.reportsMetricCard__change {
+.reportMetricCard__change {
   margin: 0.12rem 0 0;
-  font-size: 0.76rem;
-  font-weight: 700;
+  display: grid;
+  gap: 0.05rem;
 }
 
-/* Color para variacion positiva. */
-.reportsMetricCard__change--positive {
+.reportMetricCard__change strong {
+  font-size: 0.81rem;
+  line-height: 1.15;
+}
+
+.reportMetricCard__change span {
+  font-size: 0.73rem;
+}
+
+.reportMetricCard__change--positive {
   color: #30914f;
 }
 
-/* Color para variacion negativa. */
-.reportsMetricCard__change--negative {
+.reportMetricCard__change--negative {
   color: #bf4454;
 }
 
-/* Color para variacion neutral. */
-.reportsMetricCard__change--neutral {
+.reportMetricCard__change--neutral {
   color: #597267;
 }
 
-/* Grilla de 4 graficos (2x2). */
 .reportsManagementTab__chartsGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.72rem;
 }
 
-/* Card base de grafico. */
 .reportsChartCard {
   display: grid;
   align-content: start;
 }
 
-/* Lienzo interno para Recharts. */
+.reportsChartCard--wide {
+  grid-column: 1 / -1;
+}
+
 .reportsChartCard__canvas {
   width: 100%;
   height: 15rem;
 }
 
-/* Nota inferior del panel de horas pico. */
 .reportsChartCard__footnote {
-  margin: 0.35rem 0 0;
+  margin: 0.36rem 0 0;
   color: #6b8174;
   font-size: 0.74rem;
 }
 
-/* Contenedor de tabla top platos. */
+.reportsManagementTab__topDishes {
+  display: grid;
+  gap: 0.45rem;
+}
+
 .reportsTopDishesTable {
   display: grid;
   gap: 0.3rem;
 }
 
-/* Header de columnas de top platos. */
 .reportsTopDishesTable__head {
   display: grid;
   grid-template-columns: 5.5rem 2fr 1fr 1fr 1.25fr;
@@ -169,7 +200,6 @@
   text-transform: uppercase;
 }
 
-/* Fila de top plato. */
 .reportsTopDishesTable__row {
   display: grid;
   grid-template-columns: 5.5rem 2fr 1fr 1fr 1.25fr;
@@ -181,7 +211,6 @@
   font-size: 0.79rem;
 }
 
-/* Burbuja de posicion del ranking. */
 .reportsTopDishesTable__position {
   width: 1.35rem;
   height: 1.35rem;
@@ -194,19 +223,16 @@
   font-size: 0.72rem;
 }
 
-/* Nombre del plato en top ranking. */
 .reportsTopDishesTable__name {
   color: #1f362b;
   font-weight: 700;
 }
 
-/* Columna de participacion con barra y porcentaje. */
 .reportsTopDishesTable__share {
   display: grid;
   gap: 0.16rem;
 }
 
-/* Pista base de participacion. */
 .reportsTopDishesTable__shareTrack {
   width: 100%;
   height: 0.34rem;
@@ -215,21 +241,26 @@
   overflow: hidden;
 }
 
-/* Barra activa de participacion por plato. */
 .reportsTopDishesTable__shareTrack span {
   display: block;
   height: 100%;
   border-radius: inherit;
 }
 
-/* Etiqueta de porcentaje final. */
 .reportsTopDishesTable__share small {
   color: #667f71;
   font-size: 0.7rem;
   font-weight: 700;
 }
 
-/* Ajustes responsive para pantallas medianas. */
+.reportsTopDishesTable__empty {
+  margin: 0;
+  padding: 1rem;
+  color: #666;
+  border-top: 1px solid #eee;
+  font-size: 0.85rem;
+}
+
 @media (max-width: 1200px) {
   .reportsManagementTab__metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -239,16 +270,28 @@
     grid-template-columns: 1fr;
   }
 
+  .reportsChartCard--wide {
+    grid-column: auto;
+  }
+
   .reportsTopDishesTable__head,
   .reportsTopDishesTable__row {
     grid-template-columns: 4.5rem 1.7fr 1fr 1fr 1.2fr;
   }
 }
 
-/* Ajustes responsive para movil. */
 @media (max-width: 760px) {
+  .reportsManagementTab__headerTop {
+    align-items: flex-start;
+  }
+
   .reportsManagementTab__metrics {
     grid-template-columns: 1fr;
+  }
+
+  .reportsManagementTab__control select,
+  .reportsManagementTab__control input {
+    min-width: 8.8rem;
   }
 
   .reportsTopDishesTable__head {

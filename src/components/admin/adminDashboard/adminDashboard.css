@@ -42,6 +42,36 @@
   font-size: 0.87rem;
 }
 
+.adminTopbar__dashboardFilters {
+  margin-top: 0.58rem;
+  display: inline-flex;
+  gap: 0.35rem;
+  border: 1px solid #d9e2de;
+  background: #ffffff;
+  border-radius: 0.74rem;
+  padding: 0.18rem;
+}
+
+.adminTopbar__dashboardFilterBtn {
+  border: 0;
+  background: transparent;
+  color: #5d7468;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 0.55rem;
+  padding: 0.32rem 0.58rem;
+}
+
+.adminTopbar__dashboardFilterBtn:hover {
+  background: #f2f7f3;
+  color: #365b4a;
+}
+
+.adminTopbar__dashboardFilterBtn.is-active {
+  background: #eaf7ed;
+  color: #2f8a4f;
+}
+
 /* Contenedor de perfil y estado de usuario admin. */
 .adminTopbar__profile {
   display: flex;

@@ -3,6 +3,7 @@ export interface UserDocument {
   email: string;
   role: 'admin' | 'client';
   name: string;
+  phone?: string;
   createdAt: string;
 }
 
@@ -26,6 +27,7 @@ export interface ProductDocument {
 export interface OrderItem {
   productId: string;
   name: string;
+  emoji?: string;
   quantity: number;
   unitPrice: number;
   totalPrice: number;
@@ -47,7 +49,18 @@ export interface OrderDocument {
 export interface PromotionDocument {
   id?: string;
   code: string;
-  discountPercentage: number;
-  isActive: boolean;
+  title: string;
+  description: string;
+  discountType: 'percentage' | 'fixed-amount' | 'free-shipping';
+  discountValue: number;
+  currentUses: number;
+  maxUses: number;
   validUntil: string;
+  isActive: boolean;
+  conditions: {
+    minOrderTotal: number;
+    takeoutOnly: boolean;
+    minItems: number;
+    firstOrderOnly: boolean;
+  };
 }

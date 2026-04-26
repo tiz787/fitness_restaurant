@@ -1,80 +1,385 @@
-/* Contenedor principal del acceso rapido por rol. */
-.accessSwitcherForm {
-  max-width: 34rem;
-  margin: 2.5rem auto;
-  border-radius: 1.2rem;
-  border: 1px solid #d6e2d9;
-  background: #ffffff;
-  box-shadow: 0 20px 40px rgba(29, 57, 38, 0.12);
-  overflow: hidden;
+/* Contenedor principal a pantalla completa (flexbox en 2 columnas) */
+.accessSwitcher {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
 }
 
-/* Encabezado superior con fondo diferenciado para branding. */
-.accessSwitcherForm__header {
-  padding: 1.5rem 1.6rem 1.2rem;
-  background:
-    radial-gradient(circle at 100% 0%, rgba(86, 190, 112, 0.18), transparent 45%),
-    linear-gradient(180deg, #f4fbf6, #eff8f1);
-  border-bottom: 1px solid #dce9df;
+/* Panel izquierdo: branding */
+.accessSwitcher__left {
+  flex: 1;
+  background-color: #17422b;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 2.5rem;
+  justify-content: space-between;
 }
 
-/* Texto corto de marca para contextualizar el formulario. */
-.accessSwitcherForm__eyebrow {
-  margin-bottom: 0.5rem;
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-weight: 800;
-  color: #2f6f46;
-}
-
-/* Titulo principal del bloque de acceso. */
-.accessSwitcherForm__title {
-  margin: 0;
-  font-family: 'Sora', 'Manrope', sans-serif;
-  font-size: 1.5rem;
-  line-height: 1.2;
-  color: #173b26;
-}
-
-/* Texto explicativo de estado actual del proyecto. */
-.accessSwitcherForm__description {
-  margin: 0.65rem 0 0;
-  color: #436451;
-  font-size: 0.92rem;
-}
-
-/* Zona de campos del formulario. */
-.accessSwitcherForm__form {
-  display: grid;
-  gap: 0.55rem;
-  padding: 1.3rem 1.6rem 1.6rem;
-}
-
-/* Etiquetas de campos para accesibilidad y claridad. */
-.accessSwitcherForm__label {
-  font-size: 0.86rem;
-  font-weight: 700;
-  color: #2d4d3b;
-}
-
-/* Contenedor de acciones en columna para lectura rapida. */
-.accessSwitcherForm__actions {
-  display: grid;
+.accessSwitcher__brand {
+  display: flex;
+  align-items: center;
   gap: 0.75rem;
-  margin-top: 0.85rem;
 }
 
-/* Ajustes responsive para pantalla pequena. */
-@media (max-width: 640px) {
-  .accessSwitcherForm {
-    margin: 1rem auto;
-    border-radius: 0.95rem;
-  }
+.accessSwitcher__logoBox {
+  background-color: rgba(74, 222, 128, 0.2);
+  border-radius: 8px;
+  padding: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  .accessSwitcherForm__header,
-  .accessSwitcherForm__form {
-    padding-left: 1rem;
-    padding-right: 1rem;
+.accessSwitcher__brandName {
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 0.5px;
+}
+
+.accessSwitcher__messageWrapper {
+  max-width: 600px;
+  margin-bottom: 2rem;
+}
+
+.accessSwitcher__heroTitle {
+  font-size: 2.5rem;
+  line-height: 1.2;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.accessSwitcher__heroHighlight {
+  color: #64e38b;
+}
+
+.accessSwitcher__heroText {
+  font-size: 1rem;
+  color: #a0bba8;
+  line-height: 1.5;
+  margin-bottom: 3rem;
+  max-width: 500px;
+}
+
+.accessSwitcher__metrics {
+  display: flex;
+  gap: 1rem;
+}
+
+.accessMetric {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.accessMetric__value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.accessMetric__label {
+  font-size: 0.75rem;
+  color: #a0bba8;
+}
+
+/* Panel derecho: Formulario */
+.accessSwitcher__right {
+  flex: 1;
+  background-color: #fafafa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: 2rem;
+}
+
+.accessCard {
+  background: #ffffff;
+  width: 100%;
+  max-width: 440px;
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+}
+
+.accessCard__header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.accessCard__title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 0.25rem;
+}
+
+.accessCard__subtitle {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Demo Alert */
+.accessCard__demoAlert {
+  border: 1px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.demoAlert__label {
+  font-size: 0.75rem;
+  text-align: center;
+  color: #6b7280;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
+}
+
+.demoAlert__buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.demoBtn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #374151;
+  transition: all 0.2s;
+}
+
+.demoBtn--client:hover {
+  border-color: #10b981;
+  color: #10b981;
+  background: #f0fdf4;
+}
+
+.demoBtn--admin:hover {
+  border-color: #f59e0b;
+  color: #f59e0b;
+  background: #fffbeb;
+}
+
+/* Form Styles */
+.accessCard__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.accessCard__error {
+  background-color: #fee2e2;
+  color: #991b1b;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formGroup label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.formGroup input {
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  color: #111111;
+  background-color: #ffffff;
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.15);
+}
+
+.formGroup input::placeholder {
+  color: #9ca3af;
+}
+
+.passwordInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordInputWrapper input {
+  width: 100%;
+  padding-right: 2.5rem;
+}
+
+.passwordToggleBtn {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 1.1rem;
+  color: #6b7280;
+}
+
+.accessCard__forgotOptions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -0.5rem;
+}
+
+.accessCard__forgotOptions a {
+  font-size: 0.8rem;
+  color: #10b981;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.accessCard__forgotOptions a:hover {
+  text-decoration: underline;
+}
+
+.accessCard__footer {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-top: 1rem;
+}
+
+.accessCard__footer a {
+  color: #10b981;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.accessCard__footer a:hover {
+  text-decoration: underline;
+}
+
+.accessFloatingHelp {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+}
+
+.helpBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #111827;
+  color: #fff;
+  border: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 900px) {
+  .accessSwitcher {
+    flex-direction: column;
   }
+  .accessSwitcher__left {
+    padding: 2rem 1.5rem;
+  }
+  .accessSwitcher__metrics {
+    flex-direction: column;
+  }
+  .accessSwitcher__right {
+    padding: 2rem 1.5rem;
+  }
+  .accessCard {
+    padding: 1.5rem;
+  }
+}
+
+/* Nuevos estilos para integración Google y Registro */
+.accessCard__promptActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.accessCard__error--warning {
+  background-color: #fff3cd;
+  color: #854d0e;
+  border: 1px solid #fde68a;
+}
+
+.authDivider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 0.5rem 0;
+  color: #9ca3af;
+}
+
+.authDivider::before,
+.authDivider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.authDivider span {
+  padding: 0 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.googleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  height: 48px;
+}
+
+.googleBtn:hover {
+  background-color: #f9fafb;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.googleBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.googleIcon {
+  width: 20px;
+  height: 20px;
 }

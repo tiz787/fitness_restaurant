@@ -1,307 +1,515 @@
-/* Contenedor principal de la pestaña usuarios. */
-.usersManagementTab {
-  display: grid;
-  gap: 0.9rem;
+.usersTab {
+  padding: 2rem;
+  background-color: #f4f6f8;
+  min-height: 100%;
 }
 
-/* Header principal de gestion de usuarios. */
-.usersManagementTab__header {
-  display: grid;
-  gap: 0.15rem;
+.usersTab__header {
+  margin-bottom: 2rem;
 }
 
-/* Titulo principal de usuarios. */
-.usersManagementTab__title {
-  margin: 0;
-  font-family: 'Sora', 'Manrope', sans-serif;
-  font-size: 2rem;
-  color: #172a23;
+.usersTab__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 0.25rem;
 }
 
-/* Subtitulo de contexto de cantidad de usuarios. */
-.usersManagementTab__subtitle {
-  margin: 0;
-  color: #607468;
+.usersTab__subtitle {
+  color: #666;
+  font-size: 0.9rem;
 }
 
-/* Grid de metricas superiores de usuarios. */
-.usersManagementTab__stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.65rem;
+.usersTab__statsRow {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
-/* Grid superior de graficos. */
-.usersManagementTab__charts {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.2rem;
-  margin-bottom: 0.5rem;
+.usersTab__statCard {
+  background: white;
+  padding: 1.25rem;
+  border-radius: 12px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
-/* Contenedor individual de grafico. */
-.usersChartCard {
-  border: 1px solid #dce4df;
-  border-radius: 1.2rem;
-  background: #ffffff;
-  padding: 1.2rem;
+.usersTab__statIcon {
+  width: 48px;
+  height: 48px;
+  background: #f0f7f3;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.usersTab__statIcon.admin {
+  background: #fff4eb;
+}
+
+.usersTab__statIcon.date {
+  background: #f5f6ff;
+}
+
+.usersTab__statCard div {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 }
 
-/* Titulo del grafico. */
-.usersChartCard__title {
-  margin: 0;
-  font-family: 'Sora', 'Manrope', sans-serif;
-  font-size: 1.1rem;
+.usersTab__statCard strong {
+  font-size: 1.25rem;
   font-weight: 700;
-  color: #172a23;
+  color: #1a1a1a;
 }
 
-/* Card base de metricas en seccion usuarios. */
-.usersStatCard {
-  border: 1px solid #dce4df;
-  border-radius: 0.9rem;
-  background: #ffffff;
-  padding: 0.7rem;
+.usersTab__statCard span {
+  font-size: 0.85rem;
+  color: #666;
 }
 
-/* Valor principal de metrica de usuario. */
-.usersStatCard p {
-  margin: 0;
-  font-size: 1.55rem;
-  font-weight: 800;
-  color: #2e493c;
-}
-
-/* Etiqueta secundaria de metrica de usuario. */
-.usersStatCard span {
-  color: #637a6d;
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-/* Nota de politica de roles (solo clientes). */
-.usersManagementTab__policyNote {
-  margin: 0;
-  border: 1px solid #dce4df;
-  border-radius: 0.8rem;
-  background: #f6faf7;
-  color: #547063;
-  font-size: 0.84rem;
-  padding: 0.55rem 0.7rem;
-}
-
-/* Fila de filtros de busqueda y selects. */
-.usersManagementTab__filters {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 0.6rem;
-}
-
-/* Buscador principal con icono integrado. */
-.usersManagementTab__search {
-  display: grid;
-  grid-template-columns: auto 1fr;
+.usersTab__controls {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 0.4rem;
-  border: 1px solid #dce4df;
-  border-radius: 0.9rem;
-  padding: 0.35rem 0.65rem;
-  background: #ffffff;
+  margin-bottom: 2rem;
+  gap: 2rem;
 }
 
-/* Input interno del buscador sin borde duplicado. */
-.usersManagementTab__search input {
-  border: 0;
-  box-shadow: none;
-  background: transparent;
-  padding: 0.5rem 0.2rem;
-  color: #111111;
+.usersTab__searchWrapper {
+  position: relative;
+  flex: 1;
+  max-width: 600px;
+}
+
+.usersTab__searchIcon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+}
+
+.usersTab__search {
   width: 100%;
-}
-
-/* Para que se vea bien el placehoder */
-.usersManagementTab__search input::placeholder {
-  color: #607468;
-}
-
-/* Estilo de select para filtros auxiliares. */
-.usersManagementTab__filters select {
-  min-width: 10.5rem;
-  border: 1px solid #dce4df;
-  border-radius: 0.9rem;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #111111;
   background: #ffffff;
-  padding: 0.55rem 0.75rem;
+  outline: none;
+}
+
+.usersTab__search::placeholder {
+  color: #65766d;
+}
+
+.usersTab__search:focus {
+  border-color: #4CAF50;
+}
+
+.usersTab__roleFilters {
+  display: flex;
+  gap: 0.5rem;
+  background: white;
+  padding: 0.3rem;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.usersTab__roleBtn {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
   color: #111111;
   font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
-/* Grid de tarjetas de clientes. */
-.usersManagementTab__grid {
+.usersTab__roleBtn:hover {
+  background: #f4f6f8;
+}
+
+.usersTab__roleBtn.active {
+  background: #dff2e4;
+  border-color: #98cfaa;
+  color: #111111;
+}
+
+/* User Card Grid */
+.usersTab__grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 1.5rem;
 }
 
-/* Card individual de cliente. */
 .userCard {
-  border: 1px solid #dce4df;
-  border-radius: 0.95rem;
-  background: #ffffff;
-  padding: 0.8rem;
-  display: grid;
-  gap: 0.55rem;
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
 }
 
-/* Header de identidad de cliente. */
 .userCard__header {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.userCard__avatar {
+  width: 54px;
+  height: 54px;
+  background: #e8eaf6;
+  color: #3f51b5;
+  font-size: 1.25rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.userCard__headerInfo h3 {
+  font-size: 1.1rem;
+  margin: 0 0 0.25rem 0;
+  color: #1a1a1a;
+}
+
+.userCard__badge {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.userCard__badge.client {
+  color: #3f51b5;
+  background: #e8eaf6;
+}
+
+.userCard__badge.admin {
+  color: #e65100;
+  background: #fbe9e7;
+}
+
+.userCard__details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: #666;
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.userCard__details p {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.userCard__metrics {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: auto;
+  margin-bottom: 1rem;
+}
+
+.userCard__metricItem {
+  flex: 1;
+  padding: 0.75rem;
+  border-radius: 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.userCard__metricItem.light-green {
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.userCard__metricItem.light-blue {
+  background: #eff6ff;
+  color: #1e40af;
+}
+
+.userCard__metricItem strong {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.userCard__metricItem span {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.userCard__actionBtn {
+  width: 100%;
+  padding: 0.8rem;
+  background: #5db075;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.userCard__actionBtn:hover {
+  background: #4a905e;
+}
+
+.usersTab__empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  background: white;
+  border-radius: 12px;
+}
+
+/* Sidebar Info Overlay */
+.userSidebar__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.userSidebar {
+  background: white;
+  width: 100%;
+  max-width: 480px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.3s ease-out forwards;
+  box-shadow: -4px 0 24px rgba(0,0,0,0.1);
+  overflow-y: auto;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.userSidebar__header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #eee;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-/* Bloque de avatar emoji y texto principal. */
-.userCard__identity {
+.userSidebar__headerProfile {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 1rem;
 }
 
-/* Avatar temporal con emoji de persona. */
-.userCard__avatar {
-  width: 2.1rem;
-  height: 2.1rem;
-  border-radius: 999px;
-  border: 1px solid #dce5df;
-  background: #f5faf7;
-  display: grid;
-  place-content: center;
-  font-size: 1.15rem;
+.userSidebar__headerProfile h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.1rem;
 }
 
-/* Nombre del cliente en card. */
-.userCard__name {
+.userSidebar__headerProfile p {
   margin: 0;
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: #233b30;
+  color: #666;
+  font-size: 0.85rem;
 }
 
-/* Rol visible del cliente (fijo). */
-.userCard__role {
-  margin: 0.16rem 0 0;
-  font-size: 0.76rem;
-  color: #3a8f55;
-  font-weight: 700;
+.userSidebar__close {
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  color: #999;
+  cursor: pointer;
+  padding: 0.5rem;
 }
 
-/* Lista de datos del cliente. */
-.userCard__details {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.userSidebar__close:hover {
+  color: #333;
+}
+
+.userSidebar__statsGrid {
+  padding: 1.5rem;
   display: grid;
-  gap: 0.2rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
 }
 
-/* Item de detalle de cliente. */
-.userCard__details li {
-  margin: 0;
-  color: #5d7568;
-  font-size: 0.79rem;
-}
-
-/* Grupo de botones de accion de card usuario. */
-.userCard__actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.45rem;
-}
-
-/* Boton principal de acciones de usuario. */
-.userCard__actions button {
-  border: 1px solid #d6dfd9;
-  border-radius: 999px;
-  padding: 0.42rem 0.62rem;
-  background: #ffffff;
-  color: #335244;
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-/* Estado visual de boton deshabilitado. */
-.userCard__actions button:disabled {
-  background: #f4f7f5;
-  color: #8a9b90;
-}
-
-/* Panel expandible con historial de pedidos del cliente. */
-.userCard__orders {
-  border-top: 1px solid #e3eae5;
-  padding-top: 0.5rem;
-}
-
-/* Titulo del bloque de pedidos del cliente. */
-.userCard__ordersTitle {
-  margin: 0;
-  color: #335244;
-  font-size: 0.77rem;
-  font-weight: 700;
-}
-
-/* Lista de pedidos del cliente. */
-.userCard__orders ul {
-  list-style: none;
-  margin: 0.4rem 0 0;
-  padding: 0;
-  display: grid;
-  gap: 0.3rem;
-}
-
-/* Fila de pedido con columnas compactas. */
-.userCard__orders li {
-  margin: 0;
-  border: 1px solid #dce4df;
-  border-radius: 0.6rem;
-  background: #f8fbf9;
-  padding: 0.3rem 0.45rem;
-  display: grid;
-  grid-template-columns: 1fr auto auto auto;
-  gap: 0.4rem;
+.userSidebar__statBox {
+  padding: 1rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
   align-items: center;
-  font-size: 0.72rem;
-  color: #566f62;
+  text-align: center;
+  border: 1px solid rgba(0,0,0,0.05);
 }
 
-/* Ajustes responsive para filtros y cards. */
-@media (max-width: 1200px) {
-  .usersManagementTab__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.userSidebar__statBox.light-green { background: #f0fdf4; color: #166534; }
+.userSidebar__statBox.light-blue { background: #eff6ff; color: #1e40af; }
+.userSidebar__statBox.light-orange { background: #fff7ed; color: #c2410c; }
+
+.userSidebar__statBox .icon {
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
 }
 
-/* Ajustes responsive para vista movil. */
-@media (max-width: 760px) {
-  .usersManagementTab__charts {
-    grid-template-columns: 1fr;
-  }
+.userSidebar__statBox strong {
+  font-size: 1rem;
+  font-weight: 700;
+}
 
-  .usersManagementTab__stats {
-    grid-template-columns: 1fr;
-  }
+.userSidebar__statBox span {
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
 
-  .usersManagementTab__filters {
-    grid-template-columns: 1fr;
-  }
+.userSidebar__orderFilters {
+  padding: 0 1.5rem 1rem;
+  display: flex;
+  gap: 0.75rem;
+}
 
-  .usersManagementTab__grid {
-    grid-template-columns: 1fr;
-  }
+.userSidebar__filterBtn {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 1px solid #eee;
+  background: white;
+  color: #666;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
 
-  .userCard__orders li {
-    grid-template-columns: 1fr;
-  }
+.userSidebar__filterBtn.active {
+  background: #f0fdf4;
+  color: #166534;
+  border-color: #166534;
+}
+
+.userSidebar__orderList {
+  padding: 0 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.userSidebar__orderCard {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.userSidebar__orderCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.userSidebar__orderCardIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.userSidebar__orderCardInfo {
+  flex: 1;
+}
+
+.userSidebar__orderCardHead {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.userSidebar__orderCardHead strong {
+  font-size: 0.95rem;
+  color: #1a1a1a;
+}
+
+.userSidebar__statusBadge {
+  font-size: 0.65rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.userSidebar__statusBadge.delivered {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.userSidebar__statusBadge.active {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.userSidebar__orderCardMeta {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.userSidebar__orderCardPrice {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.userSidebar__orderCardPrice .chev {
+  color: #999;
+}
+
+.userSidebar__empty {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  background: #f8f9fa;
+  border-radius: 8px;
 }

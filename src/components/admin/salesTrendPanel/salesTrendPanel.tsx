@@ -17,6 +17,8 @@ import './salesTrendPanel.css'
 interface SalesTrendPanelProps {
   // Lista de puntos para dibujar la curva de tendencia.
   points: SalesTrendPoint[]
+  // Texto del chip para indicar el rango actual del dashboard.
+  chipLabel?: string
 }
 
 // Formatea ticks monetarios del eje Y.
@@ -29,7 +31,7 @@ const formatCurrencyTick = (value: number): string => {
 }
 
 // Renderiza panel de tendencia de ventas ultimos dias.
-export default function SalesTrendPanel({ points }: SalesTrendPanelProps) {
+export default function SalesTrendPanel({ points, chipLabel = 'Ultimos 7 dias' }: SalesTrendPanelProps) {
   // Muestra estado vacio si no hay datos estaticos cargados.
   if (points.length === 0) {
     return (
@@ -47,7 +49,7 @@ export default function SalesTrendPanel({ points }: SalesTrendPanelProps) {
     <article className="salesTrendPanel panelCard">
       <header className="panelCard__header">
         <h2 className="panelCard__title">Ventas ultimos 8 dias</h2>
-        <span className="panelCard__chip">Ultimos 7 dias</span>
+        <span className="panelCard__chip">{chipLabel}</span>
       </header>
 
       <div className="salesTrendPanel__chart">

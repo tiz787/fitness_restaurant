@@ -13,4 +13,5 @@ export interface AppButtonProps {
   onClick?: () => void
   // Permite que el boton use todo el ancho disponible cuando es necesario.
   fullWidth?: boolean
+  disabled?: boolean
 }

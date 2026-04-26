@@ -12,6 +12,8 @@ export default function ClientCheckoutView({
   items,
   onBackToCart,
   onConfirmOrder,
+  discountAmount,
+  isFreeShipping,
 }: ClientCheckoutViewProps) {
   const [currentStep, setCurrentStep] = useState<CheckoutStep>('delivery')
 
@@ -29,8 +31,8 @@ export default function ClientCheckoutView({
 
   // Resumen monetario.
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0)
-  const shipping = deliveryMethod === 'delivery' ? 0 : 0
-  const total = subtotal + shipping
+  const shipping = deliveryMethod === 'delivery' ? (isFreeShipping ? 0 : 5000) : 0
+  const total = Math.max(0, subtotal - discountAmount) + shipping
 
   const handleNextStep = (next: CheckoutStep): void => {
     setCurrentStep(next)

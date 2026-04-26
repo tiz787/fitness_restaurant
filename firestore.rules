@@ -9,29 +9,21 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Regla para que cualquier persona pueda ver los productos, 
-    // pero solo el administrador (a través de un panel de control) podría escribirlos si validamos rol.
-    // Por ahora (para desarrollo) permitiremos que lea todo y solo usuarios logueados escriban.
     match /products/{productId} {
       allow read: if true; // Todos pueden ver el menú (incluso sin login)
-      allow write: if true; // TEMPORAL: Permitir escritura sin login para desarrollo (volver a if isAuthenticated() con autenticacion completa)
+      allow write: if isAuthenticated();
     }
 
-    // Regla para órdenes:
-    // MIENTRAS ESTAMOS EN DESARROLLO, dejaremos que cualquiera pueda crear/leer/actualizar órdenes.
-    // Cuando implementemos el Login (Auth), cambiaremos esto a `if isAuthenticated()`.
     match /orders/{orderId} {
-      allow create, read, update: if true; 
+      allow create: if isAuthenticated();
+      allow read, update: if isAuthenticated(); 
       allow delete: if false; // Por seguridad, nunca se borran las órdenes
     }
 
-    // Regla para usuarios (sus perfiles)
     match /users/{userId} {
-      // Un usuario solo puede leer y actualizar su propia información
-      allow read, write: if request.auth != null && request.auth.uid == userId; 
+      allow read, write: if isAuthenticated(); 
     }
 
-    // Promociones: cualquiera puede leerlas, solo los admins editarlas
     match /promotions/{promoId} {
       allow read: if true;
       allow write: if isAuthenticated();

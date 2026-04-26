@@ -1,76 +1,110 @@
-// Importa el hook de estado para controlar la vista actual.
-import { useState } from 'react'
-// Importa los estilos generales de la aplicacion.
+import { useState, useEffect } from 'react'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from './services/firebase/config'
+import { signOutCurrentSession } from './services/firebase/auth.services'
 import './App.css'
-// Importa el formulario de acceso por roles.
 import AccessSwitcherForm from './components/auth/accessSwitcherForm/accessSwitcherForm'
-// Importa la vista principal del panel admin.
 import AdminDashboard from './components/admin/adminDashboard/adminDashboard'
-// Importa la vista principal inicial de cliente basada en catalogo.
 import ClientMenuView from './components/client/clientMenuView/clientMenuView'
-// Importa el tipo de datos del formulario de acceso.
-import type { AccessFormValues } from './components/auth/accessSwitcherForm/accessSwitcherForm.types'
 
-// Define las vistas posibles de la aplicacion en esta primera etapa.
-type AppView = 'access' | 'admin' | 'client-placeholder'
+type AppView = 'access' | 'admin' | 'client-placeholder' | 'role-selector'
 
-// Componente raiz de la aplicacion.
 function App() {
-  // Guarda la vista actual para alternar entre acceso, admin y cliente temporal.
   const [currentView, setCurrentView] = useState<AppView>('access')
-  // Guarda el correo del admin para mostrarlo en el panel.
   const [activeAdminEmail, setActiveAdminEmail] = useState<string>('admin@fitfuel.com')
+  const [sessionUser, setSessionUser] = useState<any>(null)
+  const [loadingAuth, setLoadingAuth] = useState(true)
 
-  // Maneja el envio del formulario admin y cambia la vista al dashboard.
-  const handleEnterAdmin = (values: AccessFormValues): void => {
-    // Si no hay email escrito, deja un email por defecto para la demo visual.
-    const nextEmail = values.email.trim() || 'admin@fitfuel.com'
-    // Actualiza el email que se muestra en cabecera del panel.
-    setActiveAdminEmail(nextEmail)
-    // Navega a la vista de administrador.
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setSessionUser(user)
+      if (user) {
+        setActiveAdminEmail(user.email || 'admin@fitfuel.com')
+        // Si hay usuario y estábamos en login, pasamos al selector de rol
+        if (currentView === 'access') {
+          setCurrentView('role-selector')
+        }
+      } else {
+        // Ningún usuario autenticado
+        setCurrentView('access')
+      }
+      setLoadingAuth(false)
+    })
+    return () => unsubscribe()
+  }, [currentView])
+
+  const handleEnterAdmin = (): void => {
     setCurrentView('admin')
   }
 
-  // Cambia a la vista temporal del cliente (sin logica de negocio aun).
   const handleEnterClientPlaceholder = (): void => {
-    // Muestra la pantalla de "proximamente" para cliente.
     setCurrentView('client-placeholder')
   }
 
-  // Regresa a la pantalla de acceso para cambiar de rol.
-  const handleBackToAccess = (): void => {
-    // Reestablece la vista de seleccion de rol.
-    setCurrentView('access')
+  const handleSignOut = async (): Promise<void> => {
+    await signOutCurrentSession()
   }
 
-  // Renderiza el layout base y decide que vista mostrar.
+  // Permite volver al selector desde otra vista
+  const handleBackToSelector = (): void => {
+    setCurrentView('role-selector')
+  }
+
+  if (loadingAuth) {
+    return <div className="appRoot appRoot--loading">Cargando...</div>
+  }
+
   return (
     <div
-      className={`appRoot ${currentView === 'admin' ? 'appRoot--admin' : ''} ${currentView === 'client-placeholder' ? 'appRoot--client' : ''}`}
+      className={`appRoot ${currentView === 'admin' ? 'appRoot--admin' : ''} ${currentView === 'client-placeholder' ? 'appRoot--client' : ''} ${currentView === 'access' ? 'appRoot--access' : ''} ${currentView === 'role-selector' ? 'appRoot--selector' : ''}`}
     >
       {currentView === 'access' ? (
-        <div className="appCenterPanel">
-          <AccessSwitcherForm
-            onEnterAdmin={handleEnterAdmin}
-            onEnterClient={handleEnterClientPlaceholder}
-          />
+        <AccessSwitcherForm
+          onEnterAdmin={() => { /* Navigation unnecesary here since auth state change redirects */ }}
+          onEnterClient={() => { /* Same */ }}
+        />
+      ) : null}
+
+      {currentView === 'role-selector' ? (
+        <div className="roleSelectorContainer">
+          <header className="roleSelector__header">
+            <h1>Bienvenido a tu Sandbox, {sessionUser?.displayName || sessionUser?.email}</h1>
+            <p>Este es tu propio espacio aislado. Puedes simular ser cliente y luego entrar como admin para ver los cambios.</p>
+          </header>
+          <div className="roleSelector__cards">
+            <div className="roleCard roleCard--client">
+              <h3>Modo Cliente</h3>
+              <p>Simula compras, explora tu menú semilla y haz pedidos de prueba.</p>
+              <button onClick={handleEnterClientPlaceholder}>Entrar como Cliente</button>
+            </div>
+            <div className="roleCard roleCard--admin">
+              <h3>Modo Administrador</h3>
+              <p>Gestiona tu menú, revisa las órdenes de tus clientes (las que hiciste) y crea promociones.</p>
+              <button onClick={handleEnterAdmin}>Entrar como Admin</button>
+            </div>
+          </div>
+          <div className="roleSelector__footer">
+             <button className="signOutBtn" onClick={handleSignOut}>Cerrar Sesión</button>
+          </div>
         </div>
       ) : null}
 
       {currentView === 'admin' ? (
+        // Modificado para que "onSignOut" simplemente vuelva al selector
+        // y le damos una nueva prop de "closeSession" si se requiere.
         <AdminDashboard
           adminEmail={activeAdminEmail}
-          onSignOut={handleBackToAccess}
+          onSignOut={handleBackToSelector}
           onOpenClientPreview={handleEnterClientPlaceholder}
         />
       ) : null}
 
       {currentView === 'client-placeholder' ? (
-        <ClientMenuView onBackToAccess={handleBackToAccess} />
+        // Añadimos prop de retroceso para volver al selector de este lado también
+        <ClientMenuView onBackToAccess={handleBackToSelector} />
       ) : null}
     </div>
   )
 }
 
-// Exporta el componente para usarlo en el punto de entrada.
 export default App

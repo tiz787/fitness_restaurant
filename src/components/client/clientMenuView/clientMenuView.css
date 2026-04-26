@@ -161,6 +161,11 @@
   background: transparent;
   padding: 0.46rem 0.16rem;
   font-size: 0.8rem;
+  color: #111111;
+}
+
+.clientMenuView__search input::placeholder {
+  color: #65766d;
 }
 
 /* Select de ordenamiento del listado. */
@@ -168,6 +173,7 @@
   border-radius: 0.72rem;
   border: 1px solid #d9e2dd;
   background: #ffffff;
+  color: #111111;
   min-width: 7.8rem;
   font-size: 0.75rem;
   font-weight: 700;
@@ -198,9 +204,9 @@
 
 /* Chip activo seleccionado. */
 .clientMenuView__chip.is-active {
-  background: #47ab61;
-  border-color: #47ab61;
-  color: #f4fff7;
+  background: #dff2e4;
+  border-color: #98cfaa;
+  color: #111111;
 }
 
 /* Contador de resultados de platos. */

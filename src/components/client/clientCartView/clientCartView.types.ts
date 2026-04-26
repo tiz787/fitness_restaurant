@@ -16,4 +16,6 @@ export interface ClientCartViewProps {
   onPromoCodeChange: (code: string) => void
   onApplyPromoCode: () => void
   onProceedToCheckout: () => void
+  discountAmount: number
+  isFreeShipping: boolean
 }

@@ -49,6 +49,11 @@
   background: transparent;
   box-shadow: none;
   padding: 0.5rem 0.25rem;
+  color: #111111;
+}
+
+.menuManagementTab__search input::placeholder {
+  color: #65766d;
 }
 
 /* Boton principal para mostrar formulario de nuevo plato. */
@@ -81,9 +86,9 @@
 
 /* Estado activo de categoria seleccionada. */
 .menuManagementTab__categoryButton.is-active {
-  background: #3fa15e;
-  border-color: #3fa15e;
-  color: #f5fff8;
+  background: #dff2e4;
+  border-color: #98cfaa;
+  color: #111111;
 }
 
 /* Formulario de alta rapida para nuevo plato. */

@@ -77,7 +77,10 @@ export default function OrdersManagementTab() {
           id: doc.id || 'N/A',
           timeLabel: timeStr,
           customerName: doc.userId || 'Cliente web',
-          dishEmojis: doc.items?.map(() => '🍽️').slice(0, 3) || ['🥡'],
+          dishEmojis: doc.items?.map(item => item.emoji || '🍽️').slice(0, 3) || ['🥡'],
+          fullItems: doc.items || [],
+          subtotal: doc.subtotal || doc.total,
+          numericTotal: doc.total || 0,
           total: `COP ${doc.total.toLocaleString('es-CO')}`,
           deliveryType: 'Delivery',
           status: uiStatus,
@@ -312,7 +315,10 @@ export default function OrdersManagementTab() {
         <div className="ordersManagementTab__modalOverlay" onClick={() => setSelectedOrder(null)}>
           <div className="ordersManagementTab__modalContent" onClick={(e) => e.stopPropagation()}>
             <header className="ordersManagementTab__modalHeader">
-              <h3>Detalles del pedido {selectedOrder.id}</h3>
+              <div className="ordersManagementTab__modalHeaderInfo">
+                <h3>Pedido #{selectedOrder.id.substring(0, 8)}</h3>
+                <p>Cliente: {selectedOrder.customerName.length > 15 ? selectedOrder.customerName.substring(0, 15) + '...' : selectedOrder.customerName} • {selectedOrder.timeLabel}</p>
+              </div>
               <button 
                 type="button" 
                 className="ordersManagementTab__modalClose"
@@ -322,18 +328,48 @@ export default function OrdersManagementTab() {
               </button>
             </header>
             <div className="ordersManagementTab__modalBody">
-              <p><strong>Cliente:</strong> {selectedOrder.customerName}</p>
-              <p><strong>Hora entrada:</strong> {selectedOrder.timeLabel}</p>
-              <p><strong>Tipo entrega:</strong> {selectedOrder.deliveryType}</p>
-              <p><strong>Estado actual:</strong> {selectedOrder.status}</p>
-              <p><strong>Total:</strong> {selectedOrder.total}</p>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <p>
+                  <strong>Estado:</strong>{' '}
+                  {selectedOrder.status === 'Recibido' ? '📥' : selectedOrder.status === 'Preparando' ? '👨‍🍳' : selectedOrder.status === 'Listo' ? '✅' : selectedOrder.status === 'En camino' ? '🛵' : selectedOrder.status === 'Entregado' ? '📦' : selectedOrder.status === 'Cancelado' ? '❌' : '🔘'} {selectedOrder.status} |{' '}
+                  <strong>Tipo entrega:</strong>{' '}
+                  {selectedOrder.deliveryType === 'Delivery' ? '🛵 Delivery' : '🏪 Retiro en local'}
+                </p>
+              </div>
               
-              <div className="ordersManagementTab__modalSection">
-                <h4>Platos (Emojis de demo)</h4>
-                <div className="ordersManagementTab__dishes">
-                  {selectedOrder.dishEmojis.map((dishEmoji, index) => (
-                    <span key={`${selectedOrder.id}-modal-${dishEmoji}-${index}`}>{dishEmoji}</span>
-                  ))}
+              <h4 style={{ borderBottom: '1px solid #eee', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Detalle de Platos</h4>
+              
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {selectedOrder.fullItems?.map((item, idx) => (
+                  <li key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f9f9f9', padding: '0.8rem', borderRadius: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                      <span style={{ fontSize: '1.5rem' }} title={item.name}>{item.emoji || '🍽️'}</span>
+                      <div>
+                        <p style={{ margin: 0, fontWeight: 600 }}>{item.emoji || '🍽️'} {item.name}</p>
+                        <p style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>
+                          Cant: {item.quantity} × COP {item.unitPrice.toLocaleString('es-CO')}
+                        </p>
+                      </div>
+                    </div>
+                    <p style={{ margin: 0, fontWeight: 'bold' }}>COP {item.totalPrice.toLocaleString('es-CO')}</p>
+                  </li>
+                ))}
+              </ul>
+              
+              <div style={{ marginTop: '2rem', padding: '1rem', backgroundColor: '#f0fdf4', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#555' }}>
+                  <span>Subtotal</span>
+                  <span>COP {selectedOrder.subtotal?.toLocaleString('es-CO') || selectedOrder.total.replace('COP ', '')}</span>
+                </div>
+                {selectedOrder.subtotal && selectedOrder.numericTotal !== undefined && selectedOrder.numericTotal < selectedOrder.subtotal && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', color: '#e74c3c' }}>
+                    <span>Descuento aplicado</span>
+                    <span>- COP {(selectedOrder.subtotal - selectedOrder.numericTotal).toLocaleString('es-CO')}</span>
+                  </div>
+                )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.2rem', fontWeight: 'bold', marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid #ccc' }}>
+                  <span>Total</span>
+                  <span>{selectedOrder.total}</span>
                 </div>
               </div>
             </div>

@@ -1,383 +1,278 @@
-// Importa estado y memo para filtros y visualizacion de clientes.
-import { useMemo, useState, type ChangeEvent } from 'react'
-// Importa componentes de Recharts para visualizacion de metricas.
-import {
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts'
-// Importa tipo de usuario gestionado por admin.
-import type { ManagedUser } from '../adminDashboard/adminDashboard.types'
-// Importa estilos dedicados de la pestaña usuarios.
+import { useState, useEffect, useMemo } from 'react'
+import { listenToAllUsers } from '../../../services/firebase/users.services'
+import { listenToAllOrders } from '../../../services/firebase/orders.services'
+import type { UserDocument, OrderDocument } from '../../../services/firebase/types'
 import './usersManagementTab.css'
 
-// Define props del modulo de usuarios admin.
-interface UsersManagementTabProps {
-  // Lista inicial de clientes para gestion visual.
-  initialUsers: ManagedUser[]
-}
+type RoleFilter = 'Todos' | 'Clientes' | 'Admins'
 
-// Define opciones de filtro por antiguedad.
-type AntiquityFilter = 'Todos' | '0-12 meses' | '13-24 meses' | '25+ meses'
+export default function UsersManagementTab() {
+  const [users, setUsers] = useState<UserDocument[]>([])
+  const [orders, setOrders] = useState<OrderDocument[]>([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const [roleFilter, setRoleFilter] = useState<RoleFilter>('Todos')
+  const [selectedUser, setSelectedUser] = useState<UserDocument | null>(null)
+  const [orderFilter, setOrderFilter] = useState<'Todos' | 'En camino' | 'Entregado'>('Todos')
 
-// Define opciones de filtro por numero de pedidos.
-type OrdersCountFilter = 'Todos' | '1-5 pedidos' | '6-10 pedidos' | '11+ pedidos'
+  useEffect(() => {
+    const unsubUsers = listenToAllUsers(setUsers)
+    const unsubOrders = listenToAllOrders(setOrders)
+    return () => {
+      unsubUsers()
+      unsubOrders()
+    }
+  }, [])
 
-// Evalua si un usuario cumple el filtro de antiguedad seleccionado.
-const matchesAntiquityFilter = (memberMonths: number, filter: AntiquityFilter): boolean => {
-  // Retorna true para filtro general sin restricciones.
-  if (filter === 'Todos') {
-    return true
-  }
-
-  // Aplica filtro de usuarios nuevos hasta 12 meses.
-  if (filter === '0-12 meses') {
-    return memberMonths <= 12
-  }
-
-  // Aplica filtro de antiguedad media entre 13 y 24 meses.
-  if (filter === '13-24 meses') {
-    return memberMonths >= 13 && memberMonths <= 24
-  }
-
-  // Aplica filtro de usuarios veteranos de 25+ meses.
-  return memberMonths >= 25
-}
-
-// Evalua si un usuario cumple el filtro de cantidad de pedidos.
-const matchesOrdersFilter = (totalOrders: number, filter: OrdersCountFilter): boolean => {
-  // Retorna true para filtro general.
-  if (filter === 'Todos') {
-    return true
-  }
-
-  // Retorna rango para usuarios con 1 a 5 pedidos.
-  if (filter === '1-5 pedidos') {
-    return totalOrders >= 1 && totalOrders <= 5
-  }
-
-  // Retorna rango para usuarios con 6 a 10 pedidos.
-  if (filter === '6-10 pedidos') {
-    return totalOrders >= 6 && totalOrders <= 10
-  }
-
-  // Retorna usuarios con 11 pedidos o mas.
-  return totalOrders >= 11
-}
-
-// Renderiza la pestaña de gestion de usuarios (solo clientes).
-export default function UsersManagementTab({ initialUsers }: UsersManagementTabProps) {
-  // Guarda lista local de clientes.
-  const [users] = useState<ManagedUser[]>(initialUsers)
-  // Controla texto de busqueda por nombre o correo.
-  const [searchTerm, setSearchTerm] = useState<string>('')
-  // Controla filtro activo de antiguedad del cliente.
-  const [antiquityFilter, setAntiquityFilter] = useState<AntiquityFilter>('Todos')
-  // Controla filtro activo de cantidad de pedidos.
-  const [ordersCountFilter, setOrdersCountFilter] = useState<OrdersCountFilter>('Todos')
-  // Guarda el usuario expandido para mostrar historial de pedidos.
-  const [expandedUserId, setExpandedUserId] = useState<string | null>(null)
-
-  // Calcula metricas superiores de la seccion usuarios.
   const userStats = useMemo(() => {
-    // Cuenta total de usuarios cargados en la vista.
     const totalUsers = users.length
-    // Cuenta total de clientes (rol unico permitido).
-    const totalClients = users.filter((user) => user.role === 'Cliente').length
-    // Cuenta usuarios marcados como nuevos este mes.
-    const newThisMonth = users.filter((user) => user.isNewThisMonth).length
+    const totalClients = users.filter(u => u.role === 'client').length
+    const totalAdmins = users.filter(u => u.role === 'admin').length
+    
+    const now = new Date()
+    const newThisMonth = users.filter(u => {
+      const d = new Date(u.createdAt)
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+    }).length
 
-    // Retorna objeto final de metricas.
-    return {
-      totalUsers,
-      totalClients,
-      newThisMonth,
-    }
+    return { totalUsers, totalClients, totalAdmins, newThisMonth }
   }, [users])
 
-  // Calcula datos para el grafico de distribucion por antiguedad.
-  const antiquityChartData = useMemo(() => {
-    let newUsers = 0 // 0-6 meses
-    let regularUsers = 0 // 7-12 meses
-    let veteranUsers = 0 // 13-24 meses
-    let loyalUsers = 0 // >24 meses
-
-    users.forEach((u) => {
-      if (u.memberMonths <= 6) newUsers++
-      else if (u.memberMonths <= 12) regularUsers++
-      else if (u.memberMonths <= 24) veteranUsers++
-      else loyalUsers++
-    })
-
-    return [
-      { name: 'Nuevos (0-6m)', value: newUsers, color: '#3a8f55' },
-      { name: 'Regulares (7-12m)', value: regularUsers, color: '#547063' },
-      { name: 'Veteranos (13-24m)', value: veteranUsers, color: '#8caba4' },
-      { name: 'Fieles (>24m)', value: loyalUsers, color: '#2e493c' },
-    ].filter((segment) => segment.value > 0)
-  }, [users])
-
-  // Calcula datos para el grafico de actividad (cantidad de pedidos).
-  const activityChartData = useMemo(() => {
-    let none = 0
-    let low = 0
-    let medium = 0
-    let high = 0
-
-    users.forEach((u) => {
-      if (u.totalOrders === 0) none++
-      else if (u.totalOrders <= 5) low++
-      else if (u.totalOrders <= 10) medium++
-      else high++
-    })
-
-    return [
-      { group: '0 pedidos', count: none },
-      { group: '1-5 pedidos', count: low },
-      { group: '6-10 pedidos', count: medium },
-      { group: '11+ pedidos', count: high },
-    ]
-  }, [users])
-
-  // Aplica filtros de busqueda, antiguedad y cantidad de pedidos.
   const filteredUsers = useMemo(() => {
-    // Normaliza busqueda para comparacion case-insensitive.
-    const normalizedSearch = searchTerm.trim().toLowerCase()
-
-    // Retorna solo clientes que cumplen todos los criterios.
-    return users.filter((user) => {
-      // Verifica coincidencia por nombre o correo.
-      const matchBySearch =
-        normalizedSearch.length === 0 ||
-        user.fullName.toLowerCase().includes(normalizedSearch) ||
-        user.email.toLowerCase().includes(normalizedSearch)
-
-      // Verifica si cumple filtro de antiguedad.
-      const matchByAntiquity = matchesAntiquityFilter(user.memberMonths, antiquityFilter)
-      // Verifica si cumple filtro de total de pedidos.
-      const matchByOrders = matchesOrdersFilter(user.totalOrders, ordersCountFilter)
-
-      // Conserva usuario si cumple todos los filtros.
-      return matchBySearch && matchByAntiquity && matchByOrders
+    const search = searchTerm.toLowerCase().trim()
+    return users.filter(u => {
+      const matchSearch = (u.name?.toLowerCase() || '').includes(search) || u.email.toLowerCase().includes(search)
+      const matchRole = roleFilter === 'Todos' || 
+                        (roleFilter === 'Clientes' && u.role === 'client') || 
+                        (roleFilter === 'Admins' && u.role === 'admin')
+      return matchSearch && matchRole
     })
-  }, [users, searchTerm, antiquityFilter, ordersCountFilter])
+  }, [users, searchTerm, roleFilter])
 
-  // Actualiza filtro de busqueda desde input.
-  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    // Guarda valor de busqueda actual.
-    setSearchTerm(event.target.value)
+  // Helper to format date "enero de 2024"
+  const formatJoinDate = (isoString?: string) => {
+    if (!isoString) return 'Desconocida'
+    const d = new Date(isoString)
+    if (isNaN(d.getTime())) return 'Desconocida'
+    const month = d.toLocaleString('es-ES', { month: 'long' })
+    return `Desde ${month} de ${d.getFullYear()}`
   }
-
-  // Alterna visualizacion de historial por usuario.
-  const toggleUserOrders = (userId: string): void => {
-    // Si el usuario ya esta abierto, lo colapsa.
-    if (expandedUserId === userId) {
-      setExpandedUserId(null)
-      return
+  
+  const getOrderStatsForUser = (userId: string) => {
+    const userOrders = orders.filter(o => o.userId === userId)
+    const totalSpent = userOrders.reduce((acc, o) => acc + o.total, 0)
+    const completed = userOrders.filter(o => o.status === 'delivered')
+    const active = userOrders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled')
+    return {
+      count: userOrders.length,
+      totalSpent,
+      completed: completed.length,
+      active: active.length,
+      list: userOrders
     }
-
-    // Si estaba cerrado, expande su historial de pedidos.
-    setExpandedUserId(userId)
   }
 
-  // Renderiza resumen, filtros y cards de clientes.
+  const selectedUserStats = selectedUser ? getOrderStatsForUser(selectedUser.id!) : null
+
+  const filteredUserOrders = useMemo(() => {
+    if (!selectedUserStats) return []
+    if (orderFilter === 'Todos') return selectedUserStats.list
+    if (orderFilter === 'En camino') return selectedUserStats.list.filter(o => o.status !== 'delivered' && o.status !== 'cancelled')
+    if (orderFilter === 'Entregado') return selectedUserStats.list.filter(o => o.status === 'delivered')
+    return selectedUserStats.list
+  }, [selectedUserStats, orderFilter])
+
   return (
-    <section className="usersManagementTab" aria-label="Gestion de usuarios">
-      <header className="usersManagementTab__header">
-        <h2 className="usersManagementTab__title">Usuarios</h2>
-        <p className="usersManagementTab__subtitle">{users.length} usuarios registrados</p>
+    <section className="usersTab">
+      <header className="usersTab__header">
+        <h2 className="usersTab__title">Usuarios</h2>
+        <p className="usersTab__subtitle">{userStats.totalUsers} usuarios registrados</p>
       </header>
 
-      <section className="usersManagementTab__stats" aria-label="Metricas de usuarios">
-        <article className="usersStatCard">
-          <p>👥 {userStats.totalUsers}</p>
-          <span>Usuarios totales</span>
-        </article>
-
-        <article className="usersStatCard">
-          <p>🧑 {userStats.totalClients}</p>
-          <span>Clientes</span>
-        </article>
-
-        <article className="usersStatCard">
-          <p>🆕 {userStats.newThisMonth}</p>
-          <span>Nuevos este mes</span>
-        </article>
-      </section>
-
-      {/* Contenedor de graficos de analitica de usuarios */}
-      <section className="usersManagementTab__charts" aria-label="Analiticas de clientes">
-        <article className="usersChartCard">
-          <h3 className="usersChartCard__title">Tramos de Antigüedad</h3>
-          <div style={{ width: '100%', height: 220 }}>
-            {antiquityChartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Tooltip
-                    contentStyle={{ borderRadius: '0.8rem', border: '1px solid #dce4df' }}
-                    itemStyle={{ color: '#172a23', fontWeight: '600' }}
-                  />
-                  <Pie
-                    data={antiquityChartData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={80}
-                    paddingAngle={5}
-                  >
-                    {antiquityChartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <p style={{ color: '#607468', fontSize: '0.9rem', textAlign: 'center', marginTop: '3rem' }}>
-                No hay datos disponibles
-              </p>
-            )}
+      <div className="usersTab__statsRow">
+        <div className="usersTab__statCard">
+          <span className="usersTab__statIcon">👤</span>
+          <div>
+            <strong>{userStats.totalClients}</strong>
+            <span>Clientes</span>
           </div>
-        </article>
-
-        <article className="usersChartCard">
-          <h3 className="usersChartCard__title">Tramos de Actividad (Pedidos)</h3>
-          <div style={{ width: '100%', height: 220 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={activityChartData}
-                margin={{ top: 20, right: 30, left: -20, bottom: 0 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e9ecea" />
-                <XAxis
-                  dataKey="group"
-                  tickLine={false}
-                  axisLine={false}
-                  tick={{ fill: '#607468', fontSize: '0.75rem' }}
-                />
-                <YAxis
-                  tickLine={false}
-                  axisLine={false}
-                  tick={{ fill: '#607468', fontSize: '0.75rem' }}
-                  allowDecimals={false}
-                />
-                <Tooltip
-                  cursor={{ fill: '#f6faf7' }}
-                  contentStyle={{ borderRadius: '0.8rem', border: '1px solid #dce4df' }}
-                  itemStyle={{ color: '#2e493c', fontWeight: '800' }}
-                />
-                <Bar dataKey="count" fill="#3a8f55" radius={[4, 4, 0, 0]} barSize={40} name="Usuarios" />
-              </BarChart>
-            </ResponsiveContainer>
+        </div>
+        <div className="usersTab__statCard">
+          <span className="usersTab__statIcon admin">🛡️</span>
+          <div>
+            <strong>{userStats.totalAdmins}</strong>
+            <span>Administradores</span>
           </div>
-        </article>
-      </section>
-
-      <p className="usersManagementTab__policyNote">
-        Esta seccion solo gestiona clientes. No se permite cambiar rol a administrador en esta
-        etapa.
-      </p>
-
-      <div className="usersManagementTab__filters">
-        <label className="usersManagementTab__search" htmlFor="users-search-input">
-          <span aria-hidden>🔎</span>
-          <input
-            id="users-search-input"
-            type="search"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            placeholder="Buscar usuarios..."
-          />
-        </label>
-
-        <select
-          value={antiquityFilter}
-          onChange={(event) => setAntiquityFilter(event.target.value as AntiquityFilter)}
-          aria-label="Filtrar por antiguedad"
-        >
-          <option value="Todos">Todos</option>
-          <option value="0-12 meses">0-12 meses</option>
-          <option value="13-24 meses">13-24 meses</option>
-          <option value="25+ meses">25+ meses</option>
-        </select>
-
-        <select
-          value={ordersCountFilter}
-          onChange={(event) => setOrdersCountFilter(event.target.value as OrdersCountFilter)}
-          aria-label="Filtrar por cantidad de pedidos"
-        >
-          <option value="Todos">Todos</option>
-          <option value="1-5 pedidos">1-5 pedidos</option>
-          <option value="6-10 pedidos">6-10 pedidos</option>
-          <option value="11+ pedidos">11+ pedidos</option>
-        </select>
+        </div>
+        <div className="usersTab__statCard">
+          <span className="usersTab__statIcon date">📅</span>
+          <div>
+            <strong>{userStats.newThisMonth}</strong>
+            <span>Nuevos este mes</span>
+          </div>
+        </div>
       </div>
 
-      {filteredUsers.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#607468' }}>
-          <p style={{ fontSize: '2rem', margin: '0 0 1rem' }}>🔍</p>
-          <p style={{ fontWeight: '600' }}>No encontramos usuarios con esos criterios.</p>
-          <p style={{ fontSize: '0.85rem' }}>Intenta ajustar tus filtros de búsqueda.</p>
+      <div className="usersTab__controls">
+        <div className="usersTab__searchWrapper">
+          <span className="usersTab__searchIcon">🔍</span>
+          <input 
+            type="text" 
+            placeholder="Buscar por nombre o email..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="usersTab__search"
+          />
         </div>
-      ) : (
-        <div className="usersManagementTab__grid" aria-label="Listado de clientes">
-          {filteredUsers.map((user) => (
-            <article key={user.id} className="userCard">
-              <header className="userCard__header">
-              <div className="userCard__identity">
-                <span className="userCard__avatar" aria-hidden>
-                  {user.avatarEmoji}
-                </span>
+        <div className="usersTab__roleFilters">
+          {(['Todos', 'Clientes', 'Admins'] as const).map(role => (
+            <button 
+              key={role} 
+              className={`usersTab__roleBtn ${roleFilter === role ? 'active' : ''}`}
+              onClick={() => setRoleFilter(role)}
+            >
+              {role}
+            </button>
+          ))}
+        </div>
+      </div>
 
-                <div>
-                  <p className="userCard__name">{user.fullName}</p>
-                  <p className="userCard__role">🧑 {user.role}</p>
+      <div className="usersTab__grid">
+        {filteredUsers.map(user => {
+          const stats = getOrderStatsForUser(user.id!)
+          const isAdmin = user.role === 'admin'
+          
+          return (
+            <article key={user.id} className="userCard">
+              <div className="userCard__header">
+                <div className="userCard__avatar">
+                  {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                </div>
+                <div className="userCard__headerInfo">
+                  <h3>{user.name || 'Sin Nombre'}</h3>
+                  <span className={`userCard__badge ${isAdmin ? 'admin' : 'client'}`}>
+                    {isAdmin ? '🛡️ Admin' : '👤 Cliente'}
+                  </span>
                 </div>
               </div>
+              <div className="userCard__details">
+                <p>📧 {user.email}</p>
+                <p>📞 {user.phone || '+52 55 0000 0000'}</p>
+                <p>📅 {formatJoinDate(user.createdAt)}</p>
+              </div>
+              <div className="userCard__metrics">
+                <div className="userCard__metricItem light-green">
+                  <strong>{stats.count}</strong>
+                  <span>pedidos</span>
+                </div>
+                <div className="userCard__metricItem light-blue">
+                  <strong>${stats.totalSpent.toLocaleString('en-US')}</strong>
+                  <span>gastados</span>
+                </div>
+              </div>
+              <button 
+                className="userCard__actionBtn"
+                onClick={() => setSelectedUser(user)}
+              >
+                Ver pedidos {stats.count > 0 ? ` ${stats.count}` : ''} ›
+              </button>
+            </article>
+          )
+        })}
+        {filteredUsers.length === 0 && (
+          <p className="usersTab__empty">No se encontraron usuarios.</p>
+        )}
+      </div>
+
+      {/* Sidebar for User Orders */}
+      {selectedUser && (
+        <div className="userSidebar__overlay" onClick={() => setSelectedUser(null)}>
+          <aside className="userSidebar" onClick={(e) => e.stopPropagation()}>
+            <header className="userSidebar__header">
+              <div className="userSidebar__headerProfile">
+                <div className="userCard__avatar">
+                  {selectedUser.name ? selectedUser.name.charAt(0).toUpperCase() : 'U'}
+                </div>
+                <div>
+                  <h3>{selectedUser.name || 'Sin Nombre'}</h3>
+                  <p>{selectedUser.email}</p>
+                </div>
+              </div>
+              <button className="userSidebar__close" onClick={() => setSelectedUser(null)}>✖</button>
             </header>
 
-            <ul className="userCard__details">
-              <li>✉️ {user.email}</li>
-              <li>📞 {user.phone}</li>
-              <li>📅 {user.memberSinceLabel}</li>
-              <li>🧾 {user.totalOrders} pedidos</li>
-            </ul>
+            {selectedUserStats && (
+              <>
+                <div className="userSidebar__statsGrid">
+                  <div className="userSidebar__statBox light-green">
+                    <span className="icon">💲</span>
+                    <strong>${selectedUserStats.totalSpent.toLocaleString('en-US')}</strong>
+                    <span>Total gastado</span>
+                  </div>
+                  <div className="userSidebar__statBox light-blue">
+                    <span className="icon">⏱️</span>
+                    <strong>{selectedUserStats.completed} pedidos</strong>
+                    <span>Completados</span>
+                  </div>
+                  <div className="userSidebar__statBox light-orange">
+                    <span className="icon">🔄</span>
+                    <strong>{selectedUserStats.active} activo</strong>
+                    <span>En curso</span>
+                  </div>
+                </div>
 
-            <div className="userCard__actions">
-              <button type="button" onClick={() => toggleUserOrders(user.id)}>
-                {expandedUserId === user.id ? 'Ocultar pedidos' : 'Ver pedidos'}
-              </button>
+                <div className="userSidebar__orderFilters">
+                  {(['Todos', 'En camino', 'Entregado'] as const).map(f => {
+                    const count = f === 'Todos' ? selectedUserStats.count : 
+                                  f === 'En camino' ? selectedUserStats.active : selectedUserStats.completed;
+                    const isActive = orderFilter === f;
+                    const suffix = f === 'En camino' ? '🛵' : f === 'Entregado' ? '✔️' : '';
+                    return (
+                      <button 
+                         key={f}
+                         className={`userSidebar__filterBtn ${isActive ? 'active' : ''}`}
+                         onClick={() => setOrderFilter(f)}
+                      >
+                        {suffix} {f} ({count})
+                      </button>
+                    )
+                  })}
+                </div>
 
-              <button type="button" disabled>
-                Solo cliente
-              </button>
-            </div>
-
-            {expandedUserId === user.id ? (
-              <div className="userCard__orders" aria-label={`Pedidos de ${user.fullName}`}>
-                <p className="userCard__ordersTitle">Historial de pedidos</p>
-                <ul>
-                  {user.orders.map((order) => (
-                    <li key={order.id}>
-                      <span>{order.id}</span>
-                      <span>{order.dateLabel}</span>
-                      <span>{order.total}</span>
-                      <span>{order.status}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-          </article>
-        ))}
+                <div className="userSidebar__orderList">
+                  {filteredUserOrders.map(order => {
+                    const totalItems = order.items.reduce((s,i) => s + i.quantity, 0)
+                    const dateStr = new Date(order.createdAt).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })
+                    const isDelivered = order.status === 'delivered'
+                    return (
+                      <div key={order.id} className="userSidebar__orderCard">
+                        <div className="userSidebar__orderCardIcon">
+                          {isDelivered ? '✔️' : '🛵'}
+                        </div>
+                        <div className="userSidebar__orderCardInfo">
+                          <div className="userSidebar__orderCardHead">
+                            <strong>{order.id?.slice(0, 8)}...</strong>
+                            <span className={`userSidebar__statusBadge ${isDelivered ? 'delivered' : 'active'}`}>
+                              {isDelivered ? 'Entregado' : 'En camino'}
+                            </span>
+                          </div>
+                          <p className="userSidebar__orderCardMeta">
+                            {dateStr} • {totalItems} platos
+                          </p>
+                        </div>
+                        <div className="userSidebar__orderCardPrice">
+                          ${order.total.toLocaleString('en-US')} 
+                          <span className="chev">⌄</span>
+                        </div>
+                      </div>
+                    )
+                  })}
+                  {filteredUserOrders.length === 0 && (
+                    <p className="userSidebar__empty">No hay pedidos en esta categoría.</p>
+                  )}
+                </div>
+              </>
+            )}
+          </aside>
         </div>
       )}
     </section>

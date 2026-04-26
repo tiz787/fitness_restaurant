@@ -6,9 +6,10 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
-  doc
+  doc,
+  where
 } from 'firebase/firestore';
-import { db } from './config';
+import { db, auth } from './config';
 import { COLLECTIONS } from './collections';
 import type { ProductDocument } from './types';
 
@@ -21,9 +22,20 @@ const productsRef = collection(db, COLLECTIONS.PRODUCTS);
  * @param callback Función que se llamará con el arreglo de productos cada vez que haya un cambio
  * @returns Función () => void para cancelar la suscripción cuando el componente se desmonte
  */
-export const listenToAllProducts = (callback: (products: ProductDocument[]) => void) => {
-  // Ordenar productos alfabéticamente por default
-  const q = query(productsRef, orderBy('name', 'asc'));
+export const listenToAllProducts = (callback: (products: ProductDocument[]) => void, specifiedOwnerId?: string) => {
+  const currentOwnerId = specifiedOwnerId || auth.currentUser?.uid;
+  if (!currentOwnerId) {
+    console.warn("Intento de recuperar productos sin un ownerId válido. Retornando vacío.");
+    callback([]);
+    return () => {};
+  }
+
+  // Filtrar por ownerId (Sandbox aislando negocio) y ordenar.
+  const q = query(
+    productsRef, 
+    where('ownerId', '==', currentOwnerId),
+    orderBy('name', 'asc')
+  );
   
   return onSnapshot(q, (snapshot) => {
     const products: ProductDocument[] = [];
@@ -43,9 +55,15 @@ export const listenToAllProducts = (callback: (products: ProductDocument[]) => v
  * Añade un nuevo platillo al menú y lo sincronizará al instante en todas las pantallas de los clientes.
  * @param productData La información del nuevo platillo
  */
-export const createProduct = async (productData: Omit<ProductDocument, 'id'>) => {
+export const createProduct = async (productData: Omit<ProductDocument, 'id'>, specifiedOwnerId?: string) => {
+  const currentOwnerId = specifiedOwnerId || auth.currentUser?.uid;
+  if (!currentOwnerId) throw new Error("No hay un usuario auntenticado para ser dueño (ownerId) de este producto.");
+
   try {
-    const docRef = await addDoc(productsRef, productData);
+    const docRef = await addDoc(productsRef, {
+      ...productData,
+      ownerId: currentOwnerId
+    });
     return docRef.id;
   } catch (error) {
     console.error("Error creando nuevo platillo:", error);
